@@ -76,7 +76,26 @@ export const consistencyCheck = (data: ReportForm) => {
     F3,
     F4,
     F5,
+    LG,
+    CHG,
+    PRVS,
   } = data;
+
+  if (!LG) {
+    errData.LG = { message: "กรุณากรอก LG" };
+  }
+  if (!TYPE) {
+    errData.TYPE = { message: "กรุณากรอก TYPE" };
+  }
+  if (!SI) {
+    errData.SI = { message: "กรุณากรอก SI" };
+  }
+  if (!CHG) {
+    errData.CHG = { message: "กรุณากรอก CHG" };
+  }
+  if (!PRVS) {
+    errData.PRVS = { message: "กรุณากรอก PRVS" };
+  }
 
   if (SI === 2) {
     if (!(SI1 || SI2 || SI3 || SI4 || SI5 || SI6 || SI7)) {

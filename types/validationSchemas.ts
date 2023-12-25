@@ -312,44 +312,6 @@ export const createReportSchema = z
       { TSIC_R, LG1, LG2, LG3, ENU, LG, TYPE, SI, CHG, PRVS },
       refinementContext
     ) => {
-      if (ENU == 1) {
-        if (!LG) {
-          return refinementContext.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "กรุณากรอก LG",
-            path: ["LG"],
-          });
-        }
-        if (!TYPE) {
-          return refinementContext.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "กรุณากรอก TYPE",
-            path: ["TYPE"],
-          });
-        }
-        if (!SI) {
-          return refinementContext.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "กรุณากรอก SI",
-            path: ["SI"],
-          });
-        }
-        if (!CHG) {
-          return refinementContext.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "กรุณากรอก CHG",
-            path: ["CHG"],
-          });
-        }
-        if (!PRVS) {
-          return refinementContext.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "กรุณากรอก PRVS",
-            path: ["PRVS"],
-          });
-        }
-      }
-
       if (!TSIC_R_ARR.includes(TSIC_R)) {
         return refinementContext.addIssue({
           code: z.ZodIssueCode.custom,
