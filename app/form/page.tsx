@@ -9,9 +9,9 @@ import {
   currencyToNumber,
   numberWithCommas,
   removeNonNumeric,
-} from "@/helpers/currency";
+} from "@/helpers/common";
 import { calcQuarter, getQuarterDate, thaiYear } from "@/helpers/quarter";
-import { validateFormData } from "@/helpers/validate";
+import { consistencyCheck, validateFormData } from "@/helpers/validate";
 import { ReportForm, createReportSchema } from "@/types/validationSchemas";
 import typeOption from "@/utils/typeOption";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,6 +76,7 @@ const FormPage = () => {
   const chg = watch("CHG");
   const type = watch("TYPE");
   const sto = watch("STO_temp");
+  const enu = watch("ENU");
 
   useEffect(() => {
     const R1 = currencyToNumber(r1 as string);
@@ -100,15 +101,24 @@ const FormPage = () => {
   }, [sto]);
 
   const onSubmit = handleSubmit(async (data) => {
-    const err = validateFormData(data);
-    if (!_.isEmpty(err)) {
-      toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
-      setFormErrors(err);
-      return;
+    if (data.ENU === 1) {
+      const err = validateFormData(data);
+      if (!_.isEmpty(err)) {
+        setFormErrors(err);
+        toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
+        window.scrollTo(0, 0);
+        return;
+      } else {
+        setFormErrors([]);
+        toast.success("ส่งข้อมูลสำเร็จ");
+      }
     } else {
       setFormErrors([]);
+      toast.success("ส่งข้อมูลสำเร็จ");
     }
   });
+
+  console.log(errors);
 
   return (
     <>
@@ -124,13 +134,6 @@ const FormPage = () => {
           className="flex flex-wrap gap-10 justify-center"
           onSubmit={onSubmit}
         >
-          {/* {formErrors.length > 0 && (
-            <div className="box error w-full flex flex-wrap">
-              {formErrors.map((err, index) => (
-                <ErrorMessage key={index}>{err}</ErrorMessage>
-              ))}
-            </div>
-          )} */}
           <div className="card w-full">
             <h1>IDENTIFICATION</h1>
             <div className="flex flex-wrap gap-5 mt-5">
@@ -334,647 +337,701 @@ const FormPage = () => {
             />
           </div>
 
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>2. รูปแบบการจัดตั้งตามกฎหมาย</h1>
-            <div className="flex flex-col gap-1 items-start">
-              <Controller
-                control={control}
-                name="LG"
-                render={({ field: { onChange, value } }) => (
-                  <Radio.Group value={value} onChange={onChange}>
-                    <Space direction="vertical">
-                      <Radio value={1}>
-                        1. ส่วนบุคคล ห้างหุ้นส่วนสามัญที่ไม่เป็นนิติบุคคล
-                        {value === 1 && (
-                          <div className="my-1 flex flex-col gap-2">
-                            <p>เลขทะเบียนพาณิชย์/เลขบัตรประจำตัวประชาชน</p>
-                            <Input
-                              name="LG1"
-                              placeholder="LG1"
-                              register={register}
-                              className="w-60 md:w-72"
-                              errors={errors.LG1 || formErrors.LG1}
-                            />
-                          </div>
-                        )}
-                      </Radio>
-                      <Radio value={2}>
-                        2. ห้างหุ้นส่วนสามัญนิติบุคคล ห้างหุ้นส่วนจำกัด
-                        {value === 2 && (
-                          <div className="my-1 flex flex-col gap-2">
-                            <p>เลขทะเบียนนิติบุคคล</p>
-                            <Input
-                              name="LG2"
-                              placeholder="LG2"
-                              register={register}
-                              className="w-60 md:w-72"
-                              errors={errors.LG2 || formErrors.LG2}
-                            />
-                          </div>
-                        )}
-                      </Radio>
-                      <Radio value={3}>
-                        3. บริษัทจำกัด บริษัทจำกัด (มหาชน)
-                        {value === 3 && (
-                          <div className="my-1 flex flex-col gap-2">
-                            <p>เลขทะเบียนนิติบุคคล</p>
-                            <Input
-                              name="LG3"
-                              placeholder="LG3"
-                              register={register}
-                              className="w-60 md:w-72"
-                              errors={errors.LG3 || formErrors.LG3}
-                            />
-                          </div>
-                        )}
-                      </Radio>
-                      <Radio value={4}>4. ส่วนราชการ รัฐวิสาหกิจ</Radio>
-                      <Radio value={5}>5. สหกรณ์</Radio>
-                      <Radio value={6}>
-                        6. อื่นๆ (ระบุ)
-                        {value === 6 && (
-                          <div className="my-1 flex flex-col gap-2">
-                            <Input
-                              name="LG4"
-                              placeholder="LG4"
-                              register={register}
-                              className="w-60 md:w-72"
-                              errors={errors.LG4 || formErrors.LG4}
-                            />
-                          </div>
-                        )}
-                      </Radio>
-                    </Space>
-                  </Radio.Group>
-                )}
-              />
-              <ErrorMessage>{errors?.LG?.message}</ErrorMessage>
-            </div>
-          </div>
-
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>3. ประเภทของกิจการและชนิดของสินค้า/บริการ</h1>
-            <p>
-              ถ้าประกอบธุรกิจมากกว่า 1 ประเภท
-              โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด
-            </p>
-            <Dropdown
-              name="TYPE"
-              placeholder="TYPE"
-              options={typeOption}
-              className="w-60 md:w-80"
-              errors={errors.TYPE}
-              control={control}
-            />
-          </div>
-
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>4. ยอดขายหรือรายรับของสถานประกอบการ</h1>
-            <p>
-              บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ
-              แต่ละเดือนเป็นจำนวนเต็ม (บาท)
-            </p>
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center">
-                <p>เดือน {quarter.monthRange[0]}</p>
-                <Input
-                  name="R1_temp"
-                  placeholder="R1"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.R1_temp}
-                  showWord="บาท"
-                />
-              </div>
-              <div className="flex justify-between items-center">
-                <p>เดือน {quarter.monthRange[1]}</p>
-                <Input
-                  name="R2_temp"
-                  placeholder="R2"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.R2_temp}
-                  showWord="บาท"
-                />
-              </div>
-              <div className="flex justify-between items-center">
-                <p>เดือน {quarter.monthRange[2]}</p>
-                <Input
-                  name="R3_temp"
-                  placeholder="R3"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.R3}
-                  showWord="บาท"
-                />
-              </div>
-              <div className="flex justify-between items-center font-bold">
-                <p>รวม 3 เดือน</p>
-                <div>{tr ? numberWithCommas(tr) : 0} บาท</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>
-              5. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
-            </h1>
-            <div className="flex flex-col gap-1 items-start">
-              <Controller
-                control={control}
-                name="SI"
-                render={({ field: { onChange, value } }) => (
-                  <Radio.Group value={value} onChange={onChange}>
-                    <Space direction="horizontal">
-                      <Radio value={1}>1. ไม่มี</Radio>
-                      <Radio value={2}>2. มี</Radio>
-                    </Space>
-                  </Radio.Group>
-                )}
-              />
-              <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-            </div>
-            {si == 2 && (
-              <>
-                <div className="flex flex-col gap-3">
-                  <h1 className="text-[15px]">
-                    5.1
-                    มูลค่าการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตคิดเป็นร้อยละเท่าใดของมูลค่าขายทั้งหมด
-                  </h1>
-                  <Input
-                    name="ITR"
-                    type="number"
-                    placeholder="ITR"
-                    register={register}
-                    className="w-28"
-                    errors={errors.ITR || formErrors.ITR}
-                    showWord="%"
-                    isNumber
+          {enu === 1 && (
+            <>
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>2. รูปแบบการจัดตั้งตามกฎหมาย</h1>
+                <div className="flex flex-col gap-1 items-start">
+                  <Controller
+                    control={control}
+                    name="LG"
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group value={value} onChange={onChange}>
+                        <Space direction="vertical">
+                          <Radio value={1}>
+                            1. ส่วนบุคคล ห้างหุ้นส่วนสามัญที่ไม่เป็นนิติบุคคล
+                            {value === 1 && (
+                              <div className="my-1 flex flex-col gap-2">
+                                <p>เลขทะเบียนพาณิชย์/เลขบัตรประจำตัวประชาชน</p>
+                                <Input
+                                  name="LG1"
+                                  placeholder="LG1"
+                                  register={register}
+                                  className="w-60 md:w-72"
+                                  errors={errors.LG1 || formErrors.LG1}
+                                />
+                              </div>
+                            )}
+                          </Radio>
+                          <Radio value={2}>
+                            2. ห้างหุ้นส่วนสามัญนิติบุคคล ห้างหุ้นส่วนจำกัด
+                            {value === 2 && (
+                              <div className="my-1 flex flex-col gap-2">
+                                <p>เลขทะเบียนนิติบุคคล</p>
+                                <Input
+                                  name="LG2"
+                                  placeholder="LG2"
+                                  register={register}
+                                  className="w-60 md:w-72"
+                                  errors={errors.LG2 || formErrors.LG2}
+                                />
+                              </div>
+                            )}
+                          </Radio>
+                          <Radio value={3}>
+                            3. บริษัทจำกัด บริษัทจำกัด (มหาชน)
+                            {value === 3 && (
+                              <div className="my-1 flex flex-col gap-2">
+                                <p>เลขทะเบียนนิติบุคคล</p>
+                                <Input
+                                  name="LG3"
+                                  placeholder="LG3"
+                                  register={register}
+                                  className="w-60 md:w-72"
+                                  errors={errors.LG3 || formErrors.LG3}
+                                />
+                              </div>
+                            )}
+                          </Radio>
+                          <Radio value={4}>4. ส่วนราชการ รัฐวิสาหกิจ</Radio>
+                          <Radio value={5}>5. สหกรณ์</Radio>
+                          <Radio value={6}>
+                            6. อื่นๆ (ระบุ)
+                            {value === 6 && (
+                              <div className="my-1 flex flex-col gap-2">
+                                <Input
+                                  name="LG4"
+                                  placeholder="LG4"
+                                  register={register}
+                                  className="w-60 md:w-72"
+                                  errors={errors.LG4 || formErrors.LG4}
+                                />
+                              </div>
+                            )}
+                          </Radio>
+                        </Space>
+                      </Radio.Group>
+                    )}
                   />
+                  <ErrorMessage>{errors?.LG?.message}</ErrorMessage>
                 </div>
+              </div>
+
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>3. ประเภทของกิจการและชนิดของสินค้า/บริการ</h1>
+                <p>
+                  ถ้าประกอบธุรกิจมากกว่า 1 ประเภท
+                  โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด
+                </p>
+                <Dropdown
+                  name="TYPE"
+                  placeholder="TYPE"
+                  options={typeOption}
+                  className="w-60 md:w-80"
+                  errors={errors.TYPE}
+                  control={control}
+                />
+              </div>
+
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>4. ยอดขายหรือรายรับของสถานประกอบการ</h1>
+                <p>
+                  บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ
+                  แต่ละเดือนเป็นจำนวนเต็ม (บาท)
+                </p>
                 <div className="flex flex-col gap-3">
-                  <h1 className="text-[15px]">
-                    5.2
-                    สัดส่วนของช่องทางการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตต่อยอดขายผ่านทางอินเทอร์เน็ตทั้งหมด
-                  </h1>
+                  <div className="flex justify-between items-center">
+                    <p>เดือน {quarter.monthRange[0]}</p>
+                    <Input
+                      name="R1_temp"
+                      placeholder="R1"
+                      register={register}
+                      className="w-60 md:w-72"
+                      errors={errors.R1_temp}
+                      showWord="บาท"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p>เดือน {quarter.monthRange[1]}</p>
+                    <Input
+                      name="R2_temp"
+                      placeholder="R2"
+                      register={register}
+                      className="w-60 md:w-72"
+                      errors={errors.R2_temp}
+                      showWord="บาท"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p>เดือน {quarter.monthRange[2]}</p>
+                    <Input
+                      name="R3_temp"
+                      placeholder="R3"
+                      register={register}
+                      className="w-60 md:w-72"
+                      errors={errors.R3}
+                      showWord="บาท"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center font-bold">
+                    <p>รวม 3 เดือน</p>
+                    <div>{tr ? numberWithCommas(tr) : 0} บาท</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>
+                  5. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
+                </h1>
+                <div className="flex flex-col gap-1 items-start">
                   <Controller
                     control={control}
-                    name="SI1"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        1. Social media เช่น Facebook, Instagram, Twitter, Line
-                      </Checkbox>
+                    name="SI"
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group value={value} onChange={onChange}>
+                        <Space direction="horizontal">
+                          <Radio value={1}>1. ไม่มี</Radio>
+                          <Radio value={2}>2. มี</Radio>
+                        </Space>
+                      </Radio.Group>
                     )}
                   />
-                  {si1 && (
-                    <div className="flex gap-3 items-center text-[14px]">
-                      สัดส่วน
+                  <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                </div>
+                {si == 2 && (
+                  <>
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-[15px]">
+                        5.1
+                        มูลค่าการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตคิดเป็นร้อยละเท่าใดของมูลค่าขายทั้งหมด
+                      </h1>
                       <Input
-                        name="SI11"
+                        name="ITR"
                         type="number"
-                        placeholder="SI11"
+                        placeholder="ITR"
                         register={register}
                         className="w-28"
-                        errors={errors.SI11}
+                        errors={errors.ITR || formErrors.ITR}
                         showWord="%"
                         isNumber
                       />
                     </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI2"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        2. Website หรือ Application ของตนเอง
-                      </Checkbox>
-                    )}
-                  />
-                  {si2 && (
-                    <div className="flex gap-3 items-center text-[14px]">
-                      สัดส่วน
-                      <Input
-                        name="SI22"
-                        type="number"
-                        placeholder="SI22"
-                        register={register}
-                        className="w-28"
-                        errors={errors.SI22}
-                        showWord="%"
-                        isNumber
+                    <div className="flex flex-col gap-3">
+                      <h1 className="text-[15px]">
+                        5.2
+                        สัดส่วนของช่องทางการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตต่อยอดขายผ่านทางอินเทอร์เน็ตทั้งหมด
+                      </h1>
+                      <Controller
+                        control={control}
+                        name="SI1"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            1. Social media เช่น Facebook, Instagram, Twitter,
+                            Line
+                          </Checkbox>
+                        )}
                       />
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI3"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada, Shopee
-                      </Checkbox>
-                    )}
-                  />
-                  {si3 && (
-                    <div className="flex gap-5">
-                      <div className="flex gap-3 items-center text-[14px]">
-                        สัดส่วน
-                        <Input
-                          name="SI33"
-                          type="number"
-                          placeholder="SI33"
-                          register={register}
-                          className="w-28"
-                          errors={errors.SI33}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                      <div className="flex gap-3 items-center text-[14px]">
-                        ค่าธรรมเนียม
-                        <Input
-                          name="F1"
-                          type="number"
-                          placeholder="F1"
-                          register={register}
-                          className="w-28"
-                          errors={errors.F1}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI4"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        4. Cross-border platform (ตลาดต่างประเทศ) เช่น Tmall
-                        Toaboa, Alibaba, Amazon
-                      </Checkbox>
-                    )}
-                  />
-                  {si4 && (
-                    <div className="flex gap-5">
-                      <div className="flex gap-3 items-center text-[14px]">
-                        สัดส่วน
-                        <Input
-                          name="SI44"
-                          type="number"
-                          placeholder="SI44"
-                          register={register}
-                          className="w-28"
-                          errors={errors.SI44}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                      <div className="flex gap-3 items-center text-[14px]">
-                        ค่าธรรมเนียม
-                        <Input
-                          name="F2"
-                          type="number"
-                          placeholder="F2"
-                          register={register}
-                          className="w-28"
-                          errors={errors.F2}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI5"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
-                        บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food Panda
-                      </Checkbox>
-                    )}
-                  />
-                  {si5 && (
-                    <div className="flex gap-5">
-                      <div className="flex gap-3 items-center text-[14px]">
-                        สัดส่วน
-                        <Input
-                          name="SI55"
-                          type="number"
-                          placeholder="SI55"
-                          register={register}
-                          className="w-28"
-                          errors={errors.SI55}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                      <div className="flex gap-3 items-center text-[14px]">
-                        ค่าธรรมเนียม
-                        <Input
-                          name="F3"
-                          type="number"
-                          placeholder="F1"
-                          register={register}
-                          className="w-28"
-                          errors={errors.F3}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI6"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>
-                        6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น Agoda,
-                        Booking, Airbnb, Traveloka
-                      </Checkbox>
-                    )}
-                  />
-                  {si6 && (
-                    <div className="flex gap-5">
-                      <div className="flex gap-3 items-center text-[14px]">
-                        สัดส่วน
-                        <Input
-                          name="SI66"
-                          type="number"
-                          placeholder="SI66"
-                          register={register}
-                          className="w-28"
-                          errors={errors.SI66}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                      <div className="flex gap-3 items-center text-[14px]">
-                        ค่าธรรมเนียม
-                        <Input
-                          name="F4"
-                          type="number"
-                          placeholder="F4"
-                          register={register}
-                          className="w-28"
-                          errors={errors.F4}
-                          showWord="%"
-                          isNumber
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <Controller
-                    control={control}
-                    name="SI7"
-                    render={({ field: { onChange } }) => (
-                      <Checkbox onChange={onChange}>7. อื่นๆ (ระบุ)</Checkbox>
-                    )}
-                  />
-                  {si7 && (
-                    <>
-                      <div>
-                        <Input
-                          name="SI8"
-                          placeholder="SI8"
-                          register={register}
-                          className="w-60 md:w-72"
-                          errors={errors.SI8 || formErrors.SI8}
-                        />
-                      </div>
-                      <div className="flex gap-5">
+                      {si1 && (
                         <div className="flex gap-3 items-center text-[14px]">
                           สัดส่วน
                           <Input
-                            name="SI77"
+                            name="SI11"
                             type="number"
-                            placeholder="SI77"
+                            placeholder="SI11"
                             register={register}
                             className="w-28"
-                            errors={errors.SI77}
+                            errors={errors.SI11}
                             showWord="%"
                             isNumber
                           />
                         </div>
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI2"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            2. Website หรือ Application ของตนเอง
+                          </Checkbox>
+                        )}
+                      />
+                      {si2 && (
                         <div className="flex gap-3 items-center text-[14px]">
-                          ค่าธรรมเนียม
+                          สัดส่วน
                           <Input
-                            name="F5"
+                            name="SI22"
                             type="number"
-                            placeholder="F5"
+                            placeholder="SI22"
                             register={register}
                             className="w-28"
-                            errors={errors.F5}
+                            errors={errors.SI22}
                             showWord="%"
                             isNumber
                           />
                         </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <ErrorMessage>{formErrors?.SI_ALL?.message}</ErrorMessage>
-                <ErrorMessage>
-                  {formErrors?.SI_PERCENTAGE?.message}
-                </ErrorMessage>
-                <ErrorMessage>{formErrors?.SI_FEE?.message}</ErrorMessage>
-              </>
-            )}
-          </div>
-
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>
-              6. ในไตรมาสนี้
-              ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสก่อนหน้านั้นหรือไม่ อย่างไร
-            </h1>
-            <div className="flex flex-col gap-1 items-start">
-              <Controller
-                control={control}
-                name="CHG"
-                render={({ field: { onChange, value } }) => (
-                  <Radio.Group value={value} onChange={onChange}>
-                    <Space direction="vertical">
-                      <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
-                      <Radio value={2}>
-                        2. สูงขึ้นจากไตรมาสก่อนหน้า
-                        {value === 2 && (
-                          <Input
-                            name="CIN"
-                            type="number"
-                            placeholder="CIN"
-                            register={register}
-                            className="w-28 mt-2"
-                            errors={errors.CIN}
-                            showWord="%"
-                            isNumber
-                          />
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI3"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
+                            Shopee
+                          </Checkbox>
                         )}
-                      </Radio>
-                      <Radio value={3}>
-                        3. ลดลงจากไตรมาสก่อนหน้า
-                        {value === 3 && (
-                          <Input
-                            name="CDE"
-                            type="number"
-                            placeholder="CDE"
-                            register={register}
-                            className="w-28 mt-2"
-                            errors={errors.CDE}
-                            showWord="%"
-                            isNumber
-                          />
+                      />
+                      {si3 && (
+                        <div className="flex gap-5">
+                          <div className="flex gap-3 items-center text-[14px]">
+                            สัดส่วน
+                            <Input
+                              name="SI33"
+                              type="number"
+                              placeholder="SI33"
+                              register={register}
+                              className="w-28"
+                              errors={errors.SI33}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                          <div className="flex gap-3 items-center text-[14px]">
+                            ค่าธรรมเนียม
+                            <Input
+                              name="F1"
+                              type="number"
+                              placeholder="F1"
+                              register={register}
+                              className="w-28"
+                              errors={errors.F1}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI4"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            4. Cross-border platform (ตลาดต่างประเทศ) เช่น Tmall
+                            Toaboa, Alibaba, Amazon
+                          </Checkbox>
                         )}
-                      </Radio>
-                    </Space>
-                  </Radio.Group>
-                )}
-              />
-              <ErrorMessage>{errors?.CHG?.message}</ErrorMessage>
-            </div>
-          </div>
-
-          {chg !== 1 && (
-            <div className="card w-500 flex flex-col gap-3">
-              <h1>
-                7. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
-                โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
-              </h1>
-              <div className="flex flex-col gap-5 ">
-                <Controller
-                  control={control}
-                  name="FAC"
-                  render={({ field: { onChange, value } }) => (
-                    <Radio.Group value={value} onChange={onChange}>
-                      <div className="flex">
-                        <Space direction="vertical" className="w-2/4">
-                          <Radio value={1}>1. ฤดูกาล เทศกาล</Radio>
-                          <Radio value={2}>2. กำลังซื้อของลูกค้า</Radio>
-                          <Radio value={3}>3. ต้นทุน/ราคาสินค้า</Radio>
-                          <Radio value={4}>4. คู่แข่งทางการค้า</Radio>
-                          <Radio value={5}>5. การปรับปรุงกิจการ</Radio>
-                        </Space>
-                        <Space direction="vertical">
-                          <Radio value={6}>6. ภาวะเศรษฐกิจ</Radio>
-                          <Radio value={7}>7. นโยบายภาครัฐ</Radio>
-                          <Radio value={8}>8. เทคโนโลยี</Radio>
-                          <Radio value={9}>9. โรคระบาด เช่น โควิด-19</Radio>
-                          <Radio value={10}>
-                            10. อื่นๆ (ระบุ)
-                            {value === 10 && (
+                      />
+                      {si4 && (
+                        <div className="flex gap-5">
+                          <div className="flex gap-3 items-center text-[14px]">
+                            สัดส่วน
+                            <Input
+                              name="SI44"
+                              type="number"
+                              placeholder="SI44"
+                              register={register}
+                              className="w-28"
+                              errors={errors.SI44}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                          <div className="flex gap-3 items-center text-[14px]">
+                            ค่าธรรมเนียม
+                            <Input
+                              name="F2"
+                              type="number"
+                              placeholder="F2"
+                              register={register}
+                              className="w-28"
+                              errors={errors.F2}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI5"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
+                            บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
+                            Panda
+                          </Checkbox>
+                        )}
+                      />
+                      {si5 && (
+                        <div className="flex gap-5">
+                          <div className="flex gap-3 items-center text-[14px]">
+                            สัดส่วน
+                            <Input
+                              name="SI55"
+                              type="number"
+                              placeholder="SI55"
+                              register={register}
+                              className="w-28"
+                              errors={errors.SI55}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                          <div className="flex gap-3 items-center text-[14px]">
+                            ค่าธรรมเนียม
+                            <Input
+                              name="F3"
+                              type="number"
+                              placeholder="F1"
+                              register={register}
+                              className="w-28"
+                              errors={errors.F3}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI6"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
+                            Agoda, Booking, Airbnb, Traveloka
+                          </Checkbox>
+                        )}
+                      />
+                      {si6 && (
+                        <div className="flex gap-5">
+                          <div className="flex gap-3 items-center text-[14px]">
+                            สัดส่วน
+                            <Input
+                              name="SI66"
+                              type="number"
+                              placeholder="SI66"
+                              register={register}
+                              className="w-28"
+                              errors={errors.SI66}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                          <div className="flex gap-3 items-center text-[14px]">
+                            ค่าธรรมเนียม
+                            <Input
+                              name="F4"
+                              type="number"
+                              placeholder="F4"
+                              register={register}
+                              className="w-28"
+                              errors={errors.F4}
+                              showWord="%"
+                              isNumber
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Controller
+                        control={control}
+                        name="SI7"
+                        render={({ field: { onChange } }) => (
+                          <Checkbox onChange={onChange}>
+                            7. อื่นๆ (ระบุ)
+                          </Checkbox>
+                        )}
+                      />
+                      {si7 && (
+                        <>
+                          <div>
+                            <Input
+                              name="SI8"
+                              placeholder="SI8"
+                              register={register}
+                              className="w-60 md:w-72"
+                              errors={errors.SI8 || formErrors.SI8}
+                            />
+                          </div>
+                          <div className="flex gap-5">
+                            <div className="flex gap-3 items-center text-[14px]">
+                              สัดส่วน
                               <Input
-                                name="FAC_1"
-                                placeholder="FAC_1"
+                                name="SI77"
+                                type="number"
+                                placeholder="SI77"
                                 register={register}
-                                className="w-full mt-2"
-                                errors={errors.FAC_1 || formErrors.FAC_1}
+                                className="w-28"
+                                errors={errors.SI77}
+                                showWord="%"
+                                isNumber
+                              />
+                            </div>
+                            <div className="flex gap-3 items-center text-[14px]">
+                              ค่าธรรมเนียม
+                              <Input
+                                name="F5"
+                                type="number"
+                                placeholder="F5"
+                                register={register}
+                                className="w-28"
+                                errors={errors.F5}
+                                showWord="%"
+                                isNumber
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <ErrorMessage>{formErrors?.SI_ALL?.message}</ErrorMessage>
+                    <ErrorMessage>
+                      {formErrors?.SI_PERCENTAGE?.message}
+                    </ErrorMessage>
+                    <ErrorMessage>{formErrors?.SI_FEE?.message}</ErrorMessage>
+                  </>
+                )}
+              </div>
+
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>
+                  6. ในไตรมาสนี้
+                  ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสก่อนหน้านั้นหรือไม่ อย่างไร
+                </h1>
+                <div className="flex flex-col gap-1 items-start">
+                  <Controller
+                    control={control}
+                    name="CHG"
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group value={value} onChange={onChange}>
+                        <Space direction="vertical">
+                          <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
+                          <Radio value={2}>
+                            2. สูงขึ้นจากไตรมาสก่อนหน้า
+                            {value === 2 && (
+                              <Input
+                                name="CIN"
+                                type="number"
+                                placeholder="CIN"
+                                register={register}
+                                className="w-28 mt-2"
+                                errors={errors.CIN}
+                                showWord="%"
+                                isNumber
+                              />
+                            )}
+                          </Radio>
+                          <Radio value={3}>
+                            3. ลดลงจากไตรมาสก่อนหน้า
+                            {value === 3 && (
+                              <Input
+                                name="CDE"
+                                type="number"
+                                placeholder="CDE"
+                                register={register}
+                                className="w-28 mt-2"
+                                errors={errors.CDE}
+                                showWord="%"
+                                isNumber
                               />
                             )}
                           </Radio>
                         </Space>
-                      </div>
-                    </Radio.Group>
-                  )}
-                />
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.CHG?.message}</ErrorMessage>
+                </div>
               </div>
-            </div>
-          )}
 
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>
-              8. ในไตรมาสนี้
-              ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสเดียวกันกับปีก่อนหรือไม่
-            </h1>
-            <div className="flex flex-col gap-5 items-start">
-              <Controller
-                control={control}
-                name="PRVS"
-                render={({ field: { onChange, value } }) => (
-                  <Radio.Group value={value} onChange={onChange}>
-                    <Space direction="vertical">
-                      <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
-                      <Radio value={2}>
-                        2. สูงขึ้นจากปีก่อน
-                        {value === 2 && (
-                          <Input
-                            name="PIN"
-                            type="number"
-                            placeholder="PIN"
-                            register={register}
-                            className="w-28 mt-2"
-                            errors={errors.PIN}
-                            showWord="%"
-                            isNumber
-                          />
-                        )}
-                      </Radio>
-                      <Radio value={3}>
-                        3. ลดลงจากปีก่อน
-                        {value === 3 && (
-                          <Input
-                            name="PDE"
-                            type="number"
-                            placeholder="PDE"
-                            register={register}
-                            className="w-28 mt-2"
-                            errors={errors.PDE}
-                            showWord="%"
-                            isNumber
-                          />
-                        )}
-                      </Radio>
-                    </Space>
-                  </Radio.Group>
-                )}
-              />
-              <ErrorMessage>{errors?.PRVS?.message}</ErrorMessage>
-            </div>
-          </div>
+              {chg && chg !== 1 && (
+                <div className="card w-500 flex flex-col gap-3">
+                  <h1>
+                    7. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
+                    โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
+                  </h1>
+                  <div className="flex flex-col gap-1">
+                    <Controller
+                      control={control}
+                      name="FAC"
+                      render={({ field: { onChange, value } }) => (
+                        <Radio.Group value={value} onChange={onChange}>
+                          <div className="flex">
+                            <Space direction="vertical" className="w-2/4">
+                              <Radio value={1}>1. ฤดูกาล เทศกาล</Radio>
+                              <Radio value={2}>2. กำลังซื้อของลูกค้า</Radio>
+                              <Radio value={3}>3. ต้นทุน/ราคาสินค้า</Radio>
+                              <Radio value={4}>4. คู่แข่งทางการค้า</Radio>
+                              <Radio value={5}>5. การปรับปรุงกิจการ</Radio>
+                            </Space>
+                            <Space direction="vertical">
+                              <Radio value={6}>6. ภาวะเศรษฐกิจ</Radio>
+                              <Radio value={7}>7. นโยบายภาครัฐ</Radio>
+                              <Radio value={8}>8. เทคโนโลยี</Radio>
+                              <Radio value={9}>9. โรคระบาด เช่น โควิด-19</Radio>
+                              <Radio value={10}>
+                                10. อื่นๆ (ระบุ)
+                                {value === 10 && (
+                                  <Input
+                                    name="FAC_1"
+                                    placeholder="FAC_1"
+                                    register={register}
+                                    className="w-full mt-2"
+                                    errors={errors.FAC_1 || formErrors.FAC_1}
+                                  />
+                                )}
+                              </Radio>
+                            </Space>
+                          </div>
+                        </Radio.Group>
+                      )}
+                    />
+                    <ErrorMessage>{errors?.FAC?.message}</ErrorMessage>
+                  </div>
+                </div>
+              )}
 
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>9. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</h1>
-            <Input
-              name="EMP"
-              type="number"
-              placeholder="EMP"
-              register={register}
-              className="w-40"
-              errors={errors.EMP}
-              showWord="คน"
-              isNumber
-            />
-          </div>
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>
+                  8. ในไตรมาสนี้
+                  ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสเดียวกันกับปีก่อนหรือไม่
+                </h1>
+                <div className="flex flex-col gap-1 items-start">
+                  <Controller
+                    control={control}
+                    name="PRVS"
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group value={value} onChange={onChange}>
+                        <Space direction="vertical">
+                          <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
+                          <Radio value={2}>
+                            2. สูงขึ้นจากปีก่อน
+                            {value === 2 && (
+                              <Input
+                                name="PIN"
+                                type="number"
+                                placeholder="PIN"
+                                register={register}
+                                className="w-28 mt-2"
+                                errors={errors.PIN}
+                                showWord="%"
+                                isNumber
+                              />
+                            )}
+                          </Radio>
+                          <Radio value={3}>
+                            3. ลดลงจากปีก่อน
+                            {value === 3 && (
+                              <Input
+                                name="PDE"
+                                type="number"
+                                placeholder="PDE"
+                                register={register}
+                                className="w-28 mt-2"
+                                errors={errors.PDE}
+                                showWord="%"
+                                isNumber
+                              />
+                            )}
+                          </Radio>
+                        </Space>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.PRVS?.message}</ErrorMessage>
+                </div>
+              </div>
 
-          {type === 1 && (
-            <div className="card w-500 flex flex-col gap-3">
-              <h1>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</h1>
-              <div className="flex gap-5 items-center">
-                จำนวน
+              <div className="card w-500 flex flex-col gap-3">
+                <h1>9. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</h1>
                 <Input
-                  name="STO_temp"
-                  placeholder="STO"
+                  name="EMP"
+                  type="number"
+                  placeholder="EMP"
                   register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.STO}
-                  showWord="บาท"
+                  className="w-40"
+                  errors={errors.EMP}
+                  showWord="คน"
+                  isNumber
                 />
               </div>
-              <h1>
-                และคาดว่าสินค้าคงเหลือดังกล่าว
-                จะสามารถขายได้ภายในกี่วันหลังสิ้นสุดไตรมาสปัจจุบัน
-              </h1>
-              <Input
-                name="DAY"
-                type="number"
-                placeholder="DAY"
-                register={register}
-                className="w-28"
-                errors={errors.DAY}
-                showWord="วัน"
-                isNumber
-              />
-            </div>
-          )}
 
+              {type === 1 && (
+                <div className="card w-500 flex flex-col gap-3">
+                  <h1>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</h1>
+                  <div className="flex gap-5 items-center">
+                    จำนวน
+                    <Input
+                      name="STO_temp"
+                      placeholder="STO"
+                      register={register}
+                      className="w-60 md:w-72"
+                      errors={errors.STO}
+                      showWord="บาท"
+                    />
+                  </div>
+                  <h1>
+                    และคาดว่าสินค้าคงเหลือดังกล่าว
+                    จะสามารถขายได้ภายในกี่วันหลังสิ้นสุดไตรมาสปัจจุบัน
+                  </h1>
+                  <Input
+                    name="DAY"
+                    type="number"
+                    placeholder="DAY"
+                    register={register}
+                    className="w-28"
+                    errors={errors.DAY}
+                    showWord="วัน"
+                    isNumber
+                  />
+                </div>
+              )}
+
+              <div className="w-full">
+                <div className="flex flex-col gap-3 justify-end items-end">
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
+                    <Input
+                      name="P1"
+                      placeholder="P1"
+                      register={register}
+                      className="w-28"
+                      errors={errors.P1}
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่บรรณาธิกรและลงรหัส
+                    <Input
+                      name="P2"
+                      placeholder="P2"
+                      register={register}
+                      className="w-28"
+                      errors={errors.P2}
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่บันทึกข้อมูล
+                    <Input
+                      name="P3"
+                      placeholder="P3"
+                      register={register}
+                      className="w-28"
+                      errors={errors.P3}
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    ผู้ตรวจ
+                    <Input
+                      name="P4"
+                      placeholder="P4"
+                      register={register}
+                      className="w-28"
+                      errors={errors.P4}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
           <div className="w-full flex justify-center">
             <Button type="submit" primary>
               ส่ง

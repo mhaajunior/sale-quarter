@@ -3,6 +3,7 @@ import { Controller } from "react-hook-form";
 import Select from "react-select";
 import "@/styles/Dropdown.css";
 import ErrorMessage from "./ErrorMessage";
+import classNames from "classnames";
 
 const Dropdown = ({
   name,
@@ -19,6 +20,10 @@ const Dropdown = ({
   errors: any;
   [rest: string]: any;
 }) => {
+  const classes = classNames(rest.className, {
+    error: errors,
+  });
+
   const getValue = (value: number) => {
     if (value) {
       for (let option of options) {
@@ -32,7 +37,7 @@ const Dropdown = ({
   };
 
   return (
-    <div className={rest.className ? rest.className : ""}>
+    <div className={classes}>
       {isControl && (
         <Controller
           control={rest.control}

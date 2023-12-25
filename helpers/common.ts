@@ -16,3 +16,7 @@ export const isNumNull = (x: number | undefined) => {
   }
   return x;
 };
+
+export const between = (x: number, min: number, max: number) => {
+  return x >= min && x <= max;
+};

@@ -1,6 +1,7 @@
 import "@/styles/Input.css";
 import { ReactNode } from "react";
 import ErrorMessage from "./ErrorMessage";
+import classNames from "classnames";
 
 const Input = ({
   placeholder,
@@ -25,8 +26,12 @@ const Input = ({
   errors: any;
   [rest: string]: any;
 }) => {
+  const classes = classNames(rest.className, "relative", {
+    error: errors,
+  });
+
   return (
-    <div className={`relative ${rest.className ? rest.className : ""}`}>
+    <div className={classes}>
       {!textarea && (
         <>
           <input
@@ -41,7 +46,11 @@ const Input = ({
             })}
           />
           {showWord && (
-            <div className="absolute top-0 right-0 h-[40px] flex justify-center items-center px-3 border bg-slate-200 rounded-r-[10px] border-gray-300">
+            <div
+              className={`absolute top-0 right-0 h-[40px] flex justify-center items-center px-3 border bg-slate-200 rounded-r-[10px] ${
+                errors ? "border-red-500" : "border-gray-300"
+              }`}
+            >
               {showWord}
             </div>
           )}
