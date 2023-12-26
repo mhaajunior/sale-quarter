@@ -1,5 +1,9 @@
+import { currencyToNumber } from "@/helpers/common";
+import { getQuarterDate } from "@/helpers/quarter";
 import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
+
+const quarter = getQuarterDate();
 
 export const createReportSchema = z
   .object({
@@ -58,7 +62,10 @@ export const createReportSchema = z
         invalid_type_error: "TSIC_R ที่กรอกไม่ถูกต้อง",
       })
       .gte(47111, "TSIC_R ที่กรอกไม่ถูกต้อง")
-      .lte(96309, "TSIC_R ที่กรอกไม่ถูกต้อง"),
+      .lte(96309, "TSIC_R ที่กรอกไม่ถูกต้อง")
+      .refine((data) => TSIC_R_ARR.includes(data), {
+        message: "TSIC_R ที่กรอกไม่ถูกต้อง",
+      }),
     TSIC_L: z
       .number({
         required_error: "กรุณากรอก TSIC_L",
@@ -94,12 +101,10 @@ export const createReportSchema = z
       })
       .gte(1, "QTR ที่กรอกไม่ถูกต้อง")
       .lte(4, "QTR ที่กรอกไม่ถูกต้อง"),
-    YR: z
-      .number({
-        required_error: "กรุณากรอก YR",
-        invalid_type_error: "YR ที่กรอกไม่ถูกต้อง",
-      })
-      .gte(1, "YR ที่กรอกไม่ถูกต้อง"),
+    YR: z.number({
+      required_error: "กรุณากรอก YR",
+      invalid_type_error: "YR ที่กรอกไม่ถูกต้อง",
+    }),
     ENU: z
       .number({
         required_error: "กรุณากรอก ENU",
@@ -112,10 +117,7 @@ export const createReportSchema = z
       .min(1, "กรุณากรอก TRADEMARK")
       .max(100, "TRADEMARK ที่กรอกยาวเกินกว่า 100 ตัวอักษร"),
     LG: z
-      .number({
-        required_error: "กรุณาเลือก LG",
-        invalid_type_error: "กรุณาเลือก LG",
-      })
+      .number({ invalid_type_error: "กรุณาเลือก LG" })
       .gte(1, "LG ที่เลือกไม่ถูกต้อง")
       .lte(6, "LG ที่เลือกไม่ถูกต้อง")
       .optional(),
@@ -123,16 +125,25 @@ export const createReportSchema = z
       .string()
       .min(1, "กรุณากรอก LG1")
       .length(13, "LG1 ที่กรอกไม่ถูกต้อง")
+      .refine((data) => Number(data), {
+        message: "LG1 ที่กรอกไม่ถูกต้อง",
+      })
       .optional(),
     LG2: z
       .string()
       .min(1, "กรุณากรอก LG2")
       .length(13, "LG2 ที่กรอกไม่ถูกต้อง")
+      .refine((data) => Number(data), {
+        message: "LG2 ที่กรอกไม่ถูกต้อง",
+      })
       .optional(),
     LG3: z
       .string()
       .min(1, "กรุณากรอก LG3")
       .length(13, "LG3 ที่กรอกไม่ถูกต้อง")
+      .refine((data) => Number(data), {
+        message: "LG3 ที่กรอกไม่ถูกต้อง",
+      })
       .optional(),
     LG4: z
       .string()
@@ -140,27 +151,43 @@ export const createReportSchema = z
       .max(60, "LG4 ที่กรอกยาวเกินกว่า 60 ตัวอักษร")
       .optional(),
     TYPE: z
-      .number({
-        required_error: "กรุณาเลือก TYPE",
-      })
-      .gte(1, "TYPE ที่เลือกไม่ถูกต้อง")
+      .number({ invalid_type_error: "กรุณาเลือก TYPE" })
+      .gte(1, "กรุณาเลือก TYPE")
       .lte(7, "TYPE ที่เลือกไม่ถูกต้อง")
       .optional(),
-    M1: z.string(),
-    M2: z.string(),
-    M3: z.string(),
-    R1_temp: z.string().max(15, "R1 ห้ามยาวกว่า 12 หลัก").optional(),
-    R2_temp: z.string().max(15, "R2 ห้ามยาวกว่า 12 หลัก").optional(),
-    R3_temp: z.string().max(15, "R3 ห้ามยาวกว่า 12 หลัก").optional(),
-    R1: z.number().nonnegative().optional(),
-    R2: z.number().nonnegative().optional(),
-    R3: z.number().nonnegative().optional(),
+    M1: z.string().default(quarter.rangeVal[0]),
+    M2: z.string().default(quarter.rangeVal[1]),
+    M3: z.string().default(quarter.rangeVal[2]),
+    R1_temp: z
+      .string()
+      .min(1, "กรุณากรอก R1")
+      .max(15, "R1 ห้ามยาวกว่า 12 หลัก")
+      .refine((data) => Number(currencyToNumber(data)), {
+        message: "R1 ที่กรอกไม่ถูกต้อง",
+      })
+      .optional(),
+    R2_temp: z
+      .string()
+      .min(1, "กรุณากรอก R2")
+      .max(15, "R2 ห้ามยาวกว่า 12 หลัก")
+      .refine((data) => Number(currencyToNumber(data)), {
+        message: "R2 ที่กรอกไม่ถูกต้อง",
+      })
+      .optional(),
+    R3_temp: z
+      .string()
+      .min(1, "กรุณากรอก R3")
+      .max(15, "R3 ห้ามยาวกว่า 12 หลัก")
+      .refine((data) => Number(currencyToNumber(data)), {
+        message: "R3 ที่กรอกไม่ถูกต้อง",
+      })
+      .optional(),
+    R1: z.number().max(999999999999).nonnegative().optional(),
+    R2: z.number().max(999999999999).nonnegative().optional(),
+    R3: z.number().max(999999999999).nonnegative().optional(),
     TR: z.number().max(999999999999).nonnegative().nullable().optional(),
     SI: z
-      .number({
-        required_error: "กรุณาเลือก SI",
-        invalid_type_error: "SI ที่เลือกไม่ถูกต้อง",
-      })
+      .number({ invalid_type_error: "SI ที่เลือกไม่ถูกต้อง" })
       .gte(1, "SI ที่เลือกไม่ถูกต้อง")
       .lte(2, "SI ที่เลือกไม่ถูกต้อง")
       .optional(),
@@ -242,10 +269,7 @@ export const createReportSchema = z
       .lte(100, "F5 ที่กรอกไม่ถูกต้อง")
       .optional(),
     CHG: z
-      .number({
-        required_error: "กรุณาเลือก CHG",
-        invalid_type_error: "CHG ที่เลือกไม่ถูกต้อง",
-      })
+      .number({ invalid_type_error: "CHG ที่เลือกไม่ถูกต้อง" })
       .gte(1, "CHG ที่เลือกไม่ถูกต้อง")
       .lte(3, "CHG ที่เลือกไม่ถูกต้อง")
       .optional(),
@@ -263,6 +287,7 @@ export const createReportSchema = z
       .number({ invalid_type_error: "FAC ที่เลือกไม่ถูกต้อง" })
       .gte(1, "FAC ที่เลือกไม่ถูกต้อง")
       .lte(10, "FAC ที่เลือกไม่ถูกต้อง")
+      .nullable()
       .optional(),
     FAC_1: z
       .string()
@@ -270,10 +295,7 @@ export const createReportSchema = z
       .max(100, "FAC_1 ที่กรอกยาวเกินกว่า 100 ตัวอักษร")
       .optional(),
     PRVS: z
-      .number({
-        required_error: "กรุณาเลือก PRVS",
-        invalid_type_error: "PRVS ที่เลือกไม่ถูกต้อง",
-      })
+      .number({ invalid_type_error: "PRVS ที่เลือกไม่ถูกต้อง" })
       .gte(1, "PRVS ที่เลือกไม่ถูกต้อง")
       .lte(3, "PRVS ที่เลือกไม่ถูกต้อง")
       .optional(),
@@ -288,62 +310,45 @@ export const createReportSchema = z
       .lte(100, "PDE ที่กรอกไม่ถูกต้อง")
       .optional(),
     EMP: z
-      .number({
-        required_error: "กรุณากรอก EMP",
-        invalid_type_error: "กรุณากรอก EMP",
-      })
+      .number({ invalid_type_error: "กรุณากรอก EMP" })
       .positive("EMP ที่กรอกไม่ถูกต้อง")
       .lte(9999, "PDE ที่กรอกต้องไม่ถึง 10,000 คน")
       .optional(),
-    STO_temp: z.string().max(15, "STO ห้ามยาวกว่า 12 หลัก").optional(),
-    STO: z.number().nonnegative().optional(),
+    STO_temp: z
+      .string()
+      .max(15, "STO ห้ามยาวกว่า 12 หลัก")
+      .refine((data) => Number(currencyToNumber(data)), {
+        message: "R1 ที่กรอกไม่ถูกต้อง",
+      })
+      .optional(),
+    STO: z.number().max(999999999999).nonnegative().optional(),
     DAY: z
       .number({ invalid_type_error: "กรุณากรอก DAY" })
       .nonnegative("DAY ที่กรอกไม่ถูกต้อง")
       .lte(365, "DAY ห้ามเกิน 365 วัน")
       .optional(),
-    P1: z.string().max(7, "P1 ห้ามยาวกว่า 7 หลัก").optional(),
-    P2: z.string().max(7, "P2 ห้ามยาวกว่า 7 หลัก").optional(),
-    P3: z.string().max(7, "P3 ห้ามยาวกว่า 7 หลัก").optional(),
-    P4: z.string().max(7, "P4 ห้ามยาวกว่า 7 หลัก").optional(),
+    // pending fix P1-P4
+    P1: z.string().max(7, "P1 ที่กรอกไม่ถูกต้อง").optional(),
+    P2: z.string().max(7, "P2 ที่กรอกไม่ถูกต้อง").optional(),
+    P3: z.string().max(7, "P3 ที่กรอกไม่ถูกต้อง").optional(),
+    P4: z.string().max(7, "P4 ที่กรอกไม่ถูกต้อง").optional(),
   })
-  .superRefine(
-    (
-      { TSIC_R, LG1, LG2, LG3, ENU, LG, TYPE, SI, CHG, PRVS },
-      refinementContext
-    ) => {
-      if (!TSIC_R_ARR.includes(TSIC_R)) {
-        return refinementContext.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "TSIC_R ที่กรอกไม่ถูกต้อง",
-          path: ["TSIC_R"],
-        });
-      }
-
-      if (LG1 && !Number(LG1)) {
-        return refinementContext.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "LG1 ที่กรอกไม่ถูกต้อง",
-          path: ["LG1"],
-        });
-      }
-
-      if (LG2 && !Number(LG2)) {
-        return refinementContext.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "LG2 ที่กรอกไม่ถูกต้อง",
-          path: ["LG2"],
-        });
-      }
-
-      if (LG3 && !Number(LG3)) {
-        return refinementContext.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "LG3 ที่กรอกไม่ถูกต้อง",
-          path: ["LG3"],
-        });
-      }
+  .superRefine(({ CHG, FAC, TYPE, STO_temp }, refinementContext) => {
+    if (CHG !== 1 && !FAC) {
+      return refinementContext.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "กรุณาเลือก FAC",
+        path: ["FAC"],
+      });
     }
-  );
+
+    if (TYPE === 1 && !STO_temp) {
+      return refinementContext.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "กรุณากรอก STO",
+        path: ["STO_temp"],
+      });
+    }
+  });
 
 export type ReportForm = z.infer<typeof createReportSchema>;

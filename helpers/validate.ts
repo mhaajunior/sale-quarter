@@ -2,6 +2,7 @@ import { ReportForm } from "@/types/validationSchemas";
 import { between, currencyToNumber, isNumNull } from "./common";
 
 export const validateFormData = (data: ReportForm) => {
+  console.log(data);
   if (data.R1_temp) data.R1 = currencyToNumber(data.R1_temp);
   if (data.R2_temp) data.R2 = currencyToNumber(data.R2_temp);
   if (data.R3_temp) data.R3 = currencyToNumber(data.R3_temp);
@@ -10,35 +11,6 @@ export const validateFormData = (data: ReportForm) => {
   delete data.R2_temp;
   delete data.R3_temp;
   delete data.STO_temp;
-
-  if (data.CHG === 1) {
-    delete data.FAC;
-    delete data.FAC_1;
-  }
-
-  if (data.SI === 1) {
-    delete data.ITR;
-    delete data.SI1;
-    delete data.SI2;
-    delete data.SI3;
-    delete data.SI4;
-    delete data.SI5;
-    delete data.SI6;
-    delete data.SI7;
-    delete data.SI8;
-    delete data.SI11;
-    delete data.SI22;
-    delete data.SI33;
-    delete data.SI44;
-    delete data.SI55;
-    delete data.SI66;
-    delete data.SI77;
-    delete data.F1;
-    delete data.F2;
-    delete data.F3;
-    delete data.F4;
-    delete data.F5;
-  }
 
   return consistencyCheck(data);
 };
@@ -50,10 +22,6 @@ export const consistencyCheck = (data: ReportForm) => {
     EMP,
     TYPE,
     TSIC_R,
-    TR,
-    R1,
-    R2,
-    R3,
     STO,
     DAY,
     SI,
@@ -76,52 +44,34 @@ export const consistencyCheck = (data: ReportForm) => {
     F3,
     F4,
     F5,
-    LG,
-    CHG,
-    PRVS,
   } = data;
-
-  if (!LG) {
-    errData.LG = { message: "กรุณากรอก LG" };
-  }
-  if (!TYPE) {
-    errData.TYPE = { message: "กรุณากรอก TYPE" };
-  }
-  if (!SI) {
-    errData.SI = { message: "กรุณากรอก SI" };
-  }
-  if (!CHG) {
-    errData.CHG = { message: "กรุณากรอก CHG" };
-  }
-  if (!PRVS) {
-    errData.PRVS = { message: "กรุณากรอก PRVS" };
-  }
 
   if (SI === 2) {
     if (!(SI1 || SI2 || SI3 || SI4 || SI5 || SI6 || SI7)) {
       errData.SI_ALL = { message: "กรุณาเลือก SI1-SI7 อย่างน้อย 1 ข้อ" };
-    }
-    if (
-      isNumNull(SI11) +
-        isNumNull(SI22) +
-        isNumNull(SI33) +
-        isNumNull(SI44) +
-        isNumNull(SI55) +
-        isNumNull(SI66) +
-        isNumNull(SI77) !==
-      100
-    ) {
-      errData.SI_PERCENTAGE = { message: "สัดส่วนที่กรอกต้องรวมกันได้ 100%" };
-    }
-    if (
-      isNumNull(F1) +
-        isNumNull(F2) +
-        isNumNull(F3) +
-        isNumNull(F4) +
-        isNumNull(F5) !==
-      100
-    ) {
-      errData.SI_FEE = { message: "ค่าธรรมเนียมที่กรอกต้องรวมกันได้ 100%" };
+    } else {
+      if (
+        isNumNull(SI11) +
+          isNumNull(SI22) +
+          isNumNull(SI33) +
+          isNumNull(SI44) +
+          isNumNull(SI55) +
+          isNumNull(SI66) +
+          isNumNull(SI77) !==
+        100
+      ) {
+        errData.SI_PERCENTAGE = { message: "สัดส่วนที่กรอกต้องรวมกันได้ 100%" };
+      }
+      if (
+        isNumNull(F1) +
+          isNumNull(F2) +
+          isNumNull(F3) +
+          isNumNull(F4) +
+          isNumNull(F5) !==
+        100
+      ) {
+        errData.SI_FEE = { message: "ค่าธรรมเนียมที่กรอกต้องรวมกันได้ 100%" };
+      }
     }
   }
 
@@ -155,10 +105,6 @@ export const consistencyCheck = (data: ReportForm) => {
   ) {
     errData.TYPE = { message: "TYPE กับ TSIC_R ไม่สอดคล้องกัน" };
     errData.TSIC_R = { message: "TYPE กับ TSIC_R ไม่สอดคล้องกัน" };
-  }
-
-  if (TR && TR !== isNumNull(R1) + isNumNull(R2) + isNumNull(R3)) {
-    errData.TR = { message: "TR ไม่ถูกต้อง" };
   }
 
   if (between(TSIC_R, 47111, 47991) && (!STO || STO <= 0)) {

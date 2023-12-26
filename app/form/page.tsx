@@ -11,7 +11,7 @@ import {
   removeNonNumeric,
 } from "@/helpers/common";
 import { calcQuarter, getQuarterDate, thaiYear } from "@/helpers/quarter";
-import { consistencyCheck, validateFormData } from "@/helpers/validate";
+import { validateFormData } from "@/helpers/validate";
 import { ReportForm, createReportSchema } from "@/types/validationSchemas";
 import typeOption from "@/utils/typeOption";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,13 +36,11 @@ const FormPage = () => {
   } = useForm<ReportForm>({
     resolver: zodResolver(createReportSchema),
     defaultValues: {
-      M1: quarter.rangeVal[0],
-      M2: quarter.rangeVal[1],
-      M3: quarter.rangeVal[2],
       R1_temp: "",
       R2_temp: "",
       R3_temp: "",
       STO_temp: "",
+      TYPE: 0,
       REG: 1,
       CWT: 12,
       AMP: 4,
@@ -103,6 +101,7 @@ const FormPage = () => {
   const onSubmit = handleSubmit(async (data) => {
     if (data.ENU === 1) {
       const err = validateFormData(data);
+      console.log(err);
       if (!_.isEmpty(err)) {
         setFormErrors(err);
         toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
@@ -117,6 +116,22 @@ const FormPage = () => {
       toast.success("ส่งข้อมูลสำเร็จ");
     }
   });
+
+  const onSIChange = (e: any, onChange: any) => {
+    setValue("SI1", false);
+    setValue("SI2", false);
+    setValue("SI3", false);
+    setValue("SI4", false);
+    setValue("SI5", false);
+    setValue("SI6", false);
+    setValue("SI7", false);
+    onChange(e.target.value);
+  };
+
+  const onCHGChange = (e: any, onChange: any) => {
+    setValue("FAC", null);
+    onChange(e.target.value);
+  };
 
   console.log(errors);
 
@@ -231,7 +246,7 @@ const FormPage = () => {
                   placeholder="TSIC_R"
                   register={register}
                   className="w-20"
-                  errors={errors.TSIC_R}
+                  errors={errors.TSIC_R || formErrors.TSIC_R}
                   isNumber
                 />
               </div>
@@ -256,7 +271,7 @@ const FormPage = () => {
                   placeholder="SIZE_R"
                   register={register}
                   className="w-20"
-                  errors={errors.SIZE_R}
+                  errors={errors.SIZE_R || formErrors.SIZE_R}
                   isNumber
                 />
               </div>
@@ -346,7 +361,11 @@ const FormPage = () => {
                     control={control}
                     name="LG"
                     render={({ field: { onChange, value } }) => (
-                      <Radio.Group value={value} onChange={onChange}>
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("LG").ref}
+                      >
                         <Space direction="vertical">
                           <Radio value={1}>
                             1. ส่วนบุคคล ห้างหุ้นส่วนสามัญที่ไม่เป็นนิติบุคคล
@@ -428,7 +447,7 @@ const FormPage = () => {
                   placeholder="TYPE"
                   options={typeOption}
                   className="w-60 md:w-80"
-                  errors={errors.TYPE}
+                  errors={errors.TYPE || formErrors.TYPE}
                   control={control}
                 />
               </div>
@@ -469,7 +488,7 @@ const FormPage = () => {
                       placeholder="R3"
                       register={register}
                       className="w-60 md:w-72"
-                      errors={errors.R3}
+                      errors={errors.R3_temp}
                       showWord="บาท"
                     />
                   </div>
@@ -489,7 +508,11 @@ const FormPage = () => {
                     control={control}
                     name="SI"
                     render={({ field: { onChange, value } }) => (
-                      <Radio.Group value={value} onChange={onChange}>
+                      <Radio.Group
+                        value={value}
+                        onChange={(e) => onSIChange(e, onChange)}
+                        ref={register("SI").ref}
+                      >
                         <Space direction="horizontal">
                           <Radio value={1}>1. ไม่มี</Radio>
                           <Radio value={2}>2. มี</Radio>
@@ -526,7 +549,10 @@ const FormPage = () => {
                         control={control}
                         name="SI1"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI1").ref}
+                          >
                             1. Social media เช่น Facebook, Instagram, Twitter,
                             Line
                           </Checkbox>
@@ -551,7 +577,10 @@ const FormPage = () => {
                         control={control}
                         name="SI2"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI2").ref}
+                          >
                             2. Website หรือ Application ของตนเอง
                           </Checkbox>
                         )}
@@ -575,7 +604,10 @@ const FormPage = () => {
                         control={control}
                         name="SI3"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI3").ref}
+                          >
                             3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
                             Shopee
                           </Checkbox>
@@ -615,7 +647,10 @@ const FormPage = () => {
                         control={control}
                         name="SI4"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI4").ref}
+                          >
                             4. Cross-border platform (ตลาดต่างประเทศ) เช่น Tmall
                             Toaboa, Alibaba, Amazon
                           </Checkbox>
@@ -655,7 +690,10 @@ const FormPage = () => {
                         control={control}
                         name="SI5"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI5").ref}
+                          >
                             5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
                             บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
                             Panda
@@ -696,7 +734,10 @@ const FormPage = () => {
                         control={control}
                         name="SI6"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI6").ref}
+                          >
                             6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
                             Agoda, Booking, Airbnb, Traveloka
                           </Checkbox>
@@ -736,7 +777,10 @@ const FormPage = () => {
                         control={control}
                         name="SI7"
                         render={({ field: { onChange } }) => (
-                          <Checkbox onChange={onChange}>
+                          <Checkbox
+                            onChange={onChange}
+                            ref={register("SI7").ref}
+                          >
                             7. อื่นๆ (ระบุ)
                           </Checkbox>
                         )}
@@ -802,7 +846,11 @@ const FormPage = () => {
                     control={control}
                     name="CHG"
                     render={({ field: { onChange, value } }) => (
-                      <Radio.Group value={value} onChange={onChange}>
+                      <Radio.Group
+                        value={value}
+                        onChange={(e) => onCHGChange(e, onChange)}
+                        ref={register("CHG").ref}
+                      >
                         <Space direction="vertical">
                           <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
                           <Radio value={2}>
@@ -854,7 +902,11 @@ const FormPage = () => {
                       control={control}
                       name="FAC"
                       render={({ field: { onChange, value } }) => (
-                        <Radio.Group value={value} onChange={onChange}>
+                        <Radio.Group
+                          value={value}
+                          onChange={onChange}
+                          ref={register("FAC").ref}
+                        >
                           <div className="flex">
                             <Space direction="vertical" className="w-2/4">
                               <Radio value={1}>1. ฤดูกาล เทศกาล</Radio>
@@ -900,7 +952,11 @@ const FormPage = () => {
                     control={control}
                     name="PRVS"
                     render={({ field: { onChange, value } }) => (
-                      <Radio.Group value={value} onChange={onChange}>
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("PRVS").ref}
+                      >
                         <Space direction="vertical">
                           <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
                           <Radio value={2}>
@@ -949,7 +1005,7 @@ const FormPage = () => {
                   placeholder="EMP"
                   register={register}
                   className="w-40"
-                  errors={errors.EMP}
+                  errors={errors.EMP || formErrors.EMP}
                   showWord="คน"
                   isNumber
                 />
@@ -965,7 +1021,7 @@ const FormPage = () => {
                       placeholder="STO"
                       register={register}
                       className="w-60 md:w-72"
-                      errors={errors.STO}
+                      errors={errors.STO_temp || formErrors.STO}
                       showWord="บาท"
                     />
                   </div>
@@ -979,7 +1035,7 @@ const FormPage = () => {
                     placeholder="DAY"
                     register={register}
                     className="w-28"
-                    errors={errors.DAY}
+                    errors={errors.DAY || formErrors.DAY}
                     showWord="วัน"
                     isNumber
                   />
