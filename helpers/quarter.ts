@@ -29,7 +29,7 @@ const quarterMap = {
 };
 
 export const calcQuarter = () => {
-  const month = new Date().getMonth();
+  const month = new Date().getMonth() + 1;
   const quarter = Math.ceil(month / 3);
   return quarter;
 };

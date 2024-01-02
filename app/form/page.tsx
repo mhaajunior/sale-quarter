@@ -30,6 +30,7 @@ const FormPage = () => {
     register,
     watch,
     setValue,
+    getValues,
     handleSubmit,
     control,
     formState: { errors },
@@ -40,6 +41,7 @@ const FormPage = () => {
       R2_temp: "",
       R3_temp: "",
       STO_temp: "",
+      LG1_TEMP: "1",
       TYPE: 0,
       REG: 1,
       CWT: 12,
@@ -341,15 +343,180 @@ const FormPage = () => {
               </div>
             </div>
           </div>
-          <div className="card w-500 flex flex-col gap-3">
-            <h1>1. ชื่อสถานประกอบการ</h1>
-            <Input
-              name="TRADEMARK"
-              placeholder="TRADEMARK"
-              register={register}
-              className="w-60 md:w-72"
-              errors={errors.TRADEMARK}
-            />
+
+          <div className="card w-full flex flex-wrap gap-5">
+            <h1 className="w-full">1. ข้อมูลสถานประกอบการ</h1>
+            <div className="flex items-center gap-5">
+              <label>
+                คำนำหน้านาม<span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="TITLE"
+                placeholder="TITLE"
+                register={register}
+                className="w-24"
+                errors={errors.TITLE}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>
+                ชื่อเจ้าของ/หัวหน้าครัวเรือน
+                <span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="FIRSTNAME"
+                placeholder="FIRSTNAME"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.FIRSTNAME}
+              />
+              <label>
+                นามสกุล<span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="LASTNAME"
+                placeholder="LASTNAME"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.LASTNAME}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>
+                ชื่อสถานประกอบการ<span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="TRADEMARK"
+                placeholder="TRADEMARK"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.TRADEMARK}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>เลขที่</label>
+              <Input
+                name="ADD_NO"
+                placeholder="ADD_NO"
+                register={register}
+                className="w-28"
+                errors={errors.ADD_NO}
+              />
+              <label>หมู่ที่</label>
+              {
+                <div>
+                  {getValues("VIL")}
+                  <span className="ml-3">(ค่าเดียวกันกับ VIL)</span>
+                </div>
+              }
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ตรอก/ซอย</label>
+              <Input
+                name="BLK"
+                placeholder="BLK"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.BLK}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ถนน</label>
+              <Input
+                name="STREET"
+                placeholder="STREET"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.STREET}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ตำบล/แขวง</label>
+              <Input
+                name="TAMBOL"
+                placeholder="TAMBOL"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.TAMBOL}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>อำเภอ/เขต</label>
+              <Input
+                name="AMPHOR"
+                placeholder="AMPHOR"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.AMPHOR}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>รหัสไปรษณีย์</label>
+              <Input
+                name="POST_CODE"
+                placeholder="POST_CODE"
+                register={register}
+                className="w-28"
+                errors={errors.POST_CODE}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>โทรศัพท์</label>
+              <Input
+                name="TEL_NO"
+                placeholder="TEL_NO"
+                register={register}
+                className="w-36"
+                errors={errors.TEL_NO}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>โทรสาร</label>
+              <Input
+                name="FAX_NO"
+                placeholder="FAX_NO"
+                register={register}
+                className="w-36"
+                errors={errors.FAX_NO}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>อีเมล</label>
+              <Input
+                name="E_MAIL"
+                placeholder="E_MAIL"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.E_MAIL}
+              />
+            </div>
+            <div className="flex items-center gap-5 w-full">
+              <label>
+                รายละเอียดประเภทกิจการ<span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="DES_TYPE"
+                placeholder="DES_TYPE"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.DES_TYPE}
+              />
+            </div>
+            {enu === 8 && (
+              <div className="flex items-center gap-5 w-full">
+                <label>
+                  รหัส TSIC นอกข่ายการสำรวจฯ
+                  <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  name="TSIC_CHG"
+                  placeholder="TSIC_CHG"
+                  register={register}
+                  className="w-60 md:w-72"
+                  errors={errors.TSIC_CHG || formErrors.TSIC_CHG}
+                />
+              </div>
+            )}
           </div>
 
           {enu === 1 && (
@@ -371,7 +538,26 @@ const FormPage = () => {
                             1. ส่วนบุคคล ห้างหุ้นส่วนสามัญที่ไม่เป็นนิติบุคคล
                             {value === 1 && (
                               <div className="my-1 flex flex-col gap-2">
-                                <p>เลขทะเบียนพาณิชย์/เลขบัตรประจำตัวประชาชน</p>
+                                <Controller
+                                  control={control}
+                                  name="LG1_TEMP"
+                                  render={({ field: { onChange, value } }) => (
+                                    <Radio.Group
+                                      value={value}
+                                      onChange={(e) => onSIChange(e, onChange)}
+                                      ref={register("LG1_TEMP").ref}
+                                    >
+                                      <Space direction="horizontal">
+                                        <Radio value="1">
+                                          เลขบัตรประจำตัวประชาชน
+                                        </Radio>
+                                        <Radio value="2">
+                                          เลขทะเบียนพาณิชย์
+                                        </Radio>
+                                      </Space>
+                                    </Radio.Group>
+                                  )}
+                                />
                                 <Input
                                   name="LG1"
                                   placeholder="LG1"

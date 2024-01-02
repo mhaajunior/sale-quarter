@@ -1,7 +1,8 @@
-import { currencyToNumber } from "@/helpers/common";
+import { assertThaiId, between, currencyToNumber } from "@/helpers/common";
 import { getQuarterDate } from "@/helpers/quarter";
 import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
+import validator from "validator";
 
 const quarter = getQuarterDate();
 
@@ -112,10 +113,76 @@ export const createReportSchema = z
       })
       .gte(1, "ENU ที่กรอกไม่ถูกต้อง")
       .lte(11, "ENU ที่กรอกไม่ถูกต้อง"),
+    TITLE: z
+      .string()
+      .min(1, "กรุณากรอก TITLE")
+      .max(10, "TITLE ที่กรอกยาวเกินกว่า 10 ตัวอักษร"),
+    FIRSTNAME: z
+      .string()
+      .min(1, "กรุณากรอก FIRSTNAME")
+      .max(60, "FIRSTNAME ที่กรอกยาวเกินกว่า 60 ตัวอักษร"),
+    LASTNAME: z
+      .string()
+      .min(1, "กรุณากรอก LASTNAME")
+      .max(60, "LASTNAME ที่กรอกยาวเกินกว่า 60 ตัวอักษร"),
     TRADEMARK: z
       .string()
       .min(1, "กรุณากรอก TRADEMARK")
       .max(100, "TRADEMARK ที่กรอกยาวเกินกว่า 100 ตัวอักษร"),
+    ADD_NO: z.union([
+      z
+        .string()
+        .max(10, "ADD_NO ที่กรอกยาวเกินกว่า 10 ตัวอักษร")
+        .refine((data) => Number(data), {
+          message: "ADD_NO ที่กรอกไม่ถูกต้อง",
+        }),
+      z.literal(""),
+    ]),
+    BLK: z.string().max(30, "BLK ที่กรอกยาวเกินกว่า 30 ตัวอักษร").optional(),
+    STREET: z
+      .string()
+      .max(50, "STREET ที่กรอกยาวเกินกว่า 50 ตัวอักษร")
+      .optional(),
+    TAMBOL: z
+      .string()
+      .max(30, "TAMBOL ที่กรอกยาวเกินกว่า 30 ตัวอักษร")
+      .optional(),
+    AMPHOR: z
+      .string()
+      .max(30, "AMPHOR ที่กรอกยาวเกินกว่า 30 ตัวอักษร")
+      .optional(),
+    POST_CODE: z.union([
+      z.string().regex(new RegExp("^\\d{5}$"), "POST_CODE ที่กรอกไม่ถูกต้อง"),
+      z.literal(""),
+    ]),
+    TEL_NO: z.union([
+      z.string().refine(validator.isMobilePhone, "TEL_NO ที่กรอกไม่ถูกต้อง"),
+      z.literal(""),
+    ]),
+    FAX_NO: z.union([
+      z.string().refine(validator.isMobilePhone, "FAX_NO ที่กรอกไม่ถูกต้อง"),
+      z.literal(""),
+    ]),
+    E_MAIL: z.union([
+      z
+        .string()
+        .email("E_MAIL ที่กรอกไม่ถูกต้อง")
+        .max(40, "E_MAIL ที่กรอกยาวเกินกว่า 40 ตัวอักษร"),
+      z.literal(""),
+    ]),
+    DES_TYPE: z
+      .string()
+      .min(1, "กรุณากรอก DES_TYPE")
+      .max(60, "DES_TYPE ที่กรอกยาวเกินกว่า 60 ตัวอักษร"),
+    TSIC_CHG: z.union([
+      z
+        .string()
+        .transform((data) => parseInt(data))
+        .refine((data) => between(data, 10111, 99009), {
+          message: "TSIC_CHG ที่กรอกไม่ถูกต้อง",
+        }),
+      z.literal(""),
+    ]),
     LG: z
       .number({ invalid_type_error: "กรุณาเลือก LG" })
       .gte(1, "LG ที่เลือกไม่ถูกต้อง")
@@ -129,6 +196,7 @@ export const createReportSchema = z
         message: "LG1 ที่กรอกไม่ถูกต้อง",
       })
       .optional(),
+    LG1_TEMP: z.enum(["1", "2"]).optional(),
     LG2: z
       .string()
       .min(1, "กรุณากรอก LG2")
@@ -314,41 +382,57 @@ export const createReportSchema = z
       .positive("EMP ที่กรอกไม่ถูกต้อง")
       .lte(9999, "PDE ที่กรอกต้องไม่ถึง 10,000 คน")
       .optional(),
-    STO_temp: z
-      .string()
-      .max(15, "STO ห้ามยาวกว่า 12 หลัก")
-      .refine((data) => Number(currencyToNumber(data)), {
-        message: "R1 ที่กรอกไม่ถูกต้อง",
-      })
-      .optional(),
+    STO_temp: z.union([
+      z
+        .string()
+        .max(15, "STO ห้ามยาวกว่า 12 หลัก")
+        .refine((data) => Number(currencyToNumber(data)), {
+          message: "STO ที่กรอกไม่ถูกต้อง",
+        })
+        .optional(),
+      z.literal(""),
+    ]),
+
     STO: z.number().max(999999999999).nonnegative().optional(),
     DAY: z
       .number({ invalid_type_error: "กรุณากรอก DAY" })
       .nonnegative("DAY ที่กรอกไม่ถูกต้อง")
       .lte(365, "DAY ห้ามเกิน 365 วัน")
       .optional(),
-    // pending fix P1-P4
-    P1: z.string().max(7, "P1 ที่กรอกไม่ถูกต้อง").optional(),
-    P2: z.string().max(7, "P2 ที่กรอกไม่ถูกต้อง").optional(),
-    P3: z.string().max(7, "P3 ที่กรอกไม่ถูกต้อง").optional(),
-    P4: z.string().max(7, "P4 ที่กรอกไม่ถูกต้อง").optional(),
+    P1: z.union([z.string().length(7, "P1 ที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P2: z.union([z.string().length(7, "P2 ที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P3: z.union([z.string().length(7, "P3 ที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P4: z.union([z.string().length(7, "P4 ที่กรอกไม่ถูกต้อง"), z.literal("")]),
   })
-  .superRefine(({ CHG, FAC, TYPE, STO_temp }, refinementContext) => {
-    if (CHG !== 1 && !FAC) {
-      return refinementContext.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "กรุณาเลือก FAC",
-        path: ["FAC"],
-      });
-    }
+  .superRefine(
+    ({ LG1, LG1_TEMP, CHG, FAC, TYPE, STO_temp }, refinementContext) => {
+      if (LG1 && LG1_TEMP === "1") {
+        console.log("hi");
+        if (!assertThaiId(LG1)) {
+          return refinementContext.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "LG1 ที่กรอกไม่ถูกต้อง",
+            path: ["LG1"],
+          });
+        }
+      }
 
-    if (TYPE === 1 && !STO_temp) {
-      return refinementContext.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "กรุณากรอก STO",
-        path: ["STO_temp"],
-      });
+      if (CHG !== 1 && !FAC) {
+        return refinementContext.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "กรุณาเลือก FAC",
+          path: ["FAC"],
+        });
+      }
+
+      if (TYPE === 1 && !STO_temp) {
+        return refinementContext.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "กรุณากรอก STO",
+          path: ["STO_temp"],
+        });
+      }
     }
-  });
+  );
 
 export type ReportForm = z.infer<typeof createReportSchema>;
