@@ -42,6 +42,7 @@ const Dropdown = ({
         <Controller
           control={rest.control}
           name={name}
+          shouldUnregister
           render={({ field: { onChange, onBlur, name, ref, value } }) => (
             <Select
               options={options}

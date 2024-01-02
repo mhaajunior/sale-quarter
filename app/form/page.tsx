@@ -40,7 +40,6 @@ const FormPage = () => {
       R1_temp: "",
       R2_temp: "",
       R3_temp: "",
-      STO_temp: "",
       LG1_TEMP: "1",
       TYPE: 0,
       REG: 1,
@@ -118,22 +117,6 @@ const FormPage = () => {
       toast.success("ส่งข้อมูลสำเร็จ");
     }
   });
-
-  const onSIChange = (e: any, onChange: any) => {
-    setValue("SI1", false);
-    setValue("SI2", false);
-    setValue("SI3", false);
-    setValue("SI4", false);
-    setValue("SI5", false);
-    setValue("SI6", false);
-    setValue("SI7", false);
-    onChange(e.target.value);
-  };
-
-  const onCHGChange = (e: any, onChange: any) => {
-    setValue("FAC", null);
-    onChange(e.target.value);
-  };
 
   console.log(errors);
 
@@ -510,10 +493,12 @@ const FormPage = () => {
                 </label>
                 <Input
                   name="TSIC_CHG"
+                  type="number"
                   placeholder="TSIC_CHG"
                   register={register}
                   className="w-60 md:w-72"
                   errors={errors.TSIC_CHG || formErrors.TSIC_CHG}
+                  isNumber
                 />
               </div>
             )}
@@ -527,6 +512,7 @@ const FormPage = () => {
                   <Controller
                     control={control}
                     name="LG"
+                    shouldUnregister
                     render={({ field: { onChange, value } }) => (
                       <Radio.Group
                         value={value}
@@ -541,10 +527,11 @@ const FormPage = () => {
                                 <Controller
                                   control={control}
                                   name="LG1_TEMP"
+                                  shouldUnregister
                                   render={({ field: { onChange, value } }) => (
                                     <Radio.Group
                                       value={value}
-                                      onChange={(e) => onSIChange(e, onChange)}
+                                      onChange={onChange}
                                       ref={register("LG1_TEMP").ref}
                                     >
                                       <Space direction="horizontal">
@@ -693,10 +680,11 @@ const FormPage = () => {
                   <Controller
                     control={control}
                     name="SI"
+                    shouldUnregister
                     render={({ field: { onChange, value } }) => (
                       <Radio.Group
                         value={value}
-                        onChange={(e) => onSIChange(e, onChange)}
+                        onChange={onChange}
                         ref={register("SI").ref}
                       >
                         <Space direction="horizontal">
@@ -734,6 +722,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI1"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -762,6 +751,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI2"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -789,6 +779,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI3"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -832,6 +823,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI4"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -875,6 +867,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI5"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -919,6 +912,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI6"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -962,6 +956,7 @@ const FormPage = () => {
                       <Controller
                         control={control}
                         name="SI7"
+                        shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
                             onChange={onChange}
@@ -1031,10 +1026,11 @@ const FormPage = () => {
                   <Controller
                     control={control}
                     name="CHG"
+                    shouldUnregister
                     render={({ field: { onChange, value } }) => (
                       <Radio.Group
                         value={value}
-                        onChange={(e) => onCHGChange(e, onChange)}
+                        onChange={onChange}
                         ref={register("CHG").ref}
                       >
                         <Space direction="vertical">
@@ -1087,6 +1083,7 @@ const FormPage = () => {
                     <Controller
                       control={control}
                       name="FAC"
+                      shouldUnregister
                       render={({ field: { onChange, value } }) => (
                         <Radio.Group
                           value={value}
@@ -1137,6 +1134,7 @@ const FormPage = () => {
                   <Controller
                     control={control}
                     name="PRVS"
+                    shouldUnregister
                     render={({ field: { onChange, value } }) => (
                       <Radio.Group
                         value={value}
@@ -1227,53 +1225,52 @@ const FormPage = () => {
                   />
                 </div>
               )}
-
-              <div className="w-full">
-                <div className="flex flex-col gap-3 justify-end items-end">
-                  <div className="flex gap-5 items-center">
-                    เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
-                    <Input
-                      name="P1"
-                      placeholder="P1"
-                      register={register}
-                      className="w-28"
-                      errors={errors.P1}
-                    />
-                  </div>
-                  <div className="flex gap-5 items-center">
-                    เจ้าหน้าที่บรรณาธิกรและลงรหัส
-                    <Input
-                      name="P2"
-                      placeholder="P2"
-                      register={register}
-                      className="w-28"
-                      errors={errors.P2}
-                    />
-                  </div>
-                  <div className="flex gap-5 items-center">
-                    เจ้าหน้าที่บันทึกข้อมูล
-                    <Input
-                      name="P3"
-                      placeholder="P3"
-                      register={register}
-                      className="w-28"
-                      errors={errors.P3}
-                    />
-                  </div>
-                  <div className="flex gap-5 items-center">
-                    ผู้ตรวจ
-                    <Input
-                      name="P4"
-                      placeholder="P4"
-                      register={register}
-                      className="w-28"
-                      errors={errors.P4}
-                    />
-                  </div>
-                </div>
-              </div>
             </>
           )}
+          <div className="w-full">
+            <div className="flex flex-col gap-3 justify-end items-end">
+              <div className="flex gap-5 items-center">
+                เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
+                <Input
+                  name="P1"
+                  placeholder="P1"
+                  register={register}
+                  className="w-28"
+                  errors={errors.P1}
+                />
+              </div>
+              <div className="flex gap-5 items-center">
+                เจ้าหน้าที่บรรณาธิกรและลงรหัส
+                <Input
+                  name="P2"
+                  placeholder="P2"
+                  register={register}
+                  className="w-28"
+                  errors={errors.P2}
+                />
+              </div>
+              <div className="flex gap-5 items-center">
+                เจ้าหน้าที่บันทึกข้อมูล
+                <Input
+                  name="P3"
+                  placeholder="P3"
+                  register={register}
+                  className="w-28"
+                  errors={errors.P3}
+                />
+              </div>
+              <div className="flex gap-5 items-center">
+                ผู้ตรวจ
+                <Input
+                  name="P4"
+                  placeholder="P4"
+                  register={register}
+                  className="w-28"
+                  errors={errors.P4}
+                />
+              </div>
+            </div>
+          </div>
           <div className="w-full flex justify-center">
             <Button type="submit" primary>
               ส่ง

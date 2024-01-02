@@ -23,7 +23,6 @@ export const consistencyCheck = (data: ReportForm) => {
     EMP,
     TYPE,
     TSIC_R,
-    TSIC_CHG,
     STO,
     DAY,
     SI,
@@ -47,10 +46,6 @@ export const consistencyCheck = (data: ReportForm) => {
     F4,
     F5,
   } = data;
-
-  if (TSIC_CHG && !between(TSIC_CHG, 10111, 99009)) {
-    errData.TSIC_CHG = { message: "TSIC_CHG ที่กรอกไม่ถูกต้อง" };
-  }
 
   if (SI === 2) {
     if (!(SI1 || SI2 || SI3 || SI4 || SI5 || SI6 || SI7)) {
