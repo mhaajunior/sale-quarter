@@ -134,7 +134,10 @@ const FormPage = () => {
 
   const renderErrors = () => {
     return formErrors.map((err) => (
-      <div className="text-red-500 flex items-center gap-3 mb-2 last:mb-0">
+      <div
+        key={err.label}
+        className="text-red-500 flex items-center gap-3 md:w-2/4 w-full"
+      >
         <div className="border border-red-500 p-2 rounded font-bold text-xs text-white bg-red-500">
           {err.label}
         </div>
@@ -160,7 +163,7 @@ const FormPage = () => {
           onSubmit={onSubmit}
         >
           {formErrors.length > 0 && (
-            <div className="card w-full border error !bg-red-100">
+            <div className="card w-full border error !bg-red-100 flex flex-wrap gap-y-5">
               {renderErrors()}
             </div>
           )}
