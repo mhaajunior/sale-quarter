@@ -16,7 +16,7 @@ import { ReportForm, createReportSchema } from "@/types/validationSchemas";
 import typeOption from "@/utils/typeOption";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, Radio, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import _ from "lodash";
 import { toast } from "sonner";
@@ -24,8 +24,6 @@ import { toast } from "sonner";
 const quarter = getQuarterDate();
 
 const FormPage = () => {
-  const [formErrors, setFormErrors] = useState<any>({});
-
   const {
     register,
     watch,
@@ -40,7 +38,7 @@ const FormPage = () => {
       R1_temp: "",
       R2_temp: "",
       R3_temp: "",
-      LG1_TEMP: "1",
+      LG1_temp: "1",
       TYPE: 0,
       REG: 1,
       CWT: 12,
@@ -100,22 +98,9 @@ const FormPage = () => {
   }, [sto]);
 
   const onSubmit = handleSubmit(async (data) => {
-    if (data.ENU === 1) {
-      const err = validateFormData(data);
-      console.log(err);
-      if (!_.isEmpty(err)) {
-        setFormErrors(err);
-        toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
-        window.scrollTo(0, 0);
-        return;
-      } else {
-        setFormErrors([]);
-        toast.success("ส่งข้อมูลสำเร็จ");
-      }
-    } else {
-      setFormErrors([]);
-      toast.success("ส่งข้อมูลสำเร็จ");
-    }
+    const result = validateFormData(data);
+    console.log(result);
+    toast.success("ส่งข้อมูลสำเร็จ");
   });
 
   console.log(errors);
@@ -124,10 +109,10 @@ const FormPage = () => {
     <>
       <div className="mb-10 flex flex-col gap-3">
         <Title>แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. {thaiYear}</Title>
-        <h1 className="text-xl">
+        <div className="text-xl">
           ไตรมาส {calcQuarter()} ({quarter.monthRange[0]} -{" "}
           {quarter.monthRange[2]} {thaiYear.toString().slice(2)})
-        </h1>
+        </div>
       </div>
       <div className="card">
         <form
@@ -135,7 +120,7 @@ const FormPage = () => {
           onSubmit={onSubmit}
         >
           <div className="card w-full">
-            <h1>IDENTIFICATION</h1>
+            <div>IDENTIFICATION</div>
             <div className="flex flex-wrap gap-5 mt-5">
               <div className="flex items-center gap-5">
                 <label className="w-10">REG</label>
@@ -231,7 +216,7 @@ const FormPage = () => {
                   placeholder="TSIC_R"
                   register={register}
                   className="w-20"
-                  errors={errors.TSIC_R || formErrors.TSIC_R}
+                  errors={errors.TSIC_R}
                   isNumber
                 />
               </div>
@@ -256,7 +241,7 @@ const FormPage = () => {
                   placeholder="SIZE_R"
                   register={register}
                   className="w-20"
-                  errors={errors.SIZE_R || formErrors.SIZE_R}
+                  errors={errors.SIZE_R}
                   isNumber
                 />
               </div>
@@ -328,7 +313,7 @@ const FormPage = () => {
           </div>
 
           <div className="card w-full flex flex-wrap gap-5">
-            <h1 className="w-full">1. ข้อมูลสถานประกอบการ</h1>
+            <div className="w-full">1. ข้อมูลสถานประกอบการ</div>
             <div className="flex items-center gap-5">
               <label>
                 คำนำหน้านาม<span className="text-red-500">*</span>
@@ -497,7 +482,7 @@ const FormPage = () => {
                   placeholder="TSIC_CHG"
                   register={register}
                   className="w-60 md:w-72"
-                  errors={errors.TSIC_CHG || formErrors.TSIC_CHG}
+                  errors={errors.TSIC_CHG}
                   isNumber
                 />
               </div>
@@ -507,7 +492,10 @@ const FormPage = () => {
           {enu === 1 && (
             <>
               <div className="card w-500 flex flex-col gap-3">
-                <h1>2. รูปแบบการจัดตั้งตามกฎหมาย</h1>
+                <div>
+                  2. รูปแบบการจัดตั้งตามกฎหมาย
+                  <span className="ml-3 !text-xs text-gray-400">[LG]</span>
+                </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
                     control={control}
@@ -526,13 +514,13 @@ const FormPage = () => {
                               <div className="my-1 flex flex-col gap-2">
                                 <Controller
                                   control={control}
-                                  name="LG1_TEMP"
+                                  name="LG1_temp"
                                   shouldUnregister
                                   render={({ field: { onChange, value } }) => (
                                     <Radio.Group
                                       value={value}
                                       onChange={onChange}
-                                      ref={register("LG1_TEMP").ref}
+                                      ref={register("LG1_temp").ref}
                                     >
                                       <Space direction="horizontal">
                                         <Radio value="1">
@@ -550,7 +538,7 @@ const FormPage = () => {
                                   placeholder="LG1"
                                   register={register}
                                   className="w-60 md:w-72"
-                                  errors={errors.LG1 || formErrors.LG1}
+                                  errors={errors.LG1}
                                 />
                               </div>
                             )}
@@ -565,7 +553,7 @@ const FormPage = () => {
                                   placeholder="LG2"
                                   register={register}
                                   className="w-60 md:w-72"
-                                  errors={errors.LG2 || formErrors.LG2}
+                                  errors={errors.LG2}
                                 />
                               </div>
                             )}
@@ -580,7 +568,7 @@ const FormPage = () => {
                                   placeholder="LG3"
                                   register={register}
                                   className="w-60 md:w-72"
-                                  errors={errors.LG3 || formErrors.LG3}
+                                  errors={errors.LG3}
                                 />
                               </div>
                             )}
@@ -596,7 +584,7 @@ const FormPage = () => {
                                   placeholder="LG4"
                                   register={register}
                                   className="w-60 md:w-72"
-                                  errors={errors.LG4 || formErrors.LG4}
+                                  errors={errors.LG4}
                                 />
                               </div>
                             )}
@@ -610,7 +598,7 @@ const FormPage = () => {
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>3. ประเภทของกิจการและชนิดของสินค้า/บริการ</h1>
+                <div>3. ประเภทของกิจการและชนิดของสินค้า/บริการ</div>
                 <p>
                   ถ้าประกอบธุรกิจมากกว่า 1 ประเภท
                   โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด
@@ -620,13 +608,13 @@ const FormPage = () => {
                   placeholder="TYPE"
                   options={typeOption}
                   className="w-60 md:w-80"
-                  errors={errors.TYPE || formErrors.TYPE}
+                  errors={errors.TYPE}
                   control={control}
                 />
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>4. ยอดขายหรือรายรับของสถานประกอบการ</h1>
+                <div>4. ยอดขายหรือรายรับของสถานประกอบการ</div>
                 <p>
                   บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ
                   แต่ละเดือนเป็นจำนวนเต็ม (บาท)
@@ -673,9 +661,10 @@ const FormPage = () => {
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>
+                <div>
                   5. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
-                </h1>
+                  <span className="ml-3 !text-xs text-gray-400">[SI]</span>
+                </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
                     control={control}
@@ -699,26 +688,26 @@ const FormPage = () => {
                 {si == 2 && (
                   <>
                     <div className="flex flex-col gap-3">
-                      <h1 className="text-[15px]">
+                      <div className="text-[15px]">
                         5.1
                         มูลค่าการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตคิดเป็นร้อยละเท่าใดของมูลค่าขายทั้งหมด
-                      </h1>
+                      </div>
                       <Input
                         name="ITR"
                         type="number"
                         placeholder="ITR"
                         register={register}
                         className="w-28"
-                        errors={errors.ITR || formErrors.ITR}
+                        errors={errors.ITR}
                         showWord="%"
                         isNumber
                       />
                     </div>
                     <div className="flex flex-col gap-3">
-                      <h1 className="text-[15px]">
+                      <div className="text-[15px]">
                         5.2
                         สัดส่วนของช่องทางการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตต่อยอดขายผ่านทางอินเทอร์เน็ตทั้งหมด
-                      </h1>
+                      </div>
                       <Controller
                         control={control}
                         name="SI1"
@@ -730,6 +719,9 @@ const FormPage = () => {
                           >
                             1. Social media เช่น Facebook, Instagram, Twitter,
                             Line
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI1]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -758,6 +750,9 @@ const FormPage = () => {
                             ref={register("SI2").ref}
                           >
                             2. Website หรือ Application ของตนเอง
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI2]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -787,6 +782,9 @@ const FormPage = () => {
                           >
                             3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
                             Shopee
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI3]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -831,6 +829,9 @@ const FormPage = () => {
                           >
                             4. Cross-border platform (ตลาดต่างประเทศ) เช่น Tmall
                             Toaboa, Alibaba, Amazon
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI4]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -876,6 +877,9 @@ const FormPage = () => {
                             5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
                             บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
                             Panda
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI5]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -920,6 +924,9 @@ const FormPage = () => {
                           >
                             6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
                             Agoda, Booking, Airbnb, Traveloka
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI6]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -963,6 +970,9 @@ const FormPage = () => {
                             ref={register("SI7").ref}
                           >
                             7. อื่นๆ (ระบุ)
+                            <span className="ml-3 !text-xs text-gray-400">
+                              [SI7]
+                            </span>
                           </Checkbox>
                         )}
                       />
@@ -974,7 +984,7 @@ const FormPage = () => {
                               placeholder="SI8"
                               register={register}
                               className="w-60 md:w-72"
-                              errors={errors.SI8 || formErrors.SI8}
+                              errors={errors.SI8}
                             />
                           </div>
                           <div className="flex gap-5">
@@ -1008,20 +1018,17 @@ const FormPage = () => {
                         </>
                       )}
                     </div>
-                    <ErrorMessage>{formErrors?.SI_ALL?.message}</ErrorMessage>
-                    <ErrorMessage>
-                      {formErrors?.SI_PERCENTAGE?.message}
-                    </ErrorMessage>
-                    <ErrorMessage>{formErrors?.SI_FEE?.message}</ErrorMessage>
+                    <ErrorMessage>{errors?.SI7?.message}</ErrorMessage>
                   </>
                 )}
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>
+                <div>
                   6. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสก่อนหน้านั้นหรือไม่ อย่างไร
-                </h1>
+                  <span className="ml-3 !text-xs text-gray-400">[CHG]</span>
+                </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
                     control={control}
@@ -1075,10 +1082,11 @@ const FormPage = () => {
 
               {chg && chg !== 1 && (
                 <div className="card w-500 flex flex-col gap-3">
-                  <h1>
+                  <div>
                     7. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
                     โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
-                  </h1>
+                    <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
+                  </div>
                   <div className="flex flex-col gap-1">
                     <Controller
                       control={control}
@@ -1111,7 +1119,7 @@ const FormPage = () => {
                                     placeholder="FAC_1"
                                     register={register}
                                     className="w-full mt-2"
-                                    errors={errors.FAC_1 || formErrors.FAC_1}
+                                    errors={errors.FAC_1}
                                   />
                                 )}
                               </Radio>
@@ -1126,10 +1134,11 @@ const FormPage = () => {
               )}
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>
+                <div>
                   8. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสเดียวกันกับปีก่อนหรือไม่
-                </h1>
+                  <span className="ml-3 !text-xs text-gray-400">[PRVS]</span>
+                </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
                     control={control}
@@ -1182,14 +1191,14 @@ const FormPage = () => {
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <h1>9. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</h1>
+                <div>9. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</div>
                 <Input
                   name="EMP"
                   type="number"
                   placeholder="EMP"
                   register={register}
                   className="w-40"
-                  errors={errors.EMP || formErrors.EMP}
+                  errors={errors.EMP}
                   showWord="คน"
                   isNumber
                 />
@@ -1197,7 +1206,7 @@ const FormPage = () => {
 
               {type === 1 && (
                 <div className="card w-500 flex flex-col gap-3">
-                  <h1>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</h1>
+                  <div>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</div>
                   <div className="flex gap-5 items-center">
                     จำนวน
                     <Input
@@ -1205,21 +1214,21 @@ const FormPage = () => {
                       placeholder="STO"
                       register={register}
                       className="w-60 md:w-72"
-                      errors={errors.STO_temp || formErrors.STO}
+                      errors={errors.STO_temp}
                       showWord="บาท"
                     />
                   </div>
-                  <h1>
+                  <div>
                     และคาดว่าสินค้าคงเหลือดังกล่าว
                     จะสามารถขายได้ภายในกี่วันหลังสิ้นสุดไตรมาสปัจจุบัน
-                  </h1>
+                  </div>
                   <Input
                     name="DAY"
                     type="number"
                     placeholder="DAY"
                     register={register}
                     className="w-28"
-                    errors={errors.DAY || formErrors.DAY}
+                    errors={errors.DAY}
                     showWord="วัน"
                     isNumber
                   />
