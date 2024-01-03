@@ -11,19 +11,30 @@ import {
   removeNonNumeric,
 } from "@/helpers/common";
 import { calcQuarter, getQuarterDate, thaiYear } from "@/helpers/quarter";
-import { validateFormData } from "@/helpers/validate";
+import {
+  consistencyCheck1,
+  consistencyCheck2,
+  validateFormData,
+} from "@/helpers/validate";
 import { ReportForm, createReportSchema } from "@/types/validationSchemas";
 import typeOption from "@/utils/typeOption";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, Radio, Space } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import _ from "lodash";
 import { toast } from "sonner";
+import _ from "lodash";
 
 const quarter = getQuarterDate();
 
+interface FormErrors {
+  label: string;
+  message: string;
+}
+
 const FormPage = () => {
+  const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
+
   const {
     register,
     watch,
@@ -99,11 +110,40 @@ const FormPage = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const result = validateFormData(data);
-    console.log(result);
-    toast.success("ส่งข้อมูลสำเร็จ");
+    let err;
+    if (data.ENU === 1) {
+      err = consistencyCheck1(result);
+    } else {
+      console.log("hi1");
+      err = consistencyCheck2(result);
+    }
+    if (!_.isEmpty(err)) {
+      const errArr = [];
+      for (const [key, value] of Object.entries(err)) {
+        errArr.push({ label: key, message: value as string });
+      }
+      setFormErrors(errArr);
+      toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
+      window.scrollTo(0, 0);
+      return;
+    } else {
+      setFormErrors([]);
+      toast.success("ส่งข้อมูลสำเร็จ");
+    }
   });
 
-  console.log(errors);
+  const renderErrors = () => {
+    return formErrors.map((err) => (
+      <div className="text-red-500 flex items-center gap-3 mb-2 last:mb-0">
+        <div className="border border-red-500 p-2 rounded font-bold text-xs text-white bg-red-500">
+          {err.label}
+        </div>
+        <p>{err.message}</p>
+      </div>
+    ));
+  };
+
+  console.log(formErrors);
 
   return (
     <>
@@ -119,6 +159,12 @@ const FormPage = () => {
           className="flex flex-wrap gap-10 justify-center"
           onSubmit={onSubmit}
         >
+          {formErrors.length > 0 && (
+            <div className="card w-full border error !bg-red-100">
+              {renderErrors()}
+            </div>
+          )}
+
           <div className="card w-full">
             <div>IDENTIFICATION</div>
             <div className="flex flex-wrap gap-5 mt-5">
@@ -230,7 +276,6 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.TSIC_L}
                   isNumber
-                  disabled
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -255,7 +300,6 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.SIZE_L}
                   isNumber
-                  disabled
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -326,28 +370,32 @@ const FormPage = () => {
                 errors={errors.TITLE}
               />
             </div>
-            <div className="flex items-center gap-5">
-              <label>
-                ชื่อเจ้าของ/หัวหน้าครัวเรือน
-                <span className="text-red-500">*</span>
-              </label>
-              <Input
-                name="FIRSTNAME"
-                placeholder="FIRSTNAME"
-                register={register}
-                className="w-60 md:w-72"
-                errors={errors.FIRSTNAME}
-              />
-              <label>
-                นามสกุล<span className="text-red-500">*</span>
-              </label>
-              <Input
-                name="LASTNAME"
-                placeholder="LASTNAME"
-                register={register}
-                className="w-60 md:w-72"
-                errors={errors.LASTNAME}
-              />
+            <div className="flex flex-wrap gap-5">
+              <div className="flex items-center gap-5">
+                <label>
+                  ชื่อเจ้าของ/หัวหน้าครัวเรือน
+                  <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  name="FIRSTNAME"
+                  placeholder="FIRSTNAME"
+                  register={register}
+                  className="w-60 md:w-72"
+                  errors={errors.FIRSTNAME}
+                />
+              </div>
+              <div className="flex items-center gap-5">
+                <label>
+                  นามสกุล<span className="text-red-500">*</span>
+                </label>
+                <Input
+                  name="LASTNAME"
+                  placeholder="LASTNAME"
+                  register={register}
+                  className="w-60 md:w-72"
+                  errors={errors.LASTNAME}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-5">
               <label>
@@ -1282,7 +1330,7 @@ const FormPage = () => {
           </div>
           <div className="w-full flex justify-center">
             <Button type="submit" primary>
-              ส่ง
+              บันทึก
             </Button>
           </div>
         </form>

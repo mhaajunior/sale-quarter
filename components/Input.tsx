@@ -54,6 +54,9 @@ const Input = ({
               {showWord}
             </div>
           )}
+          <span className="absolute inline text-[9px] text-gray-400  top-[-10px] left-[8px] z-10 bg-white">
+            {placeholder}
+          </span>
         </>
       )}
       {textarea && (

@@ -37,3 +37,7 @@ export const assertThaiId = (thaiId: string): boolean => {
   }
   return true;
 };
+
+export const hasNumber = (str: string) => {
+  return /\d/.test(str);
+};

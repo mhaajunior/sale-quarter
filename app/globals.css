@@ -38,6 +38,10 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+input:disabled {
+  background-color: #cdcfcf;
+}
+
 .card {
   min-height: 50px;
   box-sizing: border-box;
