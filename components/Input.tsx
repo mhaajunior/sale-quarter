@@ -9,6 +9,7 @@ const Input = ({
   textarea = false,
   isNumber = false,
   disabled = false,
+  showName = false,
   showWord = "",
   icon,
   onIconClick,
@@ -20,6 +21,7 @@ const Input = ({
   textarea?: boolean;
   isNumber?: boolean;
   disabled?: boolean;
+  showName?: boolean;
   showWord?: string;
   icon?: ReactNode;
   onIconClick?: () => void;
@@ -54,9 +56,11 @@ const Input = ({
               {showWord}
             </div>
           )}
-          <span className="absolute inline text-[9px] text-gray-400  top-[-10px] left-[8px] z-10 bg-white">
-            {placeholder}
-          </span>
+          {showName && (
+            <div className="absolute text-[9px] text-gray-400  top-[-8px] left-2 z-10 bg-white p-[2px]">
+              {placeholder}
+            </div>
+          )}
         </>
       )}
       {textarea && (

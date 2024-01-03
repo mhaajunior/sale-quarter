@@ -368,6 +368,7 @@ const FormPage = () => {
                 register={register}
                 className="w-24"
                 errors={errors.TITLE}
+                showName
               />
             </div>
             <div className="flex flex-wrap gap-5">
@@ -382,6 +383,7 @@ const FormPage = () => {
                   register={register}
                   className="w-60 md:w-72"
                   errors={errors.FIRSTNAME}
+                  showName
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -394,6 +396,7 @@ const FormPage = () => {
                   register={register}
                   className="w-60 md:w-72"
                   errors={errors.LASTNAME}
+                  showName
                 />
               </div>
             </div>
@@ -407,6 +410,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.TRADEMARK}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -417,6 +421,7 @@ const FormPage = () => {
                 register={register}
                 className="w-28"
                 errors={errors.ADD_NO}
+                showName
               />
               <label>หมู่ที่</label>
               {
@@ -434,6 +439,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.BLK}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -444,6 +450,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.STREET}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -454,6 +461,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.TAMBOL}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -464,6 +472,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.AMPHOR}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -474,6 +483,7 @@ const FormPage = () => {
                 register={register}
                 className="w-28"
                 errors={errors.POST_CODE}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -484,6 +494,7 @@ const FormPage = () => {
                 register={register}
                 className="w-36"
                 errors={errors.TEL_NO}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -494,6 +505,7 @@ const FormPage = () => {
                 register={register}
                 className="w-36"
                 errors={errors.FAX_NO}
+                showName
               />
             </div>
             <div className="flex items-center gap-5">
@@ -504,6 +516,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.E_MAIL}
+                showName
               />
             </div>
             <div className="flex items-center gap-5 w-full">
@@ -516,6 +529,7 @@ const FormPage = () => {
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.DES_TYPE}
+                showName
               />
             </div>
             {enu === 8 && (
@@ -532,6 +546,7 @@ const FormPage = () => {
                   className="w-60 md:w-72"
                   errors={errors.TSIC_CHG}
                   isNumber
+                  showName
                 />
               </div>
             )}
@@ -587,6 +602,7 @@ const FormPage = () => {
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG1}
+                                  showName
                                 />
                               </div>
                             )}
@@ -602,6 +618,7 @@ const FormPage = () => {
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG2}
+                                  showName
                                 />
                               </div>
                             )}
@@ -617,6 +634,7 @@ const FormPage = () => {
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG3}
+                                  showName
                                 />
                               </div>
                             )}
@@ -633,6 +651,7 @@ const FormPage = () => {
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG4}
+                                  showName
                                 />
                               </div>
                             )}
@@ -658,6 +677,7 @@ const FormPage = () => {
                   className="w-60 md:w-80"
                   errors={errors.TYPE}
                   control={control}
+                  showName
                 />
               </div>
 
@@ -677,6 +697,7 @@ const FormPage = () => {
                       className="w-60 md:w-72"
                       errors={errors.R1_temp}
                       showWord="บาท"
+                      showName
                     />
                   </div>
                   <div className="flex justify-between items-center">
@@ -688,6 +709,7 @@ const FormPage = () => {
                       className="w-60 md:w-72"
                       errors={errors.R2_temp}
                       showWord="บาท"
+                      showName
                     />
                   </div>
                   <div className="flex justify-between items-center">
@@ -699,6 +721,7 @@ const FormPage = () => {
                       className="w-60 md:w-72"
                       errors={errors.R3_temp}
                       showWord="บาท"
+                      showName
                     />
                   </div>
                   <div className="flex justify-between items-center font-bold">
@@ -749,6 +772,7 @@ const FormPage = () => {
                         errors={errors.ITR}
                         showWord="%"
                         isNumber
+                        showName
                       />
                     </div>
                     <div className="flex flex-col gap-3">
@@ -785,6 +809,7 @@ const FormPage = () => {
                             errors={errors.SI11}
                             showWord="%"
                             isNumber
+                            showName
                           />
                         </div>
                       )}
@@ -816,6 +841,7 @@ const FormPage = () => {
                             errors={errors.SI22}
                             showWord="%"
                             isNumber
+                            showName
                           />
                         </div>
                       )}
@@ -849,6 +875,7 @@ const FormPage = () => {
                               errors={errors.SI33}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -862,6 +889,7 @@ const FormPage = () => {
                               errors={errors.F1}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                         </div>
@@ -896,6 +924,7 @@ const FormPage = () => {
                               errors={errors.SI44}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -909,6 +938,7 @@ const FormPage = () => {
                               errors={errors.F2}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                         </div>
@@ -944,6 +974,7 @@ const FormPage = () => {
                               errors={errors.SI55}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -957,6 +988,7 @@ const FormPage = () => {
                               errors={errors.F3}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                         </div>
@@ -991,6 +1023,7 @@ const FormPage = () => {
                               errors={errors.SI66}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -1004,6 +1037,7 @@ const FormPage = () => {
                               errors={errors.F4}
                               showWord="%"
                               isNumber
+                              showName
                             />
                           </div>
                         </div>
@@ -1033,6 +1067,7 @@ const FormPage = () => {
                               register={register}
                               className="w-60 md:w-72"
                               errors={errors.SI8}
+                              showName
                             />
                           </div>
                           <div className="flex gap-5">
@@ -1047,6 +1082,7 @@ const FormPage = () => {
                                 errors={errors.SI77}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             </div>
                             <div className="flex gap-3 items-center text-[14px]">
@@ -1060,6 +1096,7 @@ const FormPage = () => {
                                 errors={errors.F5}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             </div>
                           </div>
@@ -1102,6 +1139,7 @@ const FormPage = () => {
                                 errors={errors.CIN}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             )}
                           </Radio>
@@ -1117,6 +1155,7 @@ const FormPage = () => {
                                 errors={errors.CDE}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             )}
                           </Radio>
@@ -1212,6 +1251,7 @@ const FormPage = () => {
                                 errors={errors.PIN}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             )}
                           </Radio>
@@ -1227,6 +1267,7 @@ const FormPage = () => {
                                 errors={errors.PDE}
                                 showWord="%"
                                 isNumber
+                                showName
                               />
                             )}
                           </Radio>
@@ -1249,6 +1290,7 @@ const FormPage = () => {
                   errors={errors.EMP}
                   showWord="คน"
                   isNumber
+                  showName
                 />
               </div>
 
@@ -1264,6 +1306,7 @@ const FormPage = () => {
                       className="w-60 md:w-72"
                       errors={errors.STO_temp}
                       showWord="บาท"
+                      showName
                     />
                   </div>
                   <div>
@@ -1279,6 +1322,7 @@ const FormPage = () => {
                     errors={errors.DAY}
                     showWord="วัน"
                     isNumber
+                    showName
                   />
                 </div>
               )}
@@ -1294,6 +1338,7 @@ const FormPage = () => {
                   register={register}
                   className="w-28"
                   errors={errors.P1}
+                  showName
                 />
               </div>
               <div className="flex gap-5 items-center">
@@ -1304,6 +1349,7 @@ const FormPage = () => {
                   register={register}
                   className="w-28"
                   errors={errors.P2}
+                  showName
                 />
               </div>
               <div className="flex gap-5 items-center">
@@ -1314,6 +1360,7 @@ const FormPage = () => {
                   register={register}
                   className="w-28"
                   errors={errors.P3}
+                  showName
                 />
               </div>
               <div className="flex gap-5 items-center">
@@ -1324,6 +1371,7 @@ const FormPage = () => {
                   register={register}
                   className="w-28"
                   errors={errors.P4}
+                  showName
                 />
               </div>
             </div>
