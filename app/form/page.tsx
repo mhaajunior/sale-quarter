@@ -24,13 +24,9 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import _ from "lodash";
+import { FormErrors } from "@/types/form";
 
 const quarter = getQuarterDate();
-
-interface FormErrors {
-  label: string;
-  message: string;
-}
 
 const FormPage = () => {
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
@@ -109,37 +105,33 @@ const FormPage = () => {
   }, [sto]);
 
   const onSubmit = handleSubmit(async (data) => {
-    const result = validateFormData(data);
-    let err;
+    let err: FormErrors[] = [];
     if (data.ENU === 1) {
-      err = consistencyCheck1(result);
+      err = consistencyCheck1(data);
     } else {
       console.log("hi1");
-      err = consistencyCheck2(result);
+      err = consistencyCheck2(data);
     }
-    if (!_.isEmpty(err)) {
-      const errArr = [];
-      for (const [key, value] of Object.entries(err)) {
-        errArr.push({ label: key, message: value as string });
-      }
-      setFormErrors(errArr);
+    if (err.length > 0) {
+      setFormErrors(err);
       toast.error("ตรวจพบข้อมูลที่ไม่ถูกต้อง กรุณาตรวจสอบข้อมูลอีกครั้ง");
       window.scrollTo(0, 0);
       return;
     } else {
+      const result = validateFormData(data);
       setFormErrors([]);
       toast.success("ส่งข้อมูลสำเร็จ");
     }
   });
 
   const renderErrors = () => {
-    return formErrors.map((err) => (
+    return formErrors.map((err, index) => (
       <div
-        key={err.label}
+        key={index}
         className="text-red-500 flex items-center gap-3 md:w-2/4 w-full"
       >
         <div className="border border-red-500 p-2 rounded font-bold text-xs text-white bg-red-500">
-          {err.label}
+          {err.label.join(", ")}
         </div>
         <p>{err.message}</p>
       </div>
