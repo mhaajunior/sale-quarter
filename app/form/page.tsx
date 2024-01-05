@@ -399,11 +399,11 @@ const FormPage = () => {
                 ชื่อสถานประกอบการ<span className="text-red-500">*</span>
               </label>
               <Input
-                name="TRADEMARK"
-                placeholder="TRADEMARK"
+                name="EST_NAME"
+                placeholder="EST_NAME"
                 register={register}
                 className="w-60 md:w-72"
-                errors={errors.TRADEMARK}
+                errors={errors.EST_NAME}
                 showName
               />
             </div>

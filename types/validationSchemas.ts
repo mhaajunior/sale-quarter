@@ -1,10 +1,4 @@
-import {
-  assertThaiId,
-  between,
-  currencyToNumber,
-  hasNumber,
-  isNumNull,
-} from "@/helpers/common";
+import { between, currencyToNumber, hasNumber } from "@/helpers/common";
 import { getQuarterDate } from "@/helpers/quarter";
 import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
@@ -122,6 +116,11 @@ export const createReportSchema = z.object({
     .min(1, "กรุณากรอก TITLE")
     .max(10, "TITLE ที่กรอกยาวเกินกว่า 10 ตัวอักษร")
     .refine((data) => !hasNumber(data), "TITLE ที่กรอกไม่ถูกต้อง"),
+  // RANK: z
+  //   .string()
+  //   .min(1, "กรุณากรอก RANK")
+  //   .max(20, "RANK ที่กรอกยาวเกินกว่า 20 ตัวอักษร")
+  //   .refine((data) => !hasNumber(data), "RANK ที่กรอกไม่ถูกต้อง"),
   FIRSTNAME: z
     .string()
     .min(1, "กรุณากรอก FIRSTNAME")
@@ -132,10 +131,14 @@ export const createReportSchema = z.object({
     .min(1, "กรุณากรอก LASTNAME")
     .max(60, "LASTNAME ที่กรอกยาวเกินกว่า 60 ตัวอักษร")
     .refine((data) => !hasNumber(data), "LASTNAME ที่กรอกไม่ถูกต้อง"),
-  TRADEMARK: z
+  // EST_TITLE: z
+  //   .string()
+  //   .min(1, "กรุณากรอก EST_TITLE")
+  //   .max(10, "EST_TITLE ที่กรอกยาวเกินกว่า 10 ตัวอักษร"),
+  EST_NAME: z
     .string()
-    .min(1, "กรุณากรอก TRADEMARK")
-    .max(100, "TRADEMARK ที่กรอกยาวเกินกว่า 100 ตัวอักษร"),
+    .min(1, "กรุณากรอก EST_NAME")
+    .max(100, "EST_NAME ที่กรอกยาวเกินกว่า 100 ตัวอักษร"),
   ADD_NO: z
     .string()
     .max(10, "ADD_NO ที่กรอกยาวเกินกว่า 10 ตัวอักษร")
