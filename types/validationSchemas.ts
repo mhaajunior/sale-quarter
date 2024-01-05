@@ -189,7 +189,7 @@ export const createReportSchema = z.object({
   LG: z
     .number({ invalid_type_error: "กรุณาเลือก LG" })
     .gte(1, "LG ที่เลือกไม่ถูกต้อง")
-    .lte(6, "LG ที่เลือกไม่ถูกต้อง")
+    .lte(10, "LG ที่เลือกไม่ถูกต้อง")
     .optional(),
   LG1: z
     .string()
@@ -383,6 +383,66 @@ export const createReportSchema = z.object({
     .number({ invalid_type_error: "กรุณากรอก DAY" })
     .nonnegative("DAY ที่กรอกไม่ถูกต้อง")
     .lte(365, "DAY ห้ามเกิน 365 วัน")
+    .optional(),
+  OP1: z
+    .number({ invalid_type_error: "กรุณาเลือก OP1" })
+    .gte(1, "OP1 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP1 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP2: z
+    .number({ invalid_type_error: "กรุณาเลือก OP2" })
+    .gte(1, "OP2 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP2 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP3: z
+    .number({ invalid_type_error: "กรุณาเลือก OP3" })
+    .gte(1, "OP3 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP3 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP4: z
+    .number({ invalid_type_error: "กรุณาเลือก OP4" })
+    .gte(1, "OP4 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP4 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP5: z
+    .number({ invalid_type_error: "กรุณาเลือก OP5" })
+    .gte(1, "OP5 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP5 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP6: z
+    .number({ invalid_type_error: "กรุณาเลือก OP6" })
+    .gte(1, "OP6 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP6 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP7: z
+    .number({ invalid_type_error: "กรุณาเลือก OP7" })
+    .gte(1, "OP7 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP7 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP8: z
+    .number({ invalid_type_error: "กรุณาเลือก OP8" })
+    .gte(1, "OP8 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP8 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP9: z
+    .number({ invalid_type_error: "กรุณาเลือก OP9" })
+    .gte(1, "OP9 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP9 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP10: z
+    .number({ invalid_type_error: "กรุณาเลือก OP10" })
+    .gte(1, "OP10 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP10 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP11: z
+    .number({ invalid_type_error: "กรุณาเลือก OP11" })
+    .gte(1, "OP11 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP11 ที่เลือกไม่ถูกต้อง")
+    .optional(),
+  OP12: z
+    .number({ invalid_type_error: "กรุณาเลือก OP12" })
+    .gte(1, "OP12 ที่เลือกไม่ถูกต้อง")
+    .lte(5, "OP12 ที่เลือกไม่ถูกต้อง")
     .optional(),
   P1: z.string().min(1, "กรุณากรอก P1").length(7, "P1 ที่กรอกไม่ถูกต้อง"),
   P2: z.string().min(1, "กรุณากรอก P2").length(7, "P2 ที่กรอกไม่ถูกต้อง"),

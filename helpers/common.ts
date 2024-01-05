@@ -41,3 +41,16 @@ export const assertThaiId = (thaiId: string): boolean => {
 export const hasNumber = (str: string) => {
   return /\d/.test(str);
 };
+
+export const removeLeadZero = (num: string) => {
+  if (parseInt(num) !== 0) {
+    const str = num.replace(/^0+/, "");
+    return str;
+  }
+  return num;
+};
+
+export const padZero = (num: string, length: number) => {
+  const trail = String(num).padStart(length, "0");
+  return trail;
+};

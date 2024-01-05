@@ -19,7 +19,7 @@ import {
 import { ReportForm, createReportSchema } from "@/types/validationSchemas";
 import typeOption from "@/utils/typeOption";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Checkbox, Radio, Space } from "antd";
+import { Checkbox, Col, Radio, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -109,7 +109,6 @@ const FormPage = () => {
     if (data.ENU === 1) {
       err = consistencyCheck1(data);
     } else {
-      console.log("hi1");
       err = consistencyCheck2(data);
     }
     if (err.length > 0) {
@@ -566,7 +565,7 @@ const FormPage = () => {
                         ref={register("LG").ref}
                       >
                         <Space direction="vertical">
-                          <Radio value={1}>
+                          <Radio value={1} className="start">
                             1. ส่วนบุคคล ห้างหุ้นส่วนสามัญที่ไม่เป็นนิติบุคคล
                             {value === 1 && (
                               <div className="my-1 flex flex-col gap-2">
@@ -602,7 +601,7 @@ const FormPage = () => {
                               </div>
                             )}
                           </Radio>
-                          <Radio value={2}>
+                          <Radio value={2} className="start">
                             2. ห้างหุ้นส่วนสามัญนิติบุคคล ห้างหุ้นส่วนจำกัด
                             {value === 2 && (
                               <div className="my-1 flex flex-col gap-2">
@@ -618,7 +617,7 @@ const FormPage = () => {
                               </div>
                             )}
                           </Radio>
-                          <Radio value={3}>
+                          <Radio value={3} className="start">
                             3. บริษัทจำกัด บริษัทจำกัด (มหาชน)
                             {value === 3 && (
                               <div className="my-1 flex flex-col gap-2">
@@ -634,11 +633,28 @@ const FormPage = () => {
                               </div>
                             )}
                           </Radio>
-                          <Radio value={4}>4. ส่วนราชการ รัฐวิสาหกิจ</Radio>
-                          <Radio value={5}>5. สหกรณ์</Radio>
+                          <Radio value={4} className="start">
+                            4. ส่วนราชการ รัฐวิสาหกิจ
+                          </Radio>
+                          <Radio value={5} className="start">
+                            5. สหกรณ์
+                          </Radio>
                           <Radio value={6}>
-                            6. อื่นๆ (ระบุ)
-                            {value === 6 && (
+                            6. การรวมกลุ่ม (เช่น กลุ่มเกษตรกร กลุ่มแม่บ้าน
+                            เป็นต้น)
+                          </Radio>
+                          <Radio value={7} className="start">
+                            7. สมาคม
+                          </Radio>
+                          <Radio value={8} className="start">
+                            8. มูลนิธิ
+                          </Radio>
+                          <Radio value={9} className="start">
+                            9. วิสาหกิจชุมชน
+                          </Radio>
+                          <Radio value={10} className="start">
+                            10. อื่นๆ (เช่น สโมสร ชมรม เป็นต้น) (ระบุ)
+                            {value === 10 && (
                               <div className="my-1 flex flex-col gap-2">
                                 <Input
                                   name="LG4"
@@ -661,10 +677,21 @@ const FormPage = () => {
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>3. ประเภทของกิจการและชนิดของสินค้า/บริการ</div>
-                <p>
-                  ถ้าประกอบธุรกิจมากกว่า 1 ประเภท
-                  โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด
+                <p className="leading-6">
+                  เช่น ขายของชำ ร้านสะดวกซื้อ ซุปเปอร์มาร์เก็ต ดิสเคานท์สโตร์
+                  ห้างสรรพสินค้า ขายปลีกผักและผลไม้
+                  ขายปลีกเครื่องดื่มที่ไม่มีแอลกอฮอล์ ขายปลีกเครื่องใช้ไฟฟ้า
+                  โรงแรม รีสอร์ท เกสต์เฮาส์ หอพัก ภัตตาคาร ร้านอาหาร
+                  ร้านขายก๋วยเตี๋ยว รับจัดเลี้ยง สถานีวิทยุ/โทรทัศน์ ร้านเกม
+                  ร้านเช่าหนังสือ ร้านเช่าวีดิโอ วีซีดี และดีวีดี นักแสดง
+                  โต๊ะสนุกเกอร์ ฉายภาพยนตร์ ลิเก หมอลำ สปา ร้านตัดผม เสริมสวย
+                  ร้านซักรีดเสื้อผ้า อาบ อบ นวด เป็นต้น{" "}
+                  <span className="font-bold">
+                    (ถ้าประกอบธุรกิจมากกว่า 1 ประเภท
+                    โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด)
+                  </span>
                 </p>
+
                 <Dropdown
                   name="TYPE"
                   placeholder="TYPE"
@@ -677,7 +704,22 @@ const FormPage = () => {
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
-                <div>4. ยอดขายหรือรายรับของสถานประกอบการ</div>
+                <div>4. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</div>
+                <Input
+                  name="EMP"
+                  type="number"
+                  placeholder="EMP"
+                  register={register}
+                  className="w-40"
+                  errors={errors.EMP}
+                  showWord="คน"
+                  isNumber
+                  showName
+                />
+              </div>
+
+              <div className="card w-500 flex flex-col gap-3">
+                <div>5. ยอดขายหรือรายรับของสถานประกอบการ</div>
                 <p>
                   บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ
                   แต่ละเดือนเป็นจำนวนเต็ม (บาท)
@@ -728,7 +770,7 @@ const FormPage = () => {
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>
-                  5. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
+                  6. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
                   <span className="ml-3 !text-xs text-gray-400">[SI]</span>
                 </div>
                 <div className="flex flex-col gap-1 items-start">
@@ -755,7 +797,7 @@ const FormPage = () => {
                   <>
                     <div className="flex flex-col gap-3">
                       <div className="text-[15px]">
-                        5.1
+                        6.1
                         มูลค่าการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตคิดเป็นร้อยละเท่าใดของมูลค่าขายทั้งหมด
                       </div>
                       <Input
@@ -772,7 +814,7 @@ const FormPage = () => {
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="text-[15px]">
-                        5.2
+                        6.2
                         สัดส่วนของช่องทางการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตต่อยอดขายผ่านทางอินเทอร์เน็ตทั้งหมด
                       </div>
                       <Controller
@@ -1105,7 +1147,7 @@ const FormPage = () => {
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>
-                  6. ในไตรมาสนี้
+                  7. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสก่อนหน้านั้นหรือไม่ อย่างไร
                   <span className="ml-3 !text-xs text-gray-400">[CHG]</span>
                 </div>
@@ -1121,8 +1163,10 @@ const FormPage = () => {
                         ref={register("CHG").ref}
                       >
                         <Space direction="vertical">
-                          <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
-                          <Radio value={2}>
+                          <Radio value={1} className="start">
+                            1. ไม่เปลี่ยนแปลง
+                          </Radio>
+                          <Radio value={2} className="start">
                             2. สูงขึ้นจากไตรมาสก่อนหน้า
                             {value === 2 && (
                               <Input
@@ -1138,7 +1182,7 @@ const FormPage = () => {
                               />
                             )}
                           </Radio>
-                          <Radio value={3}>
+                          <Radio value={3} className="start">
                             3. ลดลงจากไตรมาสก่อนหน้า
                             {value === 3 && (
                               <Input
@@ -1165,7 +1209,7 @@ const FormPage = () => {
               {chg && chg !== 1 && (
                 <div className="card w-500 flex flex-col gap-3">
                   <div>
-                    7. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
+                    8. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
                     โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
                     <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
                   </div>
@@ -1182,18 +1226,36 @@ const FormPage = () => {
                         >
                           <div className="flex">
                             <Space direction="vertical" className="w-2/4">
-                              <Radio value={1}>1. ฤดูกาล เทศกาล</Radio>
-                              <Radio value={2}>2. กำลังซื้อของลูกค้า</Radio>
-                              <Radio value={3}>3. ต้นทุน/ราคาสินค้า</Radio>
-                              <Radio value={4}>4. คู่แข่งทางการค้า</Radio>
-                              <Radio value={5}>5. การปรับปรุงกิจการ</Radio>
+                              <Radio value={1} className="start">
+                                1. ฤดูกาล เทศกาล
+                              </Radio>
+                              <Radio value={2} className="start">
+                                2. กำลังซื้อของลูกค้า
+                              </Radio>
+                              <Radio value={3} className="start">
+                                3. ต้นทุน/ราคาสินค้า
+                              </Radio>
+                              <Radio value={4} className="start">
+                                4. คู่แข่งทางการค้า
+                              </Radio>
+                              <Radio value={5} className="start">
+                                5. การปรับปรุงกิจการ
+                              </Radio>
                             </Space>
                             <Space direction="vertical">
-                              <Radio value={6}>6. ภาวะเศรษฐกิจ</Radio>
-                              <Radio value={7}>7. นโยบายภาครัฐ</Radio>
-                              <Radio value={8}>8. เทคโนโลยี</Radio>
-                              <Radio value={9}>9. โรคระบาด เช่น โควิด-19</Radio>
-                              <Radio value={10}>
+                              <Radio value={6} className="start">
+                                6. ภาวะเศรษฐกิจ
+                              </Radio>
+                              <Radio value={7} className="start">
+                                7. นโยบายภาครัฐ
+                              </Radio>
+                              <Radio value={8} className="start">
+                                8. เทคโนโลยี
+                              </Radio>
+                              <Radio value={9} className="start">
+                                9. โรคระบาด เช่น โควิด-19
+                              </Radio>
+                              <Radio value={10} className="start">
                                 10. อื่นๆ (ระบุ)
                                 {value === 10 && (
                                   <Input
@@ -1217,7 +1279,7 @@ const FormPage = () => {
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>
-                  8. ในไตรมาสนี้
+                  9. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสเดียวกันกับปีก่อนหรือไม่
                   <span className="ml-3 !text-xs text-gray-400">[PRVS]</span>
                 </div>
@@ -1233,8 +1295,10 @@ const FormPage = () => {
                         ref={register("PRVS").ref}
                       >
                         <Space direction="vertical">
-                          <Radio value={1}>1. ไม่เปลี่ยนแปลง</Radio>
-                          <Radio value={2}>
+                          <Radio value={1} className="start">
+                            1. ไม่เปลี่ยนแปลง
+                          </Radio>
+                          <Radio value={2} className="start">
                             2. สูงขึ้นจากปีก่อน
                             {value === 2 && (
                               <Input
@@ -1250,7 +1314,7 @@ const FormPage = () => {
                               />
                             )}
                           </Radio>
-                          <Radio value={3}>
+                          <Radio value={3} className="start">
                             3. ลดลงจากปีก่อน
                             {value === 3 && (
                               <Input
@@ -1272,21 +1336,6 @@ const FormPage = () => {
                   />
                   <ErrorMessage>{errors?.PRVS?.message}</ErrorMessage>
                 </div>
-              </div>
-
-              <div className="card w-500 flex flex-col gap-3">
-                <div>9. จำนวนคนทำงานตามปกติของสถานประกอบการในไตรมาสนี้</div>
-                <Input
-                  name="EMP"
-                  type="number"
-                  placeholder="EMP"
-                  register={register}
-                  className="w-40"
-                  errors={errors.EMP}
-                  showWord="คน"
-                  isNumber
-                  showName
-                />
               </div>
 
               {type === 1 && (
@@ -1321,6 +1370,417 @@ const FormPage = () => {
                   />
                 </div>
               )}
+
+              <div className="card w-full flex flex-col gap-3">
+                <div>11. ความคิดเห็นที่มีต่อธุรกิจของท่าน</div>
+                <div>
+                  <Row gutter={16} className="mb-4 text-center">
+                    <Col className="gutter-row" span={8}>
+                      <p>ด้าน</p>
+                    </Col>
+                    <Col className="gutter-row" span={3}>
+                      <h5>(1)</h5>
+                      <h4>เพิ่มขึ้นมาก</h4>
+                    </Col>
+                    <Col className="gutter-row" span={3}>
+                      <h5>(2)</h5>
+                      <h4>เพิ่มขึ้นเล็กน้อย</h4>
+                    </Col>
+                    <Col className="gutter-row" span={3}>
+                      <h5>(3)</h5>
+                      <h4>เท่าเดิม</h4>
+                    </Col>
+                    <Col className="gutter-row" span={3}>
+                      <h5>(4)</h5>
+                      <h4>ลดลงเล็กน้อย</h4>
+                    </Col>
+                    <Col className="gutter-row" span={3}>
+                      <h5>(5)</h5>
+                      <h4>ลดลงมาก</h4>
+                    </Col>
+                  </Row>
+                  <Controller
+                    control={control}
+                    name="OP1"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP1").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16} className="text-center">
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - ต้นทุน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP1]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP1?.message}</ErrorMessage>
+                  <Controller
+                    control={control}
+                    name="OP2"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP2").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - กำไร
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP2]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP2?.message}</ErrorMessage>
+                  <Controller
+                    control={control}
+                    name="OP3"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP3").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - ราคาขายสินค้า/บริการของท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP3]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP3?.message}</ErrorMessage>
+                  <Controller
+                    control={control}
+                    name="OP4"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP4").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - สภาพการแข่งขันของธุรกิจในพื้นที่
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP4]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP4?.message}</ErrorMessage>
+                  <Controller
+                    control={control}
+                    name="OP5"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP5").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - สภาพคล่องทางการเงินของธุรกิจท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP5]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP5?.message}</ErrorMessage>
+                  <Controller
+                    control={control}
+                    name="OP6"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP6").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - แนวโน้มการลงทุนในกิจการของท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP6]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP6?.message}</ErrorMessage>
+                  {/* <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                    <div className="flex flex-col gap-1 items-start">
+                      <Controller
+                        control={control}
+                        name="OP1"
+                        shouldUnregister
+                        render={({ field: { onChange, value } }) => (
+                          <Radio.Group
+                            value={value}
+                            onChange={onChange}
+                            ref={register("SI").ref}
+                          >
+                            <Space direction="horizontal">
+                              <Radio value={1}></Radio>
+                              <Radio value={2}></Radio>
+                              <Radio value={3}></Radio>
+                              <Radio value={4}></Radio>
+                              <Radio value={5}></Radio>
+                            </Space>
+                          </Radio.Group>
+                        )}
+                      />
+                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
+                    </div>
+                  </div> */}
+                </div>
+              </div>
             </>
           )}
           <div className="w-full">
