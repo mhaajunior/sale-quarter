@@ -43,6 +43,7 @@ const SearchPage = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<SearchForm>({
     resolver: zodResolver(searchIdSchema),
@@ -344,11 +345,11 @@ const SearchPage = () => {
         setResponse(res.data);
         setId(data.ID);
       }
-      setLoading(false);
     } catch (err: any) {
       errorHandler(err);
-      setLoading(false);
     }
+    setLoading(false);
+    reset();
   });
 
   return (
