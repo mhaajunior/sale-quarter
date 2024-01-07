@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Control" ALTER COLUMN "regis_cid" SET DATA TYPE TEXT,
+ALTER COLUMN "regis_no" SET DATA TYPE TEXT;

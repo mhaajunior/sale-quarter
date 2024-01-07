@@ -23,25 +23,21 @@ const Button = ({
   loading,
   ...rest
 }: ButtonProps) => {
-  const classes = classNames(
-    rest.className,
-    "flex ellipsis items-center px-3 py-2 btn",
-    {
-      "btn-grad": primary,
-      "btn-blue": secondary,
-      "btn-danger": danger,
-      "btn-warning": warning,
-      "rounded-3xl": rounded,
-      "opacity-50 cursor-not-allowed": loading,
-    }
-  );
+  const classes = classNames(rest.className, "flex ellipsis items-center btn", {
+    "btn-grad": primary,
+    "btn-blue": secondary,
+    "btn-danger": danger,
+    "btn-warning": warning,
+    "rounded-3xl": rounded,
+    "opacity-50 cursor-not-allowed": loading,
+  });
 
   return (
     <button {...rest} className={classes} disabled={loading}>
       {loading ? (
         <AiOutlineLoading3Quarters className="animate-spin text-white mx-auto" />
       ) : (
-        children
+        <span className="flex items-center">{children}</span>
       )}
     </button>
   );

@@ -1,9 +1,9 @@
-import { SelectOption } from "@/types/selectOption";
+import { SelectOption } from "@/types/common";
 
 const typeOption: SelectOption[] = [
   { label: "การขายปลีก", value: 1 },
   { label: "ที่พักแรม", value: 2 },
-  { label: "การบริการอาการและเครื่องดื่ม", value: 3 },
+  { label: "การบริการอาหารและเครื่องดื่ม", value: 3 },
   {
     label:
       "การผลิตภาพยนตร์ วีดิทัศน์ และรายการโทรทัศน์ การบันทึกเสียงลงบนสื่อ การจัดผังรายการและการแพร่ภาพกระจายเสียง และกิจกรรมสำนักข่าว",

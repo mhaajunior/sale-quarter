@@ -10,4 +10,149 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Control {
+  id        Int     @id @default(autoincrement())
+  es_id     BigInt  @unique
+  tsic_code Int
+  size12    String
+  initial   String?
+  firstname String?
+  lastname  String?
+  comp_name String?
+  district  Int
+  ea        String
+  vil       String
+  house_no  String
+  street    String?
+  soi       String?
+  building  String?
+  tam       String
+  tam_name  String
+  amp       String
+  amp_name  String
+  tel_no    String?
+  e_mail    String?
+  econ_fm   Int
+  regis_cid String?
+  regis_no  String?
+  cwt       Int
+  cwt_name  String
+  reg       Int
 
+  @@index([es_id])
+}
+
+model Report {
+  id String @id @default(uuid())
+
+  ID     BigInt
+  REG    Int    @db.SmallInt
+  CWT    Int    @db.SmallInt
+  AMP    String @db.VarChar(2)
+  TAM    String @db.VarChar(2)
+  MUN    Int    @db.SmallInt
+  EA     String @db.VarChar(4)
+  VIL    String @db.VarChar(2)
+  TSIC_R Int
+  TSIC_L Int
+  SIZE_R String @db.VarChar(2)
+  SIZE_L String @db.VarChar(2)
+  NO     String @db.VarChar(4)
+  QTR    Int    @db.SmallInt
+  YR     Int    @db.SmallInt
+  ENU    String @db.VarChar(2)
+
+  TITLE     String @db.VarChar(10)
+  RANK      String @db.VarChar(20)
+  FIRSTNAME String @db.VarChar(60)
+  LASTNAME  String @db.VarChar(60)
+  EST_TITLE String @db.VarChar(10)
+  EST_NAME  String @db.VarChar(100)
+  ADD_NO    String @db.VarChar(10)
+  BUILDING  String @db.VarChar(60)
+  ROOM      String @db.VarChar(30)
+  STREET    String @db.VarChar(50)
+  BLK       String @db.VarChar(30)
+  SOI       String @db.VarChar(30)
+  SUB_DIST  String @db.VarChar(30)
+  DISTRICT  String @db.VarChar(30)
+  PROVINCE  String @db.VarChar(30)
+  POST_CODE String @db.VarChar(5)
+  TEL_NO    String @db.VarChar(20)
+  E_MAIL    String @db.VarChar(30)
+  WEBSITE   String @db.VarChar(30)
+  SOCIAL    String @db.VarChar(30)
+
+  TSIC_CHG Int?
+  LG       String? @db.VarChar(2)
+  LG1      String? @db.VarChar(13)
+  LG1_temp String  @db.VarChar(1)
+  LG2      String? @db.VarChar(13)
+  LG3      String? @db.VarChar(13)
+  LG4      String? @db.VarChar(13)
+  DES_TYPE String? @db.VarChar(60)
+  TYPE     Int?
+  M1       String? @db.VarChar(2)
+  M2       String? @db.VarChar(2)
+  M3       String? @db.VarChar(2)
+  R1       Int?
+  R2       Int?
+  R3       Int?
+  TR       Int?
+  SI       Int?
+  ITR      String? @db.VarChar(3)
+  SI1      Int?    @db.SmallInt
+  SI2      Int?    @db.SmallInt
+  SI3      Int?    @db.SmallInt
+  SI4      Int?    @db.SmallInt
+  SI5      Int?    @db.SmallInt
+  SI6      Int?    @db.SmallInt
+  SI7      Int?    @db.SmallInt
+  SI8      String? @db.VarChar(60)
+  SI11     String? @db.VarChar(3)
+  SI22     String? @db.VarChar(3)
+  SI33     String? @db.VarChar(3)
+  SI44     String? @db.VarChar(3)
+  SI55     String? @db.VarChar(3)
+  SI66     String? @db.VarChar(3)
+  SI77     String? @db.VarChar(3)
+  F1       String? @db.VarChar(3)
+  F2       String? @db.VarChar(3)
+  F3       String? @db.VarChar(3)
+  F4       String? @db.VarChar(3)
+  F5       String? @db.VarChar(3)
+  CHG      Int?    @db.SmallInt
+  CIN      String? @db.VarChar(3)
+  CDE      String? @db.VarChar(3)
+  FAC      String? @db.VarChar(2)
+  FAC_1    String? @db.VarChar(100)
+  PRVS     Int?    @db.SmallInt
+  PIN      String? @db.VarChar(3)
+  PDE      String? @db.VarChar(3)
+  STO      BigInt?
+  DAY      Int?    @db.SmallInt
+  OP1      Int?    @db.SmallInt
+  OP2      Int?    @db.SmallInt
+  OP3      Int?    @db.SmallInt
+  OP4      Int?    @db.SmallInt
+  OP5      Int?    @db.SmallInt
+  OP6      Int?    @db.SmallInt
+  OP7      Int?    @db.SmallInt
+  OP8      Int?    @db.SmallInt
+  OP9      Int?    @db.SmallInt
+  OP10     Int?    @db.SmallInt
+  OP11     Int?    @db.SmallInt
+  OP12     Int?    @db.SmallInt
+  P1       String? @db.VarChar(7)
+  P2       String? @db.VarChar(7)
+  P3       String? @db.VarChar(7)
+  P4       String? @db.VarChar(7)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ID])
+  @@index([CWT])
+  @@index([QTR])
+  @@index([YR])
+}

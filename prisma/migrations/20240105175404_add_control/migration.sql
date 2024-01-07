@@ -1,0 +1,32 @@
+-- CreateTable
+CREATE TABLE "Control" (
+    "id" SERIAL NOT NULL,
+    "es_id" TEXT NOT NULL,
+    "tsic_code" TEXT NOT NULL,
+    "size12" TEXT NOT NULL,
+    "initial" TEXT,
+    "firstname" TEXT,
+    "lastname" TEXT,
+    "comp_name" TEXT,
+    "district" TEXT NOT NULL,
+    "ea" TEXT NOT NULL,
+    "vil" TEXT NOT NULL,
+    "house_no" TEXT NOT NULL,
+    "street" TEXT,
+    "soi" TEXT,
+    "building" TEXT,
+    "tam" TEXT NOT NULL,
+    "tam_name" TEXT NOT NULL,
+    "amp" TEXT NOT NULL,
+    "amp_name" TEXT NOT NULL,
+    "tel_no" TEXT,
+    "e_mail" TEXT,
+    "econ_fm" TEXT NOT NULL,
+    "regis_cid" TEXT,
+    "regis_no" TEXT,
+    "cwt" TEXT NOT NULL,
+    "cwt_name" TEXT NOT NULL,
+    "reg" TEXT NOT NULL,
+
+    CONSTRAINT "Control_pkey" PRIMARY KEY ("id")
+);

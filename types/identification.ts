@@ -1,18 +1,17 @@
 export interface Identification {
-  key: React.Key;
-  REG: string;
-  CWT: string;
+  REG: number;
+  CWT: number;
   AMP: string;
   TAM: string;
-  MUN: string;
+  MUN: number;
   EA: string;
   VIL: string;
-  TSIC_R: string;
-  TSIC_L: string;
+  TSIC_R: number;
+  TSIC_L: number;
   SIZE_R: string;
   SIZE_L: string;
   NO: string;
-  QTR: string;
-  YR: string;
+  QTR: number;
+  YR: number;
   ENU: string;
 }

@@ -63,8 +63,13 @@ h5 {
   width: 500px;
 }
 
-.ant-radio-wrapper.start .ant-radio {
+.ant-radio-wrapper.start .ant-radio,
+.ant-checkbox-wrapper.start .ant-checkbox {
   align-self: self-start !important;
+}
+
+.ant-tag {
+  margin-inline-end: 0 !important;
 }
 
 .ant-radio-wrapper.zero {

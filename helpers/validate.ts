@@ -1,6 +1,6 @@
 import { ReportForm } from "@/types/validationSchemas";
-import { assertThaiId, between, currencyToNumber, isNumNull } from "./common";
-import { FormErrors } from "@/types/form";
+import { between, currencyToNumber } from "./common";
+import { FormErrors } from "@/types/common";
 
 export const validateFormData = (data: ReportForm) => {
   if (data.R1_temp) data.R1 = currencyToNumber(data.R1_temp);
@@ -11,87 +11,14 @@ export const validateFormData = (data: ReportForm) => {
   delete data.R2_temp;
   delete data.R3_temp;
   delete data.STO_temp;
-  delete data.LG1_temp;
+  delete data.TR_temp;
 
   return data;
 };
 
 export const consistencyCheck1 = (data: ReportForm) => {
   const errData: FormErrors[] = [];
-  const {
-    SIZE_R,
-    EMP,
-    TYPE,
-    TSIC_R,
-    STO,
-    DAY,
-    SI,
-    SI1,
-    SI2,
-    SI3,
-    SI4,
-    SI5,
-    SI6,
-    SI7,
-    SI11,
-    SI22,
-    SI33,
-    SI44,
-    SI55,
-    SI66,
-    SI77,
-    F1,
-    F2,
-    F3,
-    F4,
-    F5,
-    LG1,
-    LG1_temp,
-  } = data;
-
-  if (LG1 && LG1_temp === "1") {
-    if (!assertThaiId(LG1)) {
-      errData.push({ label: ["LG1"], message: "LG1 ที่กรอกไม่ถูกต้อง" });
-    }
-  }
-
-  if (SI === 2) {
-    if (!(SI1 || SI2 || SI3 || SI4 || SI5 || SI6 || SI7)) {
-      errData.push({
-        label: ["SI_ALL"],
-        message: "กรุณาเลือก SI1-SI7 อย่างน้อย 1 ข้อ",
-      });
-    } else {
-      if (
-        isNumNull(SI11) +
-          isNumNull(SI22) +
-          isNumNull(SI33) +
-          isNumNull(SI44) +
-          isNumNull(SI55) +
-          isNumNull(SI66) +
-          isNumNull(SI77) !==
-        100
-      ) {
-        errData.push({
-          label: ["SI_PERCENTAGE"],
-          message: "สัดส่วนที่กรอกต้องรวมกันได้ 100%",
-        });
-      }
-      if (
-        isNumNull(F1) +
-          isNumNull(F2) +
-          isNumNull(F3) +
-          isNumNull(F4) +
-          isNumNull(F5) !==
-        100
-      ) {
-        errData.push({
-          label: ["SI_FEE"],
-          message: "ค่าธรรมเนียมที่กรอกต้องรวมกันได้ 100%",
-        });
-      }
-    }
-  }
+  const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
 
   if (
     EMP &&
@@ -129,7 +56,10 @@ export const consistencyCheck1 = (data: ReportForm) => {
     });
   }
 
-  if (between(TSIC_R, 47111, 47991) && (!STO || STO <= 0)) {
+  if (
+    between(TSIC_R, 47111, 47991) &&
+    (!STO_temp || currencyToNumber(STO_temp) <= 0)
+  ) {
     errData.push({
       label: ["TSIC_R", "STO"],
       message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
@@ -138,11 +68,11 @@ export const consistencyCheck1 = (data: ReportForm) => {
 
   if (
     between(TSIC_R, 47111, 47991) &&
-    (!STO ||
+    (!STO_temp ||
       [
         9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999,
         9999999999, 99999999999, 999999999999,
-      ].includes(STO))
+      ].includes(currencyToNumber(STO_temp)))
   ) {
     errData.push({
       label: ["TSIC_R", "STO"],
@@ -150,14 +80,19 @@ export const consistencyCheck1 = (data: ReportForm) => {
     });
   }
 
-  if (between(TSIC_R, 55101, 96309) && STO) {
+  if (between(TSIC_R, 55101, 96309) && STO_temp) {
     errData.push({
       label: ["TSIC_R", "STO"],
       message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
     });
   }
 
-  if (STO && STO > 0 && between(TSIC_R, 47111, 47991) && !DAY) {
+  if (
+    STO_temp &&
+    currencyToNumber(STO_temp) > 0 &&
+    between(TSIC_R, 47111, 47991) &&
+    !DAY
+  ) {
     errData.push({
       label: ["TSIC_R", "STO", "DAY"],
       message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
@@ -172,8 +107,8 @@ export const consistencyCheck1 = (data: ReportForm) => {
   }
 
   if (
-    STO &&
-    STO > 0 &&
+    STO_temp &&
+    currencyToNumber(STO_temp) > 0 &&
     between(TSIC_R, 47111, 47991) &&
     !(DAY !== 1 && DAY !== 999)
   ) {
@@ -181,6 +116,24 @@ export const consistencyCheck1 = (data: ReportForm) => {
       label: ["TSIC_R", "STO", "DAY"],
       message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
     });
+  }
+
+  if (TYPE) {
+    if (TYPE !== 1) {
+      if (STO_temp || DAY) {
+        errData.push({
+          label: ["TYPE", "STO", "DAY"],
+          message: "ถ้า TYPE ไม่เป็นขายปลีก ห้ามมีค่า STO และ DAY",
+        });
+      }
+    } else {
+      if (!STO_temp || !DAY) {
+        errData.push({
+          label: ["TYPE", "STO", "DAY"],
+          message: "ถ้า TYPE เป็นขายปลีก ต้องมีค่า STO และ DAY",
+        });
+      }
+    }
   }
 
   return errData;

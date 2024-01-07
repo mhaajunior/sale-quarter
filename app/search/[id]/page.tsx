@@ -6,11 +6,18 @@ import ErrorMessage from "@/components/ErrorMessage";
 import Input from "@/components/Input";
 import Title from "@/components/Title";
 import {
+  between,
   currencyToNumber,
   numberWithCommas,
   removeNonNumeric,
 } from "@/helpers/common";
-import { calcQuarter, getQuarterDate, thaiYear } from "@/helpers/quarter";
+import {
+  checkDateBetween,
+  getQuarterDate,
+  quarterMap,
+  thaiYear,
+  yr,
+} from "@/helpers/quarter";
 import {
   consistencyCheck1,
   consistencyCheck2,
@@ -24,13 +31,26 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import _ from "lodash";
-import { FormErrors } from "@/types/form";
+import { FormErrors } from "@/types/common";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import moment from "moment";
+import axios from "axios";
+import { errorHandler } from "@/helpers/errorHandler";
+import { InitialControl, ReportControl } from "@/types/control";
+import Loading from "@/components/Loading";
+import { IoChevronBack } from "react-icons/io5";
+import Link from "next/link";
 
 const quarter = getQuarterDate();
 
 const FormPage = () => {
+  const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
-
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const qtr = Number(searchParams.get("qtr"));
+  const mode = searchParams.get("mode");
+  const router = useRouter();
   const {
     register,
     watch,
@@ -45,22 +65,12 @@ const FormPage = () => {
       R1_temp: "",
       R2_temp: "",
       R3_temp: "",
+      TR_temp: "",
       LG1_temp: "1",
       TYPE: 0,
-      REG: 1,
-      CWT: 12,
-      AMP: 4,
-      TAM: 23,
-      MUN: 1,
-      EA: 23,
-      VIL: 23,
-      TSIC_R: 47114,
-      TSIC_L: 47114,
-      SIZE_R: 2,
-      SIZE_L: 2,
       NO: 32,
-      QTR: calcQuarter(),
-      YR: Number(thaiYear.toString().slice(2)),
+      QTR: qtr,
+      YR: yr,
       ENU: 1,
     },
   });
@@ -68,6 +78,7 @@ const FormPage = () => {
   const r1 = watch("R1_temp");
   const r2 = watch("R2_temp");
   const r3 = watch("R3_temp");
+  const tr_temp = watch("TR_temp");
   const tr = watch("TR");
   const si = watch("SI");
   const si1 = watch("SI1");
@@ -78,31 +89,282 @@ const FormPage = () => {
   const si6 = watch("SI6");
   const si7 = watch("SI7");
   const chg = watch("CHG");
-  const type = watch("TYPE");
   const sto = watch("STO_temp");
   const enu = watch("ENU");
+
+  useEffect(() => {
+    if (
+      !qtr ||
+      !between(qtr, 1, 4) ||
+      !mode ||
+      !["create", "edit"].includes(mode)
+    ) {
+      router.push("/notfound");
+      return;
+    }
+
+    const format = "YYYY-MM-DD";
+    const date = new Date();
+    const currentDate = moment(date).format(format);
+    const canEdittedQtr = checkDateBetween(
+      currentDate,
+      quarterMap[qtr as keyof typeof quarterMap].formSubmittedRange[0],
+      quarterMap[qtr as keyof typeof quarterMap].formSubmittedRange[1]
+    );
+
+    if (!canEdittedQtr) {
+      router.push("/denied?code=1");
+      return;
+    }
+
+    if (qtr === 1) {
+      getIdenFromControl();
+    } else {
+      getIdenFromPrevQtr();
+    }
+  }, []);
 
   useEffect(() => {
     const R1 = currencyToNumber(r1 as string);
     const R2 = currencyToNumber(r2 as string);
     const R3 = currencyToNumber(r3 as string);
-    if (R1 || R2 || R3) {
+    const TR = currencyToNumber(tr_temp as string);
+    if (R1 || R2 || R3 || TR) {
       if (R1)
         setValue("R1_temp", numberWithCommas(removeNonNumeric(r1 as string)));
       if (R2)
         setValue("R2_temp", numberWithCommas(removeNonNumeric(r2 as string)));
       if (R3)
         setValue("R3_temp", numberWithCommas(removeNonNumeric(r3 as string)));
+      if (TR)
+        setValue(
+          "TR_temp",
+          numberWithCommas(removeNonNumeric(tr_temp as string))
+        );
       setValue("TR", R1 + R2 + R3);
     } else {
-      setValue("TR", null);
+      setValue("TR", 0);
     }
-  }, [r1, r2, r3]);
+  }, [r1, r2, r3, tr_temp]);
 
   useEffect(() => {
     if (sto)
       setValue("STO_temp", numberWithCommas(removeNonNumeric(sto as string)));
   }, [sto]);
+
+  const getIdenFromControl = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/companyId/${params.id}`);
+      if (res.status === 200) {
+        if (res.data) {
+          const {
+            amp,
+            amp_name,
+            building,
+            comp_name,
+            cwt,
+            cwt_name,
+            district,
+            e_mail,
+            ea,
+            econ_fm,
+            firstname,
+            house_no,
+            initial,
+            lastname,
+            reg,
+            regis_cid,
+            regis_no,
+            size12,
+            soi,
+            street,
+            tam,
+            tam_name,
+            tel_no,
+            tsic_code,
+            vil,
+          } = res.data as InitialControl;
+          setValue("AMP", Number(amp));
+          setValue("DISTRICT", amp_name);
+          setValue("BUILDING", building ? building : "-");
+          setValue("EST_NAME", comp_name ? comp_name : "-");
+          setValue("CWT", cwt);
+          setValue("PROVINCE", cwt_name);
+          setValue("MUN", district);
+          setValue("E_MAIL", e_mail ? e_mail : "-");
+          setValue("EA", Number(ea));
+          setValue("LG", econ_fm);
+          setValue("FIRSTNAME", firstname ? firstname : "-");
+          setValue("ADD_NO", house_no);
+          setValue("TITLE", initial ? initial : "-");
+          setValue("LASTNAME", lastname ? lastname : "-");
+          setValue("REG", reg);
+          setValue("SIZE_L", Number(size12));
+          setValue("SOI", soi ? soi : "-");
+          setValue("STREET", street ? street : "-");
+          setValue("TAM", Number(tam));
+          setValue("SUB_DIST", tam_name);
+          setValue("TEL_NO", tel_no ? tel_no : "-");
+          setValue("TSIC_L", tsic_code);
+          setValue("VIL", Number(vil));
+          if (regis_cid) {
+            if (econ_fm === 1) {
+              setValue("LG1_temp", "1");
+              setValue("LG1", regis_cid);
+            }
+          } else if (regis_no) {
+            switch (econ_fm) {
+              case 1:
+                setValue("LG1_temp", "2");
+                setValue("LG1", regis_no);
+                return;
+              case 2:
+                setValue("LG2", regis_no);
+                return;
+              case 3:
+                setValue("LG3", regis_no);
+                return;
+              default:
+                return;
+            }
+          }
+        } else {
+          router.push("/notfound");
+        }
+      }
+      setLoading(false);
+    } catch (err: any) {
+      if (err.response.status === 404) {
+        router.push("/notfound");
+      } else if (err.response.status === 400) {
+        router.push("/denied?code=2");
+      } else {
+        errorHandler(err);
+      }
+      setLoading(false);
+    }
+  };
+
+  const getIdenFromPrevQtr = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/companyId/${params.id}`, {
+        params: { quarter: qtr },
+      });
+
+      if (res.status === 200) {
+        if (res.data) {
+          const {
+            REG,
+            CWT,
+            AMP,
+            TAM,
+            MUN,
+            EA,
+            VIL,
+            TSIC_R,
+            TSIC_L,
+            SIZE_R,
+            SIZE_L,
+            NO,
+            ENU,
+            TITLE,
+            RANK,
+            FIRSTNAME,
+            LASTNAME,
+            EST_TITLE,
+            EST_NAME,
+            ADD_NO,
+            BUILDING,
+            ROOM,
+            STREET,
+            BLK,
+            SOI,
+            SUB_DIST,
+            DISTRICT,
+            PROVINCE,
+            POST_CODE,
+            TEL_NO,
+            E_MAIL,
+            WEBSITE,
+            SOCIAL,
+            TSIC_CHG,
+            LG,
+            LG1,
+            LG1_temp,
+            LG2,
+            LG3,
+            LG4,
+          } = res.data as ReportControl;
+          setValue("REG", REG);
+          setValue("CWT", CWT);
+          setValue("AMP", Number(AMP));
+          setValue("TAM", Number(TAM));
+          setValue("MUN", MUN);
+          setValue("EA", Number(EA));
+          setValue("VIL", Number(VIL));
+          setValue("TSIC_R", TSIC_R);
+          setValue("TSIC_L", TSIC_L);
+          setValue("SIZE_R", Number(SIZE_R));
+          setValue("SIZE_L", Number(SIZE_L));
+          setValue("NO", Number(NO));
+          setValue("ENU", Number(ENU));
+          setValue("TITLE", TITLE);
+          setValue("RANK", RANK);
+          setValue("FIRSTNAME", FIRSTNAME);
+          setValue("LASTNAME", LASTNAME);
+          setValue("EST_TITLE", EST_TITLE);
+          setValue("EST_NAME", EST_NAME);
+          setValue("ADD_NO", ADD_NO);
+          setValue("BUILDING", BUILDING);
+          setValue("ROOM", ROOM);
+          setValue("STREET", STREET);
+          setValue("BLK", BLK);
+          setValue("SOI", SOI);
+          setValue("SUB_DIST", SUB_DIST);
+          setValue("DISTRICT", DISTRICT);
+          setValue("PROVINCE", PROVINCE);
+          setValue("POST_CODE", POST_CODE);
+          setValue("TEL_NO", TEL_NO);
+          setValue("E_MAIL", E_MAIL);
+          setValue("WEBSITE", WEBSITE);
+          setValue("SOCIAL", SOCIAL);
+          setValue("TSIC_CHG", TSIC_CHG);
+          if (LG) {
+            switch (Number(LG)) {
+              case 1:
+                setValue("LG1_temp", LG1_temp);
+                setValue("LG1", LG1);
+              case 2:
+                setValue("LG2", LG2);
+                return;
+              case 3:
+                setValue("LG3", LG3);
+                return;
+              case 10:
+                setValue("LG4", LG4);
+                return;
+              default:
+                return;
+            }
+          }
+        } else {
+          router.push("/notfound");
+        }
+      }
+      setLoading(false);
+    } catch (err: any) {
+      if (err.response.status === 404) {
+        router.push("/notfound");
+      } else if (err.response.status === 400) {
+        router.push("/denied?code=2");
+      } else {
+        errorHandler(err);
+      }
+      setLoading(false);
+    }
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     let err: FormErrors[] = [];
@@ -137,18 +399,24 @@ const FormPage = () => {
     ));
   };
 
-  console.log(formErrors);
-
   return (
     <>
-      <div className="mb-10 flex flex-col gap-3">
-        <Title>แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. {thaiYear}</Title>
+      {loading && <Loading type="full" />}
+      <div className="mb-10 flex flex-col gap-2">
+        <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. ${thaiYear}`}>
+          <Link href="/search">
+            <Button secondary>
+              <IoChevronBack className="mr-1" />
+              กลับ
+            </Button>
+          </Link>
+        </Title>
         <div className="text-xl">
-          ไตรมาส {calcQuarter()} ({quarter.monthRange[0]} -{" "}
-          {quarter.monthRange[2]} {thaiYear.toString().slice(2)})
+          ไตรมาส {qtr} ({quarter.monthRange[0]} - {quarter.monthRange[2]} {yr})
         </div>
       </div>
       <div className="card">
+        <h1 className="mb-3">เลขประจำสถานประกอบการ: {params.id}</h1>
         <form
           className="flex flex-wrap gap-10 justify-center"
           onSubmit={onSubmit}
@@ -173,6 +441,7 @@ const FormPage = () => {
                   errors={errors.REG}
                   isNumber
                   disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -186,6 +455,7 @@ const FormPage = () => {
                   errors={errors.CWT}
                   isNumber
                   disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -198,6 +468,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.AMP}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -210,6 +481,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.TAM}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -222,6 +494,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.MUN}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -234,6 +507,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.EA}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -246,6 +520,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.VIL}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -258,6 +533,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.TSIC_R}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -270,6 +546,8 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.TSIC_L}
                   isNumber
+                  disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -282,6 +560,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.SIZE_R}
                   isNumber
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -294,6 +573,8 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.SIZE_L}
                   isNumber
+                  disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -307,6 +588,7 @@ const FormPage = () => {
                   errors={errors.NO}
                   isNumber
                   disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -320,6 +602,7 @@ const FormPage = () => {
                   errors={errors.QTR}
                   isNumber
                   disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -333,6 +616,7 @@ const FormPage = () => {
                   errors={errors.YR}
                   isNumber
                   disabled
+                  right
                 />
               </div>
               <div className="flex items-center gap-5">
@@ -345,6 +629,7 @@ const FormPage = () => {
                   className="w-20"
                   errors={errors.ENU}
                   isNumber
+                  right
                 />
               </div>
             </div>
@@ -352,10 +637,12 @@ const FormPage = () => {
 
           <div className="card w-full flex flex-wrap gap-5">
             <div className="w-full">1. ข้อมูลสถานประกอบการ</div>
+            <p className="w-full text-blue-500">
+              *** กรุณากรอกข้อมูลให้ครบทุกช่อง
+              หากช่องไหนไม่มีข้อมูลให้ใช้เครื่องหมายขีด ( - )
+            </p>
             <div className="flex items-center gap-5">
-              <label>
-                คำนำหน้านาม<span className="text-red-500">*</span>
-              </label>
+              <label>คำนำหน้านาม</label>
               <Input
                 name="TITLE"
                 placeholder="TITLE"
@@ -365,12 +652,20 @@ const FormPage = () => {
                 showName
               />
             </div>
+            <div className="flex items-center gap-5">
+              <label>ยศ</label>
+              <Input
+                name="RANK"
+                placeholder="RANK"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.RANK}
+                showName
+              />
+            </div>
             <div className="flex flex-wrap gap-5">
               <div className="flex items-center gap-5">
-                <label>
-                  ชื่อเจ้าของ/หัวหน้าครัวเรือน
-                  <span className="text-red-500">*</span>
-                </label>
+                <label>ชื่อเจ้าของ/หัวหน้าครัวเรือน</label>
                 <Input
                   name="FIRSTNAME"
                   placeholder="FIRSTNAME"
@@ -381,9 +676,7 @@ const FormPage = () => {
                 />
               </div>
               <div className="flex items-center gap-5">
-                <label>
-                  นามสกุล<span className="text-red-500">*</span>
-                </label>
+                <label>นามสกุล</label>
                 <Input
                   name="LASTNAME"
                   placeholder="LASTNAME"
@@ -395,9 +688,18 @@ const FormPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-5">
-              <label>
-                ชื่อสถานประกอบการ<span className="text-red-500">*</span>
-              </label>
+              <label>คำนำหน้าชื่อสถานประกอบการ</label>
+              <Input
+                name="EST_TITLE"
+                placeholder="EST_TITLE"
+                register={register}
+                className="w-28"
+                errors={errors.EST_TITLE}
+                showName
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ชื่อสถานประกอบการ</label>
               <Input
                 name="EST_NAME"
                 placeholder="EST_NAME"
@@ -417,22 +719,26 @@ const FormPage = () => {
                 errors={errors.ADD_NO}
                 showName
               />
-              <label>หมู่ที่</label>
-              {
-                <div>
-                  {getValues("VIL")}
-                  <span className="ml-3">(ค่าเดียวกันกับ VIL)</span>
-                </div>
-              }
             </div>
             <div className="flex items-center gap-5">
-              <label>ตรอก/ซอย</label>
+              <label>ชื่ออาคาร/หมู่บ้าน</label>
               <Input
-                name="BLK"
-                placeholder="BLK"
+                name="BUILDING"
+                placeholder="BUILDING"
                 register={register}
                 className="w-60 md:w-72"
-                errors={errors.BLK}
+                errors={errors.BUILDING}
+                showName
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ห้องเลขที่/ชั้นที่</label>
+              <Input
+                name="ROOM"
+                placeholder="ROOM"
+                register={register}
+                className="w-28"
+                errors={errors.ROOM}
                 showName
               />
             </div>
@@ -448,26 +754,52 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ตำบล/แขวง</label>
+              <label>ตรอก</label>
               <Input
-                name="TAMBOL"
-                placeholder="TAMBOL"
+                name="BLK"
+                placeholder="BLK"
                 register={register}
                 className="w-60 md:w-72"
-                errors={errors.TAMBOL}
+                errors={errors.BLK}
+                showName
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ซอย</label>
+              <Input
+                name="SOI"
+                placeholder="SOI"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.SOI}
+                showName
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>ตำบล/แขวง</label>
+              <Input
+                name="SUB_DIST"
+                placeholder="SUB_DIST"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.SUB_DIST}
                 showName
               />
             </div>
             <div className="flex items-center gap-5">
               <label>อำเภอ/เขต</label>
               <Input
-                name="AMPHOR"
-                placeholder="AMPHOR"
+                name="DISTRICT"
+                placeholder="DISTRICT"
                 register={register}
                 className="w-60 md:w-72"
-                errors={errors.AMPHOR}
+                errors={errors.DISTRICT}
                 showName
               />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>จังหวัด</label>
+              <div>{getValues("PROVINCE")}</div>
             </div>
             <div className="flex items-center gap-5">
               <label>รหัสไปรษณีย์</label>
@@ -475,7 +807,7 @@ const FormPage = () => {
                 name="POST_CODE"
                 placeholder="POST_CODE"
                 register={register}
-                className="w-28"
+                className="w-36"
                 errors={errors.POST_CODE}
                 showName
               />
@@ -492,17 +824,6 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>โทรสาร</label>
-              <Input
-                name="FAX_NO"
-                placeholder="FAX_NO"
-                register={register}
-                className="w-36"
-                errors={errors.FAX_NO}
-                showName
-              />
-            </div>
-            <div className="flex items-center gap-5">
               <label>อีเมล</label>
               <Input
                 name="E_MAIL"
@@ -513,16 +834,25 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5 w-full">
-              <label>
-                รายละเอียดประเภทกิจการ<span className="text-red-500">*</span>
-              </label>
+            <div className="flex items-center gap-5">
+              <label>Website</label>
               <Input
-                name="DES_TYPE"
-                placeholder="DES_TYPE"
+                name="WEBSITE"
+                placeholder="WEBSITE"
                 register={register}
                 className="w-60 md:w-72"
-                errors={errors.DES_TYPE}
+                errors={errors.WEBSITE}
+                showName
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label>Social Media</label>
+              <Input
+                name="SOCIAL"
+                placeholder="SOCIAL"
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.SOCIAL}
                 showName
               />
             </div>
@@ -572,7 +902,6 @@ const FormPage = () => {
                                 <Controller
                                   control={control}
                                   name="LG1_temp"
-                                  shouldUnregister
                                   render={({ field: { onChange, value } }) => (
                                     <Radio.Group
                                       value={value}
@@ -691,16 +1020,25 @@ const FormPage = () => {
                     โปรดระบุประเภทกิจการและชนิดของสินค้า/บริการที่มีรายรับสูงสุด)
                   </span>
                 </p>
-
-                <Dropdown
-                  name="TYPE"
-                  placeholder="TYPE"
-                  options={typeOption}
-                  className="w-60 md:w-80"
-                  errors={errors.TYPE}
-                  control={control}
-                  showName
-                />
+                <div className="flex flex-col gap-5">
+                  <Input
+                    name="DES_TYPE"
+                    placeholder="DES_TYPE"
+                    register={register}
+                    className="w-60 md:w-72"
+                    errors={errors.DES_TYPE}
+                    showName
+                  />
+                  <Dropdown
+                    name="TYPE"
+                    placeholder="TYPE"
+                    options={typeOption}
+                    className="w-60 md:w-72"
+                    errors={errors.TYPE}
+                    control={control}
+                    showName
+                  />
+                </div>
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
@@ -715,14 +1053,15 @@ const FormPage = () => {
                   showWord="คน"
                   isNumber
                   showName
+                  right
                 />
               </div>
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>5. ยอดขายหรือรายรับของสถานประกอบการ</div>
                 <p>
-                  บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ
-                  แต่ละเดือนเป็นจำนวนเต็ม (บาท)
+                  บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ แต่ละเดือน
+                  <b>เป็นจำนวนเต็ม (บาท)</b>
                 </p>
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-between items-center">
@@ -735,6 +1074,7 @@ const FormPage = () => {
                       errors={errors.R1_temp}
                       showWord="บาท"
                       showName
+                      right
                     />
                   </div>
                   <div className="flex justify-between items-center">
@@ -747,6 +1087,7 @@ const FormPage = () => {
                       errors={errors.R2_temp}
                       showWord="บาท"
                       showName
+                      right
                     />
                   </div>
                   <div className="flex justify-between items-center">
@@ -759,12 +1100,25 @@ const FormPage = () => {
                       errors={errors.R3_temp}
                       showWord="บาท"
                       showName
+                      right
                     />
                   </div>
-                  <div className="flex justify-between items-center font-bold">
-                    <p>รวม 3 เดือน</p>
-                    <div>{tr ? numberWithCommas(tr) : 0} บาท</div>
+                  <div className="flex justify-between items-center">
+                    <p className="font-bold">รวม 3 เดือน</p>
+                    <Input
+                      name="TR_temp"
+                      placeholder="TR"
+                      register={register}
+                      className="w-60 md:w-72"
+                      errors={errors.TR_temp}
+                      showWord="บาท"
+                      showName
+                      right
+                    />
                   </div>
+                  <h4 className="w-full text-right">
+                    ระบบรวมให้ได้ {tr ? numberWithCommas(tr) : 0} บาท
+                  </h4>
                 </div>
               </div>
 
@@ -810,19 +1164,25 @@ const FormPage = () => {
                         showWord="%"
                         isNumber
                         showName
+                        right
                       />
                     </div>
                     <div className="flex flex-col gap-3">
                       <div className="text-[15px]">
                         6.2
                         สัดส่วนของช่องทางการขายสินค้า/บริการที่ขายผ่านทางอินเทอร์เน็ตต่อยอดขายผ่านทางอินเทอร์เน็ตทั้งหมด
+                        <p className="text-blue-500">
+                          (สัดส่วนข้อ 1-7 รวมกันเท่ากับ 100%)
+                        </p>
                       </div>
+
                       <Controller
                         control={control}
                         name="SI1"
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI1").ref}
                           >
@@ -847,6 +1207,7 @@ const FormPage = () => {
                             showWord="%"
                             isNumber
                             showName
+                            right
                           />
                         </div>
                       )}
@@ -856,6 +1217,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI2").ref}
                           >
@@ -879,6 +1241,7 @@ const FormPage = () => {
                             showWord="%"
                             isNumber
                             showName
+                            right
                           />
                         </div>
                       )}
@@ -888,6 +1251,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI3").ref}
                           >
@@ -913,6 +1277,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -927,6 +1292,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                         </div>
@@ -937,6 +1303,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI4").ref}
                           >
@@ -962,6 +1329,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -976,6 +1344,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                         </div>
@@ -986,6 +1355,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI5").ref}
                           >
@@ -1012,6 +1382,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -1026,6 +1397,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                         </div>
@@ -1036,6 +1408,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI6").ref}
                           >
@@ -1061,6 +1434,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                           <div className="flex gap-3 items-center text-[14px]">
@@ -1075,6 +1449,7 @@ const FormPage = () => {
                               showWord="%"
                               isNumber
                               showName
+                              right
                             />
                           </div>
                         </div>
@@ -1085,6 +1460,7 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange } }) => (
                           <Checkbox
+                            className="start"
                             onChange={onChange}
                             ref={register("SI7").ref}
                           >
@@ -1120,6 +1496,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             </div>
                             <div className="flex gap-3 items-center text-[14px]">
@@ -1134,6 +1511,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             </div>
                           </div>
@@ -1164,7 +1542,8 @@ const FormPage = () => {
                       >
                         <Space direction="vertical">
                           <Radio value={1} className="start">
-                            1. ไม่เปลี่ยนแปลง
+                            1. ไม่เปลี่ยนแปลง{" "}
+                            <span className="text-blue-500">(ข้ามไปข้อ 9)</span>
                           </Radio>
                           <Radio value={2} className="start">
                             2. สูงขึ้นจากไตรมาสก่อนหน้า
@@ -1179,6 +1558,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             )}
                           </Radio>
@@ -1195,6 +1575,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             )}
                           </Radio>
@@ -1206,76 +1587,79 @@ const FormPage = () => {
                 </div>
               </div>
 
-              {chg && chg !== 1 && (
-                <div className="card w-500 flex flex-col gap-3">
-                  <div>
-                    8. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
-                    โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
-                    <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Controller
-                      control={control}
-                      name="FAC"
-                      shouldUnregister
-                      render={({ field: { onChange, value } }) => (
-                        <Radio.Group
-                          value={value}
-                          onChange={onChange}
-                          ref={register("FAC").ref}
-                        >
-                          <div className="flex">
-                            <Space direction="vertical" className="w-2/4">
-                              <Radio value={1} className="start">
-                                1. ฤดูกาล เทศกาล
-                              </Radio>
-                              <Radio value={2} className="start">
-                                2. กำลังซื้อของลูกค้า
-                              </Radio>
-                              <Radio value={3} className="start">
-                                3. ต้นทุน/ราคาสินค้า
-                              </Radio>
-                              <Radio value={4} className="start">
-                                4. คู่แข่งทางการค้า
-                              </Radio>
-                              <Radio value={5} className="start">
-                                5. การปรับปรุงกิจการ
-                              </Radio>
-                            </Space>
-                            <Space direction="vertical">
-                              <Radio value={6} className="start">
-                                6. ภาวะเศรษฐกิจ
-                              </Radio>
-                              <Radio value={7} className="start">
-                                7. นโยบายภาครัฐ
-                              </Radio>
-                              <Radio value={8} className="start">
-                                8. เทคโนโลยี
-                              </Radio>
-                              <Radio value={9} className="start">
-                                9. โรคระบาด เช่น โควิด-19
-                              </Radio>
-                              <Radio value={10} className="start">
-                                10. อื่นๆ (ระบุ)
-                                {value === 10 && (
-                                  <Input
-                                    name="FAC_1"
-                                    placeholder="FAC_1"
-                                    register={register}
-                                    className="w-full mt-2"
-                                    errors={errors.FAC_1}
-                                  />
-                                )}
-                              </Radio>
-                            </Space>
-                          </div>
-                        </Radio.Group>
-                      )}
-                    />
-                    <ErrorMessage>{errors?.FAC?.message}</ErrorMessage>
-                  </div>
+              <div
+                className={`card w-500 flex flex-col gap-3 ${
+                  !(!!chg && chg !== 1) ? "cursor-not-allowed opacity-50" : ""
+                }`}
+              >
+                <div>
+                  8. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
+                  โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
+                  <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
                 </div>
-              )}
+                <div className="flex flex-col gap-1">
+                  <Controller
+                    control={control}
+                    name="FAC"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("FAC").ref}
+                        disabled={!(!!chg && chg !== 1)}
+                      >
+                        <div className="flex">
+                          <Space direction="vertical" className="w-2/4">
+                            <Radio value={1} className="start">
+                              1. ฤดูกาล เทศกาล
+                            </Radio>
+                            <Radio value={2} className="start">
+                              2. กำลังซื้อของลูกค้า
+                            </Radio>
+                            <Radio value={3} className="start">
+                              3. ต้นทุน/ราคาสินค้า
+                            </Radio>
+                            <Radio value={4} className="start">
+                              4. คู่แข่งทางการค้า
+                            </Radio>
+                            <Radio value={5} className="start">
+                              5. การปรับปรุงกิจการ
+                            </Radio>
+                          </Space>
+                          <Space direction="vertical">
+                            <Radio value={6} className="start">
+                              6. ภาวะเศรษฐกิจ
+                            </Radio>
+                            <Radio value={7} className="start">
+                              7. นโยบายภาครัฐ
+                            </Radio>
+                            <Radio value={8} className="start">
+                              8. เทคโนโลยี
+                            </Radio>
+                            <Radio value={9} className="start">
+                              9. โรคระบาด เช่น โควิด-19
+                            </Radio>
+                            <Radio value={10} className="start">
+                              10. อื่นๆ (ระบุ)
+                              {value === 10 && (
+                                <Input
+                                  name="FAC_1"
+                                  placeholder="FAC_1"
+                                  register={register}
+                                  className="w-full mt-2"
+                                  errors={errors.FAC_1}
+                                />
+                              )}
+                            </Radio>
+                          </Space>
+                        </div>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.FAC?.message}</ErrorMessage>
+                </div>
+              </div>
 
               <div className="card w-500 flex flex-col gap-3">
                 <div>
@@ -1311,6 +1695,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             )}
                           </Radio>
@@ -1327,6 +1712,7 @@ const FormPage = () => {
                                 showWord="%"
                                 isNumber
                                 showName
+                                right
                               />
                             )}
                           </Radio>
@@ -1338,41 +1724,48 @@ const FormPage = () => {
                 </div>
               </div>
 
-              {type === 1 && (
-                <div className="card w-500 flex flex-col gap-3">
-                  <div>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</div>
-                  <div className="flex gap-5 items-center">
-                    จำนวน
-                    <Input
-                      name="STO_temp"
-                      placeholder="STO"
-                      register={register}
-                      className="w-60 md:w-72"
-                      errors={errors.STO_temp}
-                      showWord="บาท"
-                      showName
-                    />
-                  </div>
-                  <div>
-                    และคาดว่าสินค้าคงเหลือดังกล่าว
-                    จะสามารถขายได้ภายในกี่วันหลังสิ้นสุดไตรมาสปัจจุบัน
-                  </div>
+              <div className="card w-500 flex flex-col gap-3">
+                <p className="text-blue-500">
+                  *** บันทึกเฉพาะธุรกิจประเภทขายปลีกในข้อ 3 เช่น ขายของชำ
+                  ร้านสะดวกซื้อ ซุปเปอร์มาเก็ต ดิสเคานท์สโตร์ ห้างสรรพสินค้า
+                  ขายปลีกสินค้าเฉพาะอย่าง ฯลฯ
+                </p>
+                <div>10. มูลค่าสินค้าคงเหลือเมื่อสิ้นไตรมาส</div>
+                <div className="flex gap-5 items-center">
+                  จำนวน
                   <Input
-                    name="DAY"
-                    type="number"
-                    placeholder="DAY"
+                    name="STO_temp"
+                    placeholder="STO"
                     register={register}
-                    className="w-28"
-                    errors={errors.DAY}
-                    showWord="วัน"
-                    isNumber
+                    className="w-60 md:w-72"
+                    errors={errors.STO_temp}
+                    showWord="บาท"
                     showName
+                    right
                   />
                 </div>
-              )}
+                <div>
+                  และคาดว่าสินค้าคงเหลือดังกล่าว
+                  จะสามารถขายได้ภายในกี่วันหลังสิ้นสุดไตรมาสปัจจุบัน
+                </div>
+                <Input
+                  name="DAY"
+                  type="number"
+                  placeholder="DAY"
+                  register={register}
+                  className="w-28"
+                  errors={errors.DAY}
+                  showWord="วัน"
+                  showName
+                  right
+                />
+              </div>
 
               <div className="card w-full flex flex-col gap-3">
                 <div>11. ความคิดเห็นที่มีต่อธุรกิจของท่าน</div>
+                <div className="text-center">
+                  ไตรมาสนี้เทียบกับไตรมาสก่อนหน้า
+                </div>
                 <div>
                   <Row gutter={16} className="mb-4 text-center">
                     <Col className="gutter-row" span={8}>
@@ -1439,6 +1832,7 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP1?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
                   <Controller
                     control={control}
                     name="OP2"
@@ -1479,6 +1873,7 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP2?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
                   <Controller
                     control={control}
                     name="OP3"
@@ -1519,6 +1914,7 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP3?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
                   <Controller
                     control={control}
                     name="OP4"
@@ -1559,6 +1955,7 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP4?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
                   <Controller
                     control={control}
                     name="OP5"
@@ -1599,6 +1996,7 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP5?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
                   <Controller
                     control={control}
                     name="OP6"
@@ -1639,146 +2037,256 @@ const FormPage = () => {
                     )}
                   />
                   <ErrorMessage>{errors?.OP6?.message}</ErrorMessage>
-                  {/* <div className="flex flex-col gap-5">
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Controller
-                        control={control}
-                        name="OP1"
-                        shouldUnregister
-                        render={({ field: { onChange, value } }) => (
-                          <Radio.Group
-                            value={value}
-                            onChange={onChange}
-                            ref={register("SI").ref}
-                          >
-                            <Space direction="horizontal">
-                              <Radio value={1}></Radio>
-                              <Radio value={2}></Radio>
-                              <Radio value={3}></Radio>
-                              <Radio value={4}></Radio>
-                              <Radio value={5}></Radio>
-                            </Space>
-                          </Radio.Group>
-                        )}
-                      />
-                      <ErrorMessage>{errors?.SI?.message}</ErrorMessage>
-                    </div>
-                  </div> */}
+                  <div className="w-full h-5"></div>
+                  <hr />
+                  <div className="w-full h-5"></div>
+                  <div className="text-center">ไตรมาสถัดไป</div>
+                  <div className="w-full h-5"></div>
+                  <Controller
+                    control={control}
+                    name="OP7"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP7").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16} className="text-center">
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - ต้นทุน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP7]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP7?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
+                  <Controller
+                    control={control}
+                    name="OP8"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP8").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - กำไร
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP8]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP8?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
+                  <Controller
+                    control={control}
+                    name="OP9"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP9").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - ราคาขายสินค้า/บริการของท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP9]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP9?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
+                  <Controller
+                    control={control}
+                    name="OP10"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP10").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - สภาพการแข่งขันของธุรกิจในพื้นที่
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP10]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP10?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
+                  <Controller
+                    control={control}
+                    name="OP11"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP11").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - สภาพคล่องทางการเงินของธุรกิจท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP11]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP11?.message}</ErrorMessage>
+                  <div className="w-full h-2"></div>
+                  <Controller
+                    control={control}
+                    name="OP12"
+                    shouldUnregister
+                    render={({ field: { onChange, value } }) => (
+                      <Radio.Group
+                        value={value}
+                        onChange={onChange}
+                        ref={register("OP12").ref}
+                        className="w-full"
+                      >
+                        <Row gutter={16}>
+                          <Col className="gutter-row text-left" span={8}>
+                            <p>
+                              - แนวโน้มการลงทุนในกิจการของท่าน
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [OP12]
+                              </span>
+                            </p>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
+                          </Col>
+                        </Row>
+                      </Radio.Group>
+                    )}
+                  />
+                  <ErrorMessage>{errors?.OP12?.message}</ErrorMessage>
                 </div>
               </div>
             </>
