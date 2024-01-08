@@ -23,6 +23,12 @@ export const POST = async (req: NextRequest) => {
       reportStatus = await prisma.reportStatus.findMany({
         where: { ID },
         orderBy: [{ year: "desc" }],
+        include: {
+          report: {
+            select: { updatedAt: true },
+            orderBy: { QTR: "asc" },
+          },
+        },
       });
     }
     return NextResponse.json({ hasControl, reportStatus });

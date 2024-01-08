@@ -25,8 +25,8 @@ export const GET = async (
     }
 
     if (quarter && year) {
-      const report = await prisma.report.findFirst({
-        where: { ID: companyId, YR: year, QTR: quarter - 1 },
+      const report = await prisma.report.findUnique({
+        where: { uniqueReport: { ID: companyId, YR: year, QTR: quarter - 1 } },
         select: {
           ID: true,
           REG: true,

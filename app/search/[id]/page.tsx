@@ -33,7 +33,7 @@ import { errorHandler } from "@/helpers/errorHandler";
 import { InitialControl, ReportControl } from "@/types/control";
 import Loading from "@/components/Loading";
 import { IoChevronBack } from "react-icons/io5";
-import Link from "next/link";
+import Swal from "sweetalert2";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
@@ -374,107 +374,108 @@ const FormPage = () => {
         params: { quarter: qtr, year: yr },
       });
 
-      // if (res.status === 200) {
-      //   if (res.data) {
-      //     const {
-      //       REG,
-      //       CWT,
-      //       AMP,
-      //       TAM,
-      //       MUN,
-      //       EA,
-      //       VIL,
-      //       TSIC_R,
-      //       TSIC_L,
-      //       SIZE_R,
-      //       SIZE_L,
-      //       NO,
-      //       ENU,
-      //       TITLE,
-      //       RANK,
-      //       FIRSTNAME,
-      //       LASTNAME,
-      //       EST_TITLE,
-      //       EST_NAME,
-      //       ADD_NO,
-      //       BUILDING,
-      //       ROOM,
-      //       STREET,
-      //       BLK,
-      //       SOI,
-      //       SUB_DIST,
-      //       DISTRICT,
-      //       PROVINCE,
-      //       POST_CODE,
-      //       TEL_NO,
-      //       E_MAIL,
-      //       WEBSITE,
-      //       SOCIAL,
-      //       TSIC_CHG,
-      //       LG,
-      //       LG1,
-      //       LG1_temp,
-      //       LG2,
-      //       LG3,
-      //       LG4,
-      //     } = res.data as ReportControl;
-      //     setValue("REG", REG);
-      //     setValue("CWT", CWT);
-      //     setValue("AMP", Number(AMP));
-      //     setValue("TAM", Number(TAM));
-      //     setValue("MUN", MUN);
-      //     setValue("EA", Number(EA));
-      //     setValue("VIL", Number(VIL));
-      //     setValue("TSIC_R", TSIC_R);
-      //     setValue("TSIC_L", TSIC_L);
-      //     setValue("SIZE_R", Number(SIZE_R));
-      //     setValue("SIZE_L", Number(SIZE_L));
-      //     setValue("NO", Number(NO));
-      //     setValue("ENU", Number(ENU));
-      //     setValue("TITLE", TITLE);
-      //     setValue("RANK", RANK);
-      //     setValue("FIRSTNAME", FIRSTNAME);
-      //     setValue("LASTNAME", LASTNAME);
-      //     setValue("EST_TITLE", EST_TITLE);
-      //     setValue("EST_NAME", EST_NAME);
-      //     setValue("ADD_NO", ADD_NO);
-      //     setValue("BUILDING", BUILDING);
-      //     setValue("ROOM", ROOM);
-      //     setValue("STREET", STREET);
-      //     setValue("BLK", BLK);
-      //     setValue("SOI", SOI);
-      //     setValue("SUB_DIST", SUB_DIST);
-      //     setValue("DISTRICT", DISTRICT);
-      //     setValue("PROVINCE", PROVINCE);
-      //     setValue("POST_CODE", POST_CODE);
-      //     setValue("TEL_NO", TEL_NO);
-      //     setValue("E_MAIL", E_MAIL);
-      //     setValue("WEBSITE", WEBSITE);
-      //     setValue("SOCIAL", SOCIAL);
-      //     setValue("TSIC_CHG", TSIC_CHG);
-      //     if (LG) {
-      //       switch (Number(LG)) {
-      //         case 1:
-      //           setValue("LG1_temp", LG1_temp);
-      //           setValue("LG1", LG1);
-      //           break;
-      //         case 2:
-      //           setValue("LG2", LG2);
-      //           break;
-      //         case 3:
-      //           setValue("LG3", LG3);
-      //           break;
-      //         case 10:
-      //           setValue("LG4", LG4);
-      //           break;
-      //         default:
-      //           break;
-      //       }
-      //     }
-      //   } else {
-      //     router.push("/notfound");
-      //   }
-      // }
+      if (res.status === 200) {
+        console.log(res.data);
+        //   if (res.data) {
+        //     const {
+        //       REG,
+        //       CWT,
+        //       AMP,
+        //       TAM,
+        //       MUN,
+        //       EA,
+        //       VIL,
+        //       TSIC_R,
+        //       TSIC_L,
+        //       SIZE_R,
+        //       SIZE_L,
+        //       NO,
+        //       ENU,
+        //       TITLE,
+        //       RANK,
+        //       FIRSTNAME,
+        //       LASTNAME,
+        //       EST_TITLE,
+        //       EST_NAME,
+        //       ADD_NO,
+        //       BUILDING,
+        //       ROOM,
+        //       STREET,
+        //       BLK,
+        //       SOI,
+        //       SUB_DIST,
+        //       DISTRICT,
+        //       PROVINCE,
+        //       POST_CODE,
+        //       TEL_NO,
+        //       E_MAIL,
+        //       WEBSITE,
+        //       SOCIAL,
+        //       TSIC_CHG,
+        //       LG,
+        //       LG1,
+        //       LG1_temp,
+        //       LG2,
+        //       LG3,
+        //       LG4,
+        //     } = res.data as ReportControl;
+        //     setValue("REG", REG);
+        //     setValue("CWT", CWT);
+        //     setValue("AMP", Number(AMP));
+        //     setValue("TAM", Number(TAM));
+        //     setValue("MUN", MUN);
+        //     setValue("EA", Number(EA));
+        //     setValue("VIL", Number(VIL));
+        //     setValue("TSIC_R", TSIC_R);
+        //     setValue("TSIC_L", TSIC_L);
+        //     setValue("SIZE_R", Number(SIZE_R));
+        //     setValue("SIZE_L", Number(SIZE_L));
+        //     setValue("NO", Number(NO));
+        //     setValue("ENU", Number(ENU));
+        //     setValue("TITLE", TITLE);
+        //     setValue("RANK", RANK);
+        //     setValue("FIRSTNAME", FIRSTNAME);
+        //     setValue("LASTNAME", LASTNAME);
+        //     setValue("EST_TITLE", EST_TITLE);
+        //     setValue("EST_NAME", EST_NAME);
+        //     setValue("ADD_NO", ADD_NO);
+        //     setValue("BUILDING", BUILDING);
+        //     setValue("ROOM", ROOM);
+        //     setValue("STREET", STREET);
+        //     setValue("BLK", BLK);
+        //     setValue("SOI", SOI);
+        //     setValue("SUB_DIST", SUB_DIST);
+        //     setValue("DISTRICT", DISTRICT);
+        //     setValue("PROVINCE", PROVINCE);
+        //     setValue("POST_CODE", POST_CODE);
+        //     setValue("TEL_NO", TEL_NO);
+        //     setValue("E_MAIL", E_MAIL);
+        //     setValue("WEBSITE", WEBSITE);
+        //     setValue("SOCIAL", SOCIAL);
+        //     setValue("TSIC_CHG", TSIC_CHG);
+        //     if (LG) {
+        //       switch (Number(LG)) {
+        //         case 1:
+        //           setValue("LG1_temp", LG1_temp);
+        //           setValue("LG1", LG1);
+        //           break;
+        //         case 2:
+        //           setValue("LG2", LG2);
+        //           break;
+        //         case 3:
+        //           setValue("LG3", LG3);
+        //           break;
+        //         case 10:
+        //           setValue("LG4", LG4);
+        //           break;
+        //         default:
+        //           break;
+        //       }
+        //     }
+        //   } else {
+        //     router.push("/notfound");
+        //   }
+      }
       setLoading(false);
     } catch (err: any) {
       if (err.response.status === 404) {
@@ -504,7 +505,9 @@ const FormPage = () => {
       const result = validateFormData(data);
       try {
         setLoading(true);
-        const res = await axios.post("/api/report", result);
+        const res = await axios.post("/api/report", result, {
+          headers: { mode },
+        });
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");
           router.push("/search");
@@ -530,17 +533,32 @@ const FormPage = () => {
     ));
   };
 
+  const onClickBack = () => {
+    Swal.fire({
+      title: "คำเตือน",
+      text: "ข้อมูลที่ยังไม่ได้ถูกบันทึกจะหายทั้งหมด คุณแน่ใจหรือไม่ที่จะกลับไปหน้าค้นหา",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "ไม่",
+      confirmButtonText: "ใช่",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push("/search");
+      }
+    });
+  };
+
   return (
     <>
       {loading && <Loading type="full" />}
       <div className="mb-10 flex flex-col gap-2">
         <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. 25${yr}`}>
-          <Link href="/search">
-            <Button secondary>
-              <IoChevronBack className="mr-1" />
-              กลับ
-            </Button>
-          </Link>
+          <Button secondary onClick={onClickBack}>
+            <IoChevronBack className="mr-1" />
+            กลับ
+          </Button>
         </Title>
         <div className="text-xl">
           ไตรมาส {qtr} ({quarterData.monthRange[0]} -{" "}

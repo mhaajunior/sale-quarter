@@ -28,6 +28,7 @@ export interface CompanyData {
 export interface CompanyReport extends Identification, CompanyData {
   LG: string | null;
   LG1: string | null;
+  LG1_temp: string;
   LG2: string | null;
   LG3: string | null;
   LG4: string | null;
@@ -90,4 +91,19 @@ export interface CompanyReport extends Identification, CompanyData {
   P4: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ReportStatus {
+  id: number;
+  ID: string;
+  canCreateQtr1: boolean;
+  canCreateQtr2: boolean;
+  canCreateQtr3: boolean;
+  canCreateQtr4: boolean;
+  isSendQtr1: boolean;
+  isSendQtr2: boolean;
+  isSendQtr3: boolean;
+  isSendQtr4: boolean;
+  year: number;
+  report: { updatedAt: string }[];
 }

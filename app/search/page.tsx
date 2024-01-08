@@ -5,11 +5,13 @@ import Input from "@/components/Input";
 import Loading from "@/components/Loading";
 import Title from "@/components/Title";
 import { errorHandler } from "@/helpers/errorHandler";
+import { ReportStatus } from "@/types/report";
 import { SearchForm, searchIdSchema } from "@/types/searchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Empty, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import axios from "axios";
+import moment from "moment";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,7 +20,7 @@ import { CiSearch } from "react-icons/ci";
 
 interface Response {
   hasControl: boolean;
-  reportStatus: any[];
+  reportStatus: ReportStatus[];
 }
 
 interface QtrAction {
@@ -330,7 +332,7 @@ const SearchPage = () => {
 
   const data: DataType[] = [];
   if (response.hasControl) {
-    for (const report of response.reportStatus) {
+    for (const item of response.reportStatus) {
       const {
         id,
         year,
@@ -342,7 +344,7 @@ const SearchPage = () => {
         isSendQtr2,
         isSendQtr3,
         isSendQtr4,
-      } = report;
+      } = item;
       const qtr1Tag = [];
       const qtr2Tag = [];
       const qtr3Tag = [];
@@ -395,22 +397,18 @@ const SearchPage = () => {
         qtr2Action: { year, canCreate: canCreateQtr2, isSend: isSendQtr2 },
         qtr3Action: { year, canCreate: canCreateQtr3, isSend: isSendQtr3 },
         qtr4Action: { year, canCreate: canCreateQtr4, isSend: isSendQtr4 },
-        qtr1DateModified: "-",
-        qtr2DateModified: "-",
-        qtr3DateModified: "-",
-        qtr4DateModified: "-",
-        // qtr1DateModified: re,sponse.report[0]
-        //   ? moment(response.report[0].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-        //   : "-",
-        // qtr2DateModified: response.report[1]
-        //   ? moment(response.report[1].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-        //   : "-",
-        // qtr3DateModified: response.report[2]
-        //   ? moment(response.report[2].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-        //   : "-",
-        // qtr4DateModified: response.report[3]
-        //   ? moment(response.report[3].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-        //   : "-",
+        qtr1DateModified: item.report[0]
+          ? moment(item.report[0].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+          : "-",
+        qtr2DateModified: item.report[1]
+          ? moment(item.report[1].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+          : "-",
+        qtr3DateModified: item.report[2]
+          ? moment(item.report[2].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+          : "-",
+        qtr4DateModified: item.report[3]
+          ? moment(item.report[3].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+          : "-",
       });
     }
   }

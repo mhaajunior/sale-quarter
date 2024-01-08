@@ -1,5 +1,6 @@
 import { padZero } from "@/helpers/common";
 import prisma from "@/prisma/db";
+import { CompanyReport } from "@/types/report";
 import { createReportSchema } from "@/types/validationSchemas";
 import { rangeCheck } from "@/utils/rangeCheck";
 import { Prisma } from "@prisma/client";
@@ -7,8 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-
-  console.log(body);
+  const mode = req.headers.get("mode");
 
   const validation = createReportSchema.safeParse(body);
   if (!validation.success) {
@@ -116,20 +116,66 @@ export const POST = async (req: NextRequest) => {
     P2,
     P3,
     P4,
-  } = body;
+  } = body as CompanyReport;
+
+  let si1 = null;
+  let si2 = null;
+  let si3 = null;
+  let si4 = null;
+  let si5 = null;
+  let si6 = null;
+  let si7 = null;
+
+  if (SI === 2) {
+    if (SI1) {
+      si1 = 1;
+    } else {
+      si1 = 0;
+    }
+    if (SI2) {
+      si2 = 1;
+    } else {
+      si2 = 0;
+    }
+    if (SI3) {
+      si3 = 1;
+    } else {
+      si3 = 0;
+    }
+    if (SI4) {
+      si4 = 1;
+    } else {
+      si4 = 0;
+    }
+    if (SI5) {
+      si5 = 1;
+    } else {
+      si5 = 0;
+    }
+    if (SI6) {
+      si6 = 1;
+    } else {
+      si6 = 0;
+    }
+    if (SI7) {
+      si7 = 1;
+    } else {
+      si7 = 0;
+    }
+  }
 
   try {
     await prisma.report.upsert({
       where: { uniqueReport: { ID, YR, QTR } },
       update: {
-        AMP: padZero(AMP, rangeCheck[AMP as keyof typeof rangeCheck]),
-        TAM: padZero(TAM, rangeCheck[TAM as keyof typeof rangeCheck]),
+        AMP: padZero(AMP, rangeCheck.AMP),
+        TAM: padZero(TAM, rangeCheck.TAM),
         MUN,
-        EA: padZero(EA, rangeCheck[EA as keyof typeof rangeCheck]),
-        VIL: padZero(VIL, rangeCheck[VIL as keyof typeof rangeCheck]),
+        EA: padZero(EA, rangeCheck.EA),
+        VIL: padZero(VIL, rangeCheck.VIL),
         TSIC_R,
-        SIZE_R: padZero(SIZE_R, rangeCheck[SIZE_R as keyof typeof rangeCheck]),
-        ENU: padZero(ENU, rangeCheck[ENU as keyof typeof rangeCheck]),
+        SIZE_R: padZero(SIZE_R, rangeCheck.SIZE_R),
+        ENU: padZero(ENU, rangeCheck.ENU),
         TITLE,
         RANK,
         FIRSTNAME,
@@ -151,7 +197,7 @@ export const POST = async (req: NextRequest) => {
         WEBSITE,
         SOCIAL,
         TSIC_CHG,
-        LG: padZero(LG, rangeCheck[LG as keyof typeof rangeCheck]),
+        LG: LG && padZero(LG, rangeCheck.LG),
         LG1,
         LG1_temp,
         LG2,
@@ -167,36 +213,36 @@ export const POST = async (req: NextRequest) => {
         R3,
         TR,
         SI,
-        ITR: padZero(ITR, rangeCheck[ITR as keyof typeof rangeCheck]),
-        SI1,
-        SI2,
-        SI3,
-        SI4,
-        SI5,
-        SI6,
-        SI7,
+        ITR: ITR && padZero(ITR, rangeCheck.ITR),
+        SI1: si1,
+        SI2: si2,
+        SI3: si3,
+        SI4: si4,
+        SI5: si5,
+        SI6: si6,
+        SI7: si7,
         SI8,
-        SI11: padZero(SI11, rangeCheck[SI11 as keyof typeof rangeCheck]),
-        SI22: padZero(SI22, rangeCheck[SI22 as keyof typeof rangeCheck]),
-        SI33: padZero(SI33, rangeCheck[SI33 as keyof typeof rangeCheck]),
-        SI44: padZero(SI44, rangeCheck[SI44 as keyof typeof rangeCheck]),
-        SI55: padZero(SI55, rangeCheck[SI55 as keyof typeof rangeCheck]),
-        SI66: padZero(SI66, rangeCheck[SI66 as keyof typeof rangeCheck]),
-        SI77: padZero(SI77, rangeCheck[SI77 as keyof typeof rangeCheck]),
-        F1: padZero(F1, rangeCheck[F1 as keyof typeof rangeCheck]),
-        F2: padZero(F2, rangeCheck[F2 as keyof typeof rangeCheck]),
-        F3: padZero(F3, rangeCheck[F3 as keyof typeof rangeCheck]),
-        F4: padZero(F4, rangeCheck[F4 as keyof typeof rangeCheck]),
-        F5: padZero(F5, rangeCheck[F5 as keyof typeof rangeCheck]),
+        SI11: SI11 && padZero(SI11, rangeCheck.SI11),
+        SI22: SI22 && padZero(SI22, rangeCheck.SI22),
+        SI33: SI33 && padZero(SI33, rangeCheck.SI33),
+        SI44: SI44 && padZero(SI44, rangeCheck.SI44),
+        SI55: SI55 && padZero(SI55, rangeCheck.SI55),
+        SI66: SI66 && padZero(SI66, rangeCheck.SI66),
+        SI77: SI77 && padZero(SI77, rangeCheck.SI77),
+        F1: F1 && padZero(F1, rangeCheck.F1),
+        F2: F2 && padZero(F2, rangeCheck.F2),
+        F3: F3 && padZero(F3, rangeCheck.F3),
+        F4: F4 && padZero(F4, rangeCheck.F4),
+        F5: F5 && padZero(F5, rangeCheck.F5),
         CHG,
-        CIN: padZero(CIN, rangeCheck[CIN as keyof typeof rangeCheck]),
-        CDE: padZero(CDE, rangeCheck[CDE as keyof typeof rangeCheck]),
-        FAC: padZero(FAC, rangeCheck[FAC as keyof typeof rangeCheck]),
+        CIN: CIN && padZero(CIN, rangeCheck.CIN),
+        CDE: CDE && padZero(CDE, rangeCheck.CDE),
+        FAC: FAC && padZero(FAC, rangeCheck.FAC),
         FAC_1,
         PRVS,
-        PIN: padZero(PIN, rangeCheck[PIN as keyof typeof rangeCheck]),
-        PDE: padZero(PDE, rangeCheck[PDE as keyof typeof rangeCheck]),
-        STO,
+        PIN: PIN && padZero(PIN, rangeCheck.PIN),
+        PDE: PDE && padZero(PDE, rangeCheck.PDE),
+        STO: STO?.toString(),
         DAY,
         OP1,
         OP2,
@@ -219,19 +265,19 @@ export const POST = async (req: NextRequest) => {
         ID,
         REG,
         CWT,
-        AMP,
-        TAM,
+        AMP: padZero(AMP, rangeCheck.AMP),
+        TAM: padZero(TAM, rangeCheck.TAM),
         MUN,
-        EA,
-        VIL,
+        EA: padZero(EA, rangeCheck.EA),
+        VIL: padZero(VIL, rangeCheck.VIL),
         TSIC_R,
         TSIC_L,
-        SIZE_R,
-        SIZE_L,
-        NO,
+        SIZE_R: padZero(SIZE_R, rangeCheck.SIZE_R),
+        SIZE_L: padZero(SIZE_L, rangeCheck.SIZE_L),
+        NO: padZero(NO, rangeCheck.NO),
         QTR,
         YR,
-        ENU,
+        ENU: padZero(ENU, rangeCheck.ENU),
         TITLE,
         RANK,
         FIRSTNAME,
@@ -253,7 +299,7 @@ export const POST = async (req: NextRequest) => {
         WEBSITE,
         SOCIAL,
         TSIC_CHG,
-        LG,
+        LG: LG && padZero(LG, rangeCheck.LG),
         LG1,
         LG1_temp,
         LG2,
@@ -269,36 +315,36 @@ export const POST = async (req: NextRequest) => {
         R3,
         TR,
         SI,
-        ITR,
-        SI1,
-        SI2,
-        SI3,
-        SI4,
-        SI5,
-        SI6,
-        SI7,
+        ITR: ITR && padZero(ITR, rangeCheck.ITR),
+        SI1: si1,
+        SI2: si2,
+        SI3: si3,
+        SI4: si4,
+        SI5: si5,
+        SI6: si6,
+        SI7: si7,
         SI8,
-        SI11,
-        SI22,
-        SI33,
-        SI44,
-        SI55,
-        SI66,
-        SI77,
-        F1,
-        F2,
-        F3,
-        F4,
-        F5,
+        SI11: SI11 && padZero(SI11, rangeCheck.SI11),
+        SI22: SI22 && padZero(SI22, rangeCheck.SI22),
+        SI33: SI33 && padZero(SI33, rangeCheck.SI33),
+        SI44: SI44 && padZero(SI44, rangeCheck.SI44),
+        SI55: SI55 && padZero(SI55, rangeCheck.SI55),
+        SI66: SI66 && padZero(SI66, rangeCheck.SI66),
+        SI77: SI77 && padZero(SI77, rangeCheck.SI77),
+        F1: F1 && padZero(F1, rangeCheck.F1),
+        F2: F2 && padZero(F2, rangeCheck.F2),
+        F3: F3 && padZero(F3, rangeCheck.F3),
+        F4: F4 && padZero(F4, rangeCheck.F4),
+        F5: F5 && padZero(F5, rangeCheck.F5),
         CHG,
-        CIN,
-        CDE,
-        FAC,
+        CIN: CIN && padZero(CIN, rangeCheck.CIN),
+        CDE: CDE && padZero(CDE, rangeCheck.CDE),
+        FAC: FAC && padZero(FAC, rangeCheck.FAC),
         FAC_1,
         PRVS,
-        PIN,
-        PDE,
-        STO,
+        PIN: PIN && padZero(PIN, rangeCheck.PIN),
+        PDE: PDE && padZero(PDE, rangeCheck.PDE),
+        STO: STO?.toString(),
         DAY,
         OP1,
         OP2,
@@ -318,6 +364,34 @@ export const POST = async (req: NextRequest) => {
         P4,
       },
     });
+
+    if (mode === "create") {
+      let updateObj = {};
+      switch (QTR) {
+        case 1:
+          updateObj = { isSendQtr1: true };
+          break;
+        case 2:
+          updateObj = { isSendQtr2: true };
+          break;
+        case 3:
+          updateObj = { isSendQtr3: true };
+          break;
+        case 4:
+          updateObj = { isSendQtr4: true };
+          break;
+        default:
+          return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });
+      }
+
+      await prisma.reportStatus.update({
+        where: {
+          yearID: { ID, year: YR },
+        },
+        data: updateObj,
+      });
+    }
+
     return NextResponse.json("สร้างแบบฟอร์มสำเร็จ");
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
