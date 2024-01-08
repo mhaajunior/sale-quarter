@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ReportStatus" ALTER COLUMN "ID" SET DATA TYPE TEXT;

@@ -1,4 +1,3 @@
-import { yr } from "@/helpers/quarter";
 import prisma from "@/prisma/db";
 import { InitialControl, ReportControl } from "@/types/control";
 import { Prisma } from "@prisma/client";
@@ -10,6 +9,7 @@ export const GET = async (
 ) => {
   const companyId = params.id;
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
+  const year = Number(req.nextUrl.searchParams.get("year"));
   let obj: InitialControl | ReportControl | null = null;
 
   try {
@@ -24,9 +24,9 @@ export const GET = async (
       });
     }
 
-    if (quarter) {
+    if (quarter && year) {
       const report = await prisma.report.findFirst({
-        where: { ID: parseInt(companyId), YR: yr, QTR: quarter - 1 },
+        where: { ID: companyId, YR: year, QTR: quarter - 1 },
         select: {
           ID: true,
           REG: true,
@@ -74,10 +74,7 @@ export const GET = async (
         },
       });
       if (report) {
-        obj = {
-          ...report,
-          ID: report.ID.toString(),
-        };
+        obj = report;
       } else {
         return NextResponse.json("กรุณาส่งแบบฟอร์มในไตรมาสก่อนหน้านี้ก่อน", {
           status: 400,

@@ -58,17 +58,8 @@ export const consistencyCheck1 = (data: ReportForm) => {
 
   if (
     between(TSIC_R, 47111, 47991) &&
-    (!STO_temp || currencyToNumber(STO_temp) <= 0)
-  ) {
-    errData.push({
-      label: ["TSIC_R", "STO"],
-      message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
-    });
-  }
-
-  if (
-    between(TSIC_R, 47111, 47991) &&
     (!STO_temp ||
+      currencyToNumber(STO_temp) <= 0 ||
       [
         9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999,
         9999999999, 99999999999, 999999999999,

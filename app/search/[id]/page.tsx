@@ -11,13 +11,7 @@ import {
   numberWithCommas,
   removeNonNumeric,
 } from "@/helpers/common";
-import {
-  checkDateBetween,
-  getQuarterDate,
-  quarterMap,
-  thaiYear,
-  yr,
-} from "@/helpers/quarter";
+import { calcQuarter, checkDateBetween, quarterMap } from "@/helpers/quarter";
 import {
   consistencyCheck1,
   consistencyCheck2,
@@ -41,13 +35,12 @@ import Loading from "@/components/Loading";
 import { IoChevronBack } from "react-icons/io5";
 import Link from "next/link";
 
-const quarter = getQuarterDate();
-
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
   const params = useParams();
   const searchParams = useSearchParams();
+  const yr = Number(searchParams.get("yr"));
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
   const router = useRouter();
@@ -62,6 +55,7 @@ const FormPage = () => {
   } = useForm<ReportForm>({
     resolver: zodResolver(createReportSchema),
     defaultValues: {
+      ID: params.id.toString(),
       R1_temp: "",
       R2_temp: "",
       R3_temp: "",
@@ -74,6 +68,9 @@ const FormPage = () => {
       ENU: 1,
     },
   });
+  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[
+    calcQuarter() - 1
+  ];
 
   const r1 = watch("R1_temp");
   const r2 = watch("R2_temp");
@@ -97,7 +94,8 @@ const FormPage = () => {
       !qtr ||
       !between(qtr, 1, 4) ||
       !mode ||
-      !["create", "edit"].includes(mode)
+      !["create", "edit"].includes(mode) ||
+      !yr
     ) {
       router.push("/notfound");
       return;
@@ -106,21 +104,23 @@ const FormPage = () => {
     const format = "YYYY-MM-DD";
     const date = new Date();
     const currentDate = moment(date).format(format);
-    const canEdittedQtr = checkDateBetween(
-      currentDate,
-      quarterMap[qtr as keyof typeof quarterMap].formSubmittedRange[0],
-      quarterMap[qtr as keyof typeof quarterMap].formSubmittedRange[1]
-    );
+    const startDate = quarterData.formSubmittedRange[0];
+    const endDate = quarterData.formSubmittedRange[1];
+    const canEdittedQtr = checkDateBetween(currentDate, startDate, endDate);
 
     if (!canEdittedQtr) {
       router.push("/denied?code=1");
       return;
     }
 
-    if (qtr === 1) {
-      getIdenFromControl();
-    } else {
-      getIdenFromPrevQtr();
+    if (mode === "create") {
+      if (qtr === 1) {
+        getIdenFromControl();
+      } else {
+        getIdenFromPrevQtr();
+      }
+    } else if (mode === "edit") {
+      getQuarterReport();
     }
   }, []);
 
@@ -155,7 +155,7 @@ const FormPage = () => {
   const getIdenFromControl = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/companyId/${params.id}`);
+      const res = await axios.get(`/api/searchId/${params.id}`);
       if (res.status === 200) {
         if (res.data) {
           const {
@@ -205,7 +205,7 @@ const FormPage = () => {
           setValue("STREET", street ? street : "-");
           setValue("TAM", Number(tam));
           setValue("SUB_DIST", tam_name);
-          setValue("TEL_NO", tel_no ? tel_no : "-");
+          setValue("TEL_NO", tel_no ? tel_no.replace("-", "") : "-");
           setValue("TSIC_L", tsic_code);
           setValue("VIL", Number(vil));
           if (regis_cid) {
@@ -218,15 +218,15 @@ const FormPage = () => {
               case 1:
                 setValue("LG1_temp", "2");
                 setValue("LG1", regis_no);
-                return;
+                break;
               case 2:
                 setValue("LG2", regis_no);
-                return;
+                break;
               case 3:
                 setValue("LG3", regis_no);
-                return;
+                break;
               default:
-                return;
+                break;
             }
           }
         } else {
@@ -249,8 +249,8 @@ const FormPage = () => {
   const getIdenFromPrevQtr = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/companyId/${params.id}`, {
-        params: { quarter: qtr },
+      const res = await axios.get(`/api/searchId/${params.id}`, {
+        params: { quarter: qtr, year: yr },
       });
 
       if (res.status === 200) {
@@ -336,23 +336,145 @@ const FormPage = () => {
               case 1:
                 setValue("LG1_temp", LG1_temp);
                 setValue("LG1", LG1);
+                break;
               case 2:
                 setValue("LG2", LG2);
-                return;
+                break;
               case 3:
                 setValue("LG3", LG3);
-                return;
+                break;
               case 10:
                 setValue("LG4", LG4);
-                return;
+                break;
               default:
-                return;
+                break;
             }
           }
         } else {
           router.push("/notfound");
         }
       }
+      setLoading(false);
+    } catch (err: any) {
+      if (err.response.status === 404) {
+        router.push("/notfound");
+      } else if (err.response.status === 400) {
+        router.push("/denied?code=2");
+      } else {
+        errorHandler(err);
+      }
+      setLoading(false);
+    }
+  };
+
+  const getQuarterReport = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/report/${params.id}`, {
+        params: { quarter: qtr, year: yr },
+      });
+
+      // if (res.status === 200) {
+      //   if (res.data) {
+      //     const {
+      //       REG,
+      //       CWT,
+      //       AMP,
+      //       TAM,
+      //       MUN,
+      //       EA,
+      //       VIL,
+      //       TSIC_R,
+      //       TSIC_L,
+      //       SIZE_R,
+      //       SIZE_L,
+      //       NO,
+      //       ENU,
+      //       TITLE,
+      //       RANK,
+      //       FIRSTNAME,
+      //       LASTNAME,
+      //       EST_TITLE,
+      //       EST_NAME,
+      //       ADD_NO,
+      //       BUILDING,
+      //       ROOM,
+      //       STREET,
+      //       BLK,
+      //       SOI,
+      //       SUB_DIST,
+      //       DISTRICT,
+      //       PROVINCE,
+      //       POST_CODE,
+      //       TEL_NO,
+      //       E_MAIL,
+      //       WEBSITE,
+      //       SOCIAL,
+      //       TSIC_CHG,
+      //       LG,
+      //       LG1,
+      //       LG1_temp,
+      //       LG2,
+      //       LG3,
+      //       LG4,
+      //     } = res.data as ReportControl;
+      //     setValue("REG", REG);
+      //     setValue("CWT", CWT);
+      //     setValue("AMP", Number(AMP));
+      //     setValue("TAM", Number(TAM));
+      //     setValue("MUN", MUN);
+      //     setValue("EA", Number(EA));
+      //     setValue("VIL", Number(VIL));
+      //     setValue("TSIC_R", TSIC_R);
+      //     setValue("TSIC_L", TSIC_L);
+      //     setValue("SIZE_R", Number(SIZE_R));
+      //     setValue("SIZE_L", Number(SIZE_L));
+      //     setValue("NO", Number(NO));
+      //     setValue("ENU", Number(ENU));
+      //     setValue("TITLE", TITLE);
+      //     setValue("RANK", RANK);
+      //     setValue("FIRSTNAME", FIRSTNAME);
+      //     setValue("LASTNAME", LASTNAME);
+      //     setValue("EST_TITLE", EST_TITLE);
+      //     setValue("EST_NAME", EST_NAME);
+      //     setValue("ADD_NO", ADD_NO);
+      //     setValue("BUILDING", BUILDING);
+      //     setValue("ROOM", ROOM);
+      //     setValue("STREET", STREET);
+      //     setValue("BLK", BLK);
+      //     setValue("SOI", SOI);
+      //     setValue("SUB_DIST", SUB_DIST);
+      //     setValue("DISTRICT", DISTRICT);
+      //     setValue("PROVINCE", PROVINCE);
+      //     setValue("POST_CODE", POST_CODE);
+      //     setValue("TEL_NO", TEL_NO);
+      //     setValue("E_MAIL", E_MAIL);
+      //     setValue("WEBSITE", WEBSITE);
+      //     setValue("SOCIAL", SOCIAL);
+      //     setValue("TSIC_CHG", TSIC_CHG);
+      //     if (LG) {
+      //       switch (Number(LG)) {
+      //         case 1:
+      //           setValue("LG1_temp", LG1_temp);
+      //           setValue("LG1", LG1);
+      //           break;
+      //         case 2:
+      //           setValue("LG2", LG2);
+      //           break;
+      //         case 3:
+      //           setValue("LG3", LG3);
+      //           break;
+      //         case 10:
+      //           setValue("LG4", LG4);
+      //           break;
+      //         default:
+      //           break;
+      //       }
+      //     }
+      //   } else {
+      //     router.push("/notfound");
+      //   }
+      // }
       setLoading(false);
     } catch (err: any) {
       if (err.response.status === 404) {
@@ -380,8 +502,17 @@ const FormPage = () => {
       return;
     } else {
       const result = validateFormData(data);
-      setFormErrors([]);
-      toast.success("ส่งข้อมูลสำเร็จ");
+      try {
+        setLoading(true);
+        const res = await axios.post("/api/report", result);
+        if (res.status === 200) {
+          toast.success("ส่งข้อมูลสำเร็จ");
+          router.push("/search");
+        }
+      } catch (err: any) {
+        errorHandler(err);
+      }
+      setLoading(false);
     }
   });
 
@@ -391,7 +522,7 @@ const FormPage = () => {
         key={index}
         className="text-red-500 flex items-center gap-3 md:w-2/4 w-full"
       >
-        <div className="border border-red-500 p-2 rounded font-bold text-xs text-white bg-red-500">
+        <div className="border border-red-500 p-2 rounded font-bold text-xs text-white bg-red-500 text-center">
           {err.label.join(", ")}
         </div>
         <p>{err.message}</p>
@@ -403,7 +534,7 @@ const FormPage = () => {
     <>
       {loading && <Loading type="full" />}
       <div className="mb-10 flex flex-col gap-2">
-        <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. ${thaiYear}`}>
+        <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. 25${yr}`}>
           <Link href="/search">
             <Button secondary>
               <IoChevronBack className="mr-1" />
@@ -412,7 +543,8 @@ const FormPage = () => {
           </Link>
         </Title>
         <div className="text-xl">
-          ไตรมาส {qtr} ({quarter.monthRange[0]} - {quarter.monthRange[2]} {yr})
+          ไตรมาส {qtr} ({quarterData.monthRange[0]} -{" "}
+          {quarterData.monthRange[2]} {yr})
         </div>
       </div>
       <div className="card">
@@ -813,7 +945,12 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>โทรศัพท์</label>
+              <label>
+                โทรศัพท์
+                <span className="text-blue-500 text-xs ml-3">
+                  *กรอกเฉพาะตัวเลข
+                </span>
+              </label>
               <Input
                 name="TEL_NO"
                 placeholder="TEL_NO"
@@ -1065,7 +1202,7 @@ const FormPage = () => {
                 </p>
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarter.monthRange[0]}</p>
+                    <p>เดือน {quarterData.monthRange[0]}</p>
                     <Input
                       name="R1_temp"
                       placeholder="R1"
@@ -1078,7 +1215,7 @@ const FormPage = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarter.monthRange[1]}</p>
+                    <p>เดือน {quarterData.monthRange[1]}</p>
                     <Input
                       name="R2_temp"
                       placeholder="R2"
@@ -1091,7 +1228,7 @@ const FormPage = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarter.monthRange[2]}</p>
+                    <p>เดือน {quarterData.monthRange[2]}</p>
                     <Input
                       name="R3_temp"
                       placeholder="R3"

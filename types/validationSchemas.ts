@@ -5,15 +5,20 @@ import {
   hasNumber,
   isNumNull,
 } from "@/helpers/common";
-import { getQuarterDate } from "@/helpers/quarter";
+import { calcQuarter, quarterMap } from "@/helpers/quarter";
 import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
 import validator from "validator";
 
-const quarter = getQuarterDate();
+const quarter = quarterMap(new Date().getFullYear())[calcQuarter() - 1];
 
 export const createReportSchema = z
   .object({
+    ID: z
+      .string({
+        required_error: "ไม่มีเลขประจำสถานประกอบการ",
+      })
+      .length(15, "เลขประจำสถานประกอบการไม่ถูกต้อง"),
     REG: z
       .number({
         required_error: "กรุณากรอกภาค",

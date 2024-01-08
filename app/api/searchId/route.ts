@@ -1,4 +1,3 @@
-import { yr } from "@/helpers/quarter";
 import prisma from "@/prisma/db";
 import { searchIdSchema } from "@/types/searchSchema";
 import { Prisma } from "@prisma/client";
@@ -8,7 +7,7 @@ export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { ID } = body;
   let hasControl = false;
-  let report = null;
+  let reportStatus = null;
 
   const validation = searchIdSchema.safeParse(body);
   if (!validation.success) {
@@ -21,12 +20,12 @@ export const POST = async (req: NextRequest) => {
     });
     if (control) {
       hasControl = true;
-      report = await prisma.report.findMany({
-        where: { ID: parseInt(ID), YR: yr },
-        orderBy: { QTR: "asc" },
+      reportStatus = await prisma.reportStatus.findMany({
+        where: { ID },
+        orderBy: [{ year: "desc" }],
       });
     }
-    return NextResponse.json({ hasControl, report });
+    return NextResponse.json({ hasControl, reportStatus });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

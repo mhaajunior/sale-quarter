@@ -8,21 +8,21 @@ const DeniedPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = Number(searchParams.get("code")) || 99;
-  console.log(code);
 
   const renderedMessage = () => {
     let message = "";
     switch (code) {
       case 1:
-        message = "หน้านี้ยังไม่เปิดให้เยี่ยมชมในช่วงเวลานี้";
-        return <span className="text-xl">{message}</span>;
+        message = "หน้านี้ไม่สามารถเยี่ยมชมได้ในช่วงเวลานี้";
+        break;
       case 2:
         message = "คุณต้องส่งข้อมูลในไตรมาสก่อนหน้านี้ก่อน";
-        return <span className="text-xl">{message}</span>;
+        break;
       default:
         message = "คุณไม่มีสิทธิที่จะเยี่ยมชมหน้านี้";
-        return <span className="text-xl">{message}</span>;
+        break;
     }
+    return <span className="text-xl">{message}</span>;
   };
 
   return (

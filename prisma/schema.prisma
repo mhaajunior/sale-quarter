@@ -45,7 +45,7 @@ model Control {
 model Report {
   id String @id @default(uuid())
 
-  ID     BigInt
+  ID     String
   REG    Int    @db.SmallInt
   CWT    Int    @db.SmallInt
   AMP    String @db.VarChar(2)
@@ -129,7 +129,7 @@ model Report {
   PRVS     Int?    @db.SmallInt
   PIN      String? @db.VarChar(3)
   PDE      String? @db.VarChar(3)
-  STO      BigInt?
+  STO      String?
   DAY      Int?    @db.SmallInt
   OP1      Int?    @db.SmallInt
   OP2      Int?    @db.SmallInt
@@ -151,8 +151,29 @@ model Report {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  reportStatus ReportStatus @relation(fields: [ID, YR], references: [ID, year])
+
+  @@unique(fields: [ID, YR, QTR], name: "uniqueReport")
   @@index([ID])
   @@index([CWT])
   @@index([QTR])
   @@index([YR])
+}
+
+model ReportStatus {
+  id            Int     @id @default(autoincrement())
+  ID            String
+  year          Int
+  canCreateQtr1 Boolean
+  canCreateQtr2 Boolean
+  canCreateQtr3 Boolean
+  canCreateQtr4 Boolean
+  isSendQtr1    Boolean
+  isSendQtr2    Boolean
+  isSendQtr3    Boolean
+  isSendQtr4    Boolean
+
+  report Report[]
+
+  @@unique(fields: [ID, year], name: "yearID")
 }

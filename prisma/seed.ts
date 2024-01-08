@@ -1,9 +1,9 @@
 import prisma from "./db";
 import { join } from "path";
-const continentData = require("./csvjson.json");
+const controls = require("./csvjson.json");
 
 async function main() {
-  continentData.map(async (continentItem: any) => {
+  controls.map(async (control: any) => {
     const {
       es_id,
       tsic_code,
@@ -31,7 +31,7 @@ async function main() {
       cwt,
       cwt_name,
       reg,
-    } = continentItem;
+    } = control;
     const response = await prisma.control.create({
       data: {
         es_id,
@@ -60,6 +60,26 @@ async function main() {
         cwt,
         cwt_name,
         reg,
+      },
+    });
+    return response;
+  });
+
+  controls.map(async (control: any) => {
+    const { es_id } = control;
+
+    const response = await prisma.reportStatus.create({
+      data: {
+        ID: es_id.toString(),
+        year: 67,
+        canCreateQtr1: true,
+        canCreateQtr2: false,
+        canCreateQtr3: false,
+        canCreateQtr4: false,
+        isSendQtr1: false,
+        isSendQtr2: false,
+        isSendQtr3: false,
+        isSendQtr4: false,
       },
     });
     return response;
