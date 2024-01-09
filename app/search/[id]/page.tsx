@@ -34,9 +34,17 @@ import { InitialControl, ReportControl } from "@/types/control";
 import Loading from "@/components/Loading";
 import { IoChevronBack } from "react-icons/io5";
 import Swal from "sweetalert2";
+import { CompanyReport } from "@/types/report";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
+  const [si1, setSi1] = useState<boolean | undefined>();
+  const [si2, setSi2] = useState<boolean | undefined>();
+  const [si3, setSi3] = useState<boolean | undefined>();
+  const [si4, setSi4] = useState<boolean | undefined>();
+  const [si5, setSi5] = useState<boolean | undefined>();
+  const [si6, setSi6] = useState<boolean | undefined>();
+  const [si7, setSi7] = useState<boolean | undefined>();
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
   const params = useParams();
   const searchParams = useSearchParams();
@@ -62,7 +70,6 @@ const FormPage = () => {
       TR_temp: "",
       LG1_temp: "1",
       TYPE: 0,
-      NO: 32,
       QTR: qtr,
       YR: yr,
       ENU: 1,
@@ -78,13 +85,6 @@ const FormPage = () => {
   const tr_temp = watch("TR_temp");
   const tr = watch("TR");
   const si = watch("SI");
-  const si1 = watch("SI1");
-  const si2 = watch("SI2");
-  const si3 = watch("SI3");
-  const si4 = watch("SI4");
-  const si5 = watch("SI5");
-  const si6 = watch("SI6");
-  const si7 = watch("SI7");
   const chg = watch("CHG");
   const sto = watch("STO_temp");
   const enu = watch("ENU");
@@ -123,6 +123,39 @@ const FormPage = () => {
       getQuarterReport();
     }
   }, []);
+
+  useEffect(() => {
+    setValue("SI1", si1);
+  }, [si1]);
+
+  useEffect(() => {
+    setValue("SI2", si2);
+  }, [si2]);
+
+  useEffect(() => {
+    setValue("SI3", si3);
+  }, [si3]);
+
+  useEffect(() => {
+    setValue("SI4", si4);
+  }, [si4]);
+
+  useEffect(() => {
+    setValue("SI5", si5);
+  }, [si5]);
+
+  useEffect(() => {
+    setValue("SI6", si6);
+  }, [si6]);
+
+  useEffect(() => {
+    setValue("SI7", si7);
+  }, [si7]);
+
+  useEffect(() => {
+    if (chg === 1) setValue("FAC", undefined);
+    setValue("FAC_1", undefined);
+  }, [chg]);
 
   useEffect(() => {
     const R1 = currencyToNumber(r1 as string);
@@ -173,6 +206,7 @@ const FormPage = () => {
             house_no,
             initial,
             lastname,
+            no,
             reg,
             regis_cid,
             regis_no,
@@ -199,6 +233,7 @@ const FormPage = () => {
           setValue("ADD_NO", house_no);
           setValue("TITLE", initial ? initial : "-");
           setValue("LASTNAME", lastname ? lastname : "-");
+          setValue("NO", Number(no));
           setValue("REG", reg);
           setValue("SIZE_L", Number(size12));
           setValue("SOI", soi ? soi : "-");
@@ -332,6 +367,7 @@ const FormPage = () => {
           setValue("SOCIAL", SOCIAL);
           setValue("TSIC_CHG", TSIC_CHG);
           if (LG) {
+            setValue("LG", Number(LG));
             switch (Number(LG)) {
               case 1:
                 setValue("LG1_temp", LG1_temp);
@@ -375,106 +411,216 @@ const FormPage = () => {
       });
 
       if (res.status === 200) {
-        console.log(res.data);
-        //   if (res.data) {
-        //     const {
-        //       REG,
-        //       CWT,
-        //       AMP,
-        //       TAM,
-        //       MUN,
-        //       EA,
-        //       VIL,
-        //       TSIC_R,
-        //       TSIC_L,
-        //       SIZE_R,
-        //       SIZE_L,
-        //       NO,
-        //       ENU,
-        //       TITLE,
-        //       RANK,
-        //       FIRSTNAME,
-        //       LASTNAME,
-        //       EST_TITLE,
-        //       EST_NAME,
-        //       ADD_NO,
-        //       BUILDING,
-        //       ROOM,
-        //       STREET,
-        //       BLK,
-        //       SOI,
-        //       SUB_DIST,
-        //       DISTRICT,
-        //       PROVINCE,
-        //       POST_CODE,
-        //       TEL_NO,
-        //       E_MAIL,
-        //       WEBSITE,
-        //       SOCIAL,
-        //       TSIC_CHG,
-        //       LG,
-        //       LG1,
-        //       LG1_temp,
-        //       LG2,
-        //       LG3,
-        //       LG4,
-        //     } = res.data as ReportControl;
-        //     setValue("REG", REG);
-        //     setValue("CWT", CWT);
-        //     setValue("AMP", Number(AMP));
-        //     setValue("TAM", Number(TAM));
-        //     setValue("MUN", MUN);
-        //     setValue("EA", Number(EA));
-        //     setValue("VIL", Number(VIL));
-        //     setValue("TSIC_R", TSIC_R);
-        //     setValue("TSIC_L", TSIC_L);
-        //     setValue("SIZE_R", Number(SIZE_R));
-        //     setValue("SIZE_L", Number(SIZE_L));
-        //     setValue("NO", Number(NO));
-        //     setValue("ENU", Number(ENU));
-        //     setValue("TITLE", TITLE);
-        //     setValue("RANK", RANK);
-        //     setValue("FIRSTNAME", FIRSTNAME);
-        //     setValue("LASTNAME", LASTNAME);
-        //     setValue("EST_TITLE", EST_TITLE);
-        //     setValue("EST_NAME", EST_NAME);
-        //     setValue("ADD_NO", ADD_NO);
-        //     setValue("BUILDING", BUILDING);
-        //     setValue("ROOM", ROOM);
-        //     setValue("STREET", STREET);
-        //     setValue("BLK", BLK);
-        //     setValue("SOI", SOI);
-        //     setValue("SUB_DIST", SUB_DIST);
-        //     setValue("DISTRICT", DISTRICT);
-        //     setValue("PROVINCE", PROVINCE);
-        //     setValue("POST_CODE", POST_CODE);
-        //     setValue("TEL_NO", TEL_NO);
-        //     setValue("E_MAIL", E_MAIL);
-        //     setValue("WEBSITE", WEBSITE);
-        //     setValue("SOCIAL", SOCIAL);
-        //     setValue("TSIC_CHG", TSIC_CHG);
-        //     if (LG) {
-        //       switch (Number(LG)) {
-        //         case 1:
-        //           setValue("LG1_temp", LG1_temp);
-        //           setValue("LG1", LG1);
-        //           break;
-        //         case 2:
-        //           setValue("LG2", LG2);
-        //           break;
-        //         case 3:
-        //           setValue("LG3", LG3);
-        //           break;
-        //         case 10:
-        //           setValue("LG4", LG4);
-        //           break;
-        //         default:
-        //           break;
-        //       }
-        //     }
-        //   } else {
-        //     router.push("/notfound");
-        //   }
+        if (res.data) {
+          const {
+            REG,
+            CWT,
+            AMP,
+            TAM,
+            MUN,
+            EA,
+            VIL,
+            TSIC_R,
+            TSIC_L,
+            SIZE_R,
+            SIZE_L,
+            NO,
+            ENU,
+            TITLE,
+            RANK,
+            FIRSTNAME,
+            LASTNAME,
+            EST_TITLE,
+            EST_NAME,
+            ADD_NO,
+            BUILDING,
+            ROOM,
+            STREET,
+            BLK,
+            SOI,
+            SUB_DIST,
+            DISTRICT,
+            PROVINCE,
+            POST_CODE,
+            TEL_NO,
+            E_MAIL,
+            WEBSITE,
+            SOCIAL,
+            TSIC_CHG,
+            LG,
+            LG1,
+            LG1_temp,
+            LG2,
+            LG3,
+            LG4,
+            DES_TYPE,
+            TYPE,
+            R1,
+            R2,
+            R3,
+            TR,
+            SI,
+            ITR,
+            SI1,
+            SI2,
+            SI3,
+            SI4,
+            SI5,
+            SI6,
+            SI7,
+            SI8,
+            SI11,
+            SI22,
+            SI33,
+            SI44,
+            SI55,
+            SI66,
+            SI77,
+            F1,
+            F2,
+            F3,
+            F4,
+            F5,
+            CHG,
+            CIN,
+            CDE,
+            FAC,
+            FAC_1,
+            PRVS,
+            PIN,
+            PDE,
+            EMP,
+            STO,
+            DAY,
+            OP1,
+            OP2,
+            OP3,
+            OP4,
+            OP5,
+            OP6,
+            OP7,
+            OP8,
+            OP9,
+            OP10,
+            OP11,
+            OP12,
+            P1,
+            P2,
+            P3,
+            P4,
+          } = res.data as CompanyReport;
+          setValue("REG", REG);
+          setValue("CWT", CWT);
+          setValue("AMP", Number(AMP));
+          setValue("TAM", Number(TAM));
+          setValue("MUN", MUN);
+          setValue("EA", Number(EA));
+          setValue("VIL", Number(VIL));
+          setValue("TSIC_R", TSIC_R);
+          setValue("TSIC_L", TSIC_L);
+          setValue("SIZE_R", Number(SIZE_R));
+          setValue("SIZE_L", Number(SIZE_L));
+          setValue("NO", Number(NO));
+          setValue("ENU", Number(ENU));
+          setValue("TITLE", TITLE);
+          setValue("RANK", RANK);
+          setValue("FIRSTNAME", FIRSTNAME);
+          setValue("LASTNAME", LASTNAME);
+          setValue("EST_TITLE", EST_TITLE);
+          setValue("EST_NAME", EST_NAME);
+          setValue("ADD_NO", ADD_NO);
+          setValue("BUILDING", BUILDING);
+          setValue("ROOM", ROOM);
+          setValue("STREET", STREET);
+          setValue("BLK", BLK);
+          setValue("SOI", SOI);
+          setValue("SUB_DIST", SUB_DIST);
+          setValue("DISTRICT", DISTRICT);
+          setValue("PROVINCE", PROVINCE);
+          setValue("POST_CODE", POST_CODE);
+          setValue("TEL_NO", TEL_NO);
+          setValue("E_MAIL", E_MAIL);
+          setValue("WEBSITE", WEBSITE);
+          setValue("SOCIAL", SOCIAL);
+          setValue("TSIC_CHG", TSIC_CHG);
+          setValue("TYPE", TYPE);
+          setValue("DES_TYPE", DES_TYPE);
+          setValue("R1_temp", R1?.toString());
+          setValue("R2_temp", R2?.toString());
+          setValue("R3_temp", R3?.toString());
+          setValue("TR_temp", TR?.toString());
+          setValue("SI", SI);
+          setValue("ITR", Number(ITR));
+          setValue("SI1", SI1 === 1 ? true : false);
+          setValue("SI2", SI2 === 1 ? true : false);
+          setValue("SI3", SI3 === 1 ? true : false);
+          setValue("SI4", SI4 === 1 ? true : false);
+          setValue("SI5", SI5 === 1 ? true : false);
+          setValue("SI6", SI6 === 1 ? true : false);
+          setValue("SI7", SI7 === 1 ? true : false);
+          setValue("SI8", SI8);
+          setValue("SI11", Number(SI11));
+          setValue("SI22", Number(SI22));
+          setValue("SI33", Number(SI33));
+          setValue("SI44", Number(SI44));
+          setValue("SI55", Number(SI55));
+          setValue("SI66", Number(SI66));
+          setValue("SI77", Number(SI77));
+          setValue("F1", Number(F1));
+          setValue("F2", Number(F2));
+          setValue("F3", Number(F3));
+          setValue("F4", Number(F4));
+          setValue("F5", Number(F5));
+          setValue("CHG", CHG);
+          setValue("CIN", Number(CIN));
+          setValue("CDE", Number(CDE));
+          setValue("FAC", Number(FAC));
+          setValue("FAC_1", FAC_1);
+          setValue("PRVS", PRVS);
+          setValue("PIN", Number(PIN));
+          setValue("PDE", Number(PDE));
+          setValue("EMP", EMP);
+          setValue("STO_temp", STO);
+          setValue("DAY", DAY);
+          setValue("OP1", OP1);
+          setValue("OP2", OP2);
+          setValue("OP3", OP3);
+          setValue("OP4", OP4);
+          setValue("OP5", OP5);
+          setValue("OP6", OP6);
+          setValue("OP7", OP7);
+          setValue("OP8", OP8);
+          setValue("OP9", OP9);
+          setValue("OP10", OP10);
+          setValue("OP11", OP11);
+          setValue("OP12", OP12);
+          setValue("P1", P1);
+          setValue("P2", P2);
+          setValue("P3", P3);
+          setValue("P4", P4);
+          if (LG) {
+            setValue("LG", Number(LG));
+            switch (Number(LG)) {
+              case 1:
+                setValue("LG1_temp", LG1_temp);
+                setValue("LG1", LG1);
+                break;
+              case 2:
+                setValue("LG2", LG2);
+                break;
+              case 3:
+                setValue("LG3", LG3);
+                break;
+              case 10:
+                setValue("LG4", LG4);
+                break;
+              default:
+                break;
+            }
+          }
+        } else {
+          router.push("/notfound");
+        }
       }
       setLoading(false);
     } catch (err: any) {
@@ -549,6 +695,8 @@ const FormPage = () => {
       }
     });
   };
+
+  console.log(errors);
 
   return (
     <>
@@ -1335,343 +1483,371 @@ const FormPage = () => {
                         control={control}
                         name="SI1"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI1").ref}
-                          >
-                            1. Social media เช่น Facebook, Instagram, Twitter,
-                            Line
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI1]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi1(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI1").ref}
+                              checked={value}
+                            >
+                              1. Social media เช่น Facebook, Instagram, Twitter,
+                              Line
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI1]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-3 items-center text-[14px]">
+                                สัดส่วน
+                                <Input
+                                  name="SI11"
+                                  type="number"
+                                  placeholder="SI11"
+                                  register={register}
+                                  className="w-28"
+                                  errors={errors.SI11}
+                                  showWord="%"
+                                  isNumber
+                                  showName
+                                  right
+                                />
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si1 && (
-                        <div className="flex gap-3 items-center text-[14px]">
-                          สัดส่วน
-                          <Input
-                            name="SI11"
-                            type="number"
-                            placeholder="SI11"
-                            register={register}
-                            className="w-28"
-                            errors={errors.SI11}
-                            showWord="%"
-                            isNumber
-                            showName
-                            right
-                          />
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI2"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI2").ref}
-                          >
-                            2. Website หรือ Application ของตนเอง
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI2]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi2(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI2").ref}
+                              checked={value}
+                            >
+                              2. Website หรือ Application ของตนเอง
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI2]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-3 items-center text-[14px]">
+                                สัดส่วน
+                                <Input
+                                  name="SI22"
+                                  type="number"
+                                  placeholder="SI22"
+                                  register={register}
+                                  className="w-28"
+                                  errors={errors.SI22}
+                                  showWord="%"
+                                  isNumber
+                                  showName
+                                  right
+                                />
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si2 && (
-                        <div className="flex gap-3 items-center text-[14px]">
-                          สัดส่วน
-                          <Input
-                            name="SI22"
-                            type="number"
-                            placeholder="SI22"
-                            register={register}
-                            className="w-28"
-                            errors={errors.SI22}
-                            showWord="%"
-                            isNumber
-                            showName
-                            right
-                          />
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI3"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI3").ref}
-                          >
-                            3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
-                            Shopee
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI3]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi3(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI3").ref}
+                              checked={value}
+                            >
+                              3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
+                              Shopee
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI3]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-5">
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  สัดส่วน
+                                  <Input
+                                    name="SI33"
+                                    type="number"
+                                    placeholder="SI33"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.SI33}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  ค่าธรรมเนียม
+                                  <Input
+                                    name="F1"
+                                    type="number"
+                                    placeholder="F1"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.F1}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si3 && (
-                        <div className="flex gap-5">
-                          <div className="flex gap-3 items-center text-[14px]">
-                            สัดส่วน
-                            <Input
-                              name="SI33"
-                              type="number"
-                              placeholder="SI33"
-                              register={register}
-                              className="w-28"
-                              errors={errors.SI33}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                          <div className="flex gap-3 items-center text-[14px]">
-                            ค่าธรรมเนียม
-                            <Input
-                              name="F1"
-                              type="number"
-                              placeholder="F1"
-                              register={register}
-                              className="w-28"
-                              errors={errors.F1}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI4"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI4").ref}
-                          >
-                            4. Cross-border platform (ตลาดต่างประเทศ) เช่น Tmall
-                            Toaboa, Alibaba, Amazon
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI4]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi4(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI4").ref}
+                              checked={value}
+                            >
+                              4. Cross-border platform (ตลาดต่างประเทศ) เช่น
+                              Tmall Toaboa, Alibaba, Amazon
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI4]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-5">
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  สัดส่วน
+                                  <Input
+                                    name="SI44"
+                                    type="number"
+                                    placeholder="SI44"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.SI44}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  ค่าธรรมเนียม
+                                  <Input
+                                    name="F2"
+                                    type="number"
+                                    placeholder="F2"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.F2}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si4 && (
-                        <div className="flex gap-5">
-                          <div className="flex gap-3 items-center text-[14px]">
-                            สัดส่วน
-                            <Input
-                              name="SI44"
-                              type="number"
-                              placeholder="SI44"
-                              register={register}
-                              className="w-28"
-                              errors={errors.SI44}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                          <div className="flex gap-3 items-center text-[14px]">
-                            ค่าธรรมเนียม
-                            <Input
-                              name="F2"
-                              type="number"
-                              placeholder="F2"
-                              register={register}
-                              className="w-28"
-                              errors={errors.F2}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI5"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI5").ref}
-                          >
-                            5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
-                            บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
-                            Panda
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI5]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi5(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI5").ref}
+                              checked={value}
+                            >
+                              5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
+                              บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
+                              Panda
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI5]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-5">
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  สัดส่วน
+                                  <Input
+                                    name="SI55"
+                                    type="number"
+                                    placeholder="SI55"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.SI55}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  ค่าธรรมเนียม
+                                  <Input
+                                    name="F3"
+                                    type="number"
+                                    placeholder="F1"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.F3}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si5 && (
-                        <div className="flex gap-5">
-                          <div className="flex gap-3 items-center text-[14px]">
-                            สัดส่วน
-                            <Input
-                              name="SI55"
-                              type="number"
-                              placeholder="SI55"
-                              register={register}
-                              className="w-28"
-                              errors={errors.SI55}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                          <div className="flex gap-3 items-center text-[14px]">
-                            ค่าธรรมเนียม
-                            <Input
-                              name="F3"
-                              type="number"
-                              placeholder="F1"
-                              register={register}
-                              className="w-28"
-                              errors={errors.F3}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI6"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI6").ref}
-                          >
-                            6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
-                            Agoda, Booking, Airbnb, Traveloka
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI6]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi6(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI6").ref}
+                              checked={value}
+                            >
+                              6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
+                              Agoda, Booking, Airbnb, Traveloka
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI6]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <div className="flex gap-5">
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  สัดส่วน
+                                  <Input
+                                    name="SI66"
+                                    type="number"
+                                    placeholder="SI66"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.SI66}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                                <div className="flex gap-3 items-center text-[14px]">
+                                  ค่าธรรมเนียม
+                                  <Input
+                                    name="F4"
+                                    type="number"
+                                    placeholder="F4"
+                                    register={register}
+                                    className="w-28"
+                                    errors={errors.F4}
+                                    showWord="%"
+                                    isNumber
+                                    showName
+                                    right
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       />
-                      {si6 && (
-                        <div className="flex gap-5">
-                          <div className="flex gap-3 items-center text-[14px]">
-                            สัดส่วน
-                            <Input
-                              name="SI66"
-                              type="number"
-                              placeholder="SI66"
-                              register={register}
-                              className="w-28"
-                              errors={errors.SI66}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                          <div className="flex gap-3 items-center text-[14px]">
-                            ค่าธรรมเนียม
-                            <Input
-                              name="F4"
-                              type="number"
-                              placeholder="F4"
-                              register={register}
-                              className="w-28"
-                              errors={errors.F4}
-                              showWord="%"
-                              isNumber
-                              showName
-                              right
-                            />
-                          </div>
-                        </div>
-                      )}
                       <Controller
                         control={control}
                         name="SI7"
                         shouldUnregister
-                        render={({ field: { onChange } }) => (
-                          <Checkbox
-                            className="start"
-                            onChange={onChange}
-                            ref={register("SI7").ref}
-                          >
-                            7. อื่นๆ (ระบุ)
-                            <span className="ml-3 !text-xs text-gray-400">
-                              [SI7]
-                            </span>
-                          </Checkbox>
+                        render={({ field: { onChange, value } }) => (
+                          <>
+                            {setSi7(value)}
+                            <Checkbox
+                              className="start"
+                              onChange={onChange}
+                              ref={register("SI7").ref}
+                              checked={value}
+                            >
+                              7. อื่นๆ (ระบุ)
+                              <span className="ml-3 !text-xs text-gray-400">
+                                [SI7]
+                              </span>
+                            </Checkbox>
+                            {value && (
+                              <>
+                                <div>
+                                  <Input
+                                    name="SI8"
+                                    placeholder="SI8"
+                                    register={register}
+                                    className="w-60 md:w-72"
+                                    errors={errors.SI8}
+                                    showName
+                                  />
+                                </div>
+                                <div className="flex gap-5">
+                                  <div className="flex gap-3 items-center text-[14px]">
+                                    สัดส่วน
+                                    <Input
+                                      name="SI77"
+                                      type="number"
+                                      placeholder="SI77"
+                                      register={register}
+                                      className="w-28"
+                                      errors={errors.SI77}
+                                      showWord="%"
+                                      isNumber
+                                      showName
+                                      right
+                                    />
+                                  </div>
+                                  <div className="flex gap-3 items-center text-[14px]">
+                                    ค่าธรรมเนียม
+                                    <Input
+                                      name="F5"
+                                      type="number"
+                                      placeholder="F5"
+                                      register={register}
+                                      className="w-28"
+                                      errors={errors.F5}
+                                      showWord="%"
+                                      isNumber
+                                      showName
+                                      right
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </>
                         )}
                       />
-                      {si7 && (
-                        <>
-                          <div>
-                            <Input
-                              name="SI8"
-                              placeholder="SI8"
-                              register={register}
-                              className="w-60 md:w-72"
-                              errors={errors.SI8}
-                              showName
-                            />
-                          </div>
-                          <div className="flex gap-5">
-                            <div className="flex gap-3 items-center text-[14px]">
-                              สัดส่วน
-                              <Input
-                                name="SI77"
-                                type="number"
-                                placeholder="SI77"
-                                register={register}
-                                className="w-28"
-                                errors={errors.SI77}
-                                showWord="%"
-                                isNumber
-                                showName
-                                right
-                              />
-                            </div>
-                            <div className="flex gap-3 items-center text-[14px]">
-                              ค่าธรรมเนียม
-                              <Input
-                                name="F5"
-                                type="number"
-                                placeholder="F5"
-                                register={register}
-                                className="w-28"
-                                errors={errors.F5}
-                                showWord="%"
-                                isNumber
-                                showName
-                                right
-                              />
-                            </div>
-                          </div>
-                        </>
-                      )}
                     </div>
                     <ErrorMessage>{errors?.SI7?.message}</ErrorMessage>
                   </>

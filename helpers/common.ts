@@ -10,7 +10,7 @@ export const currencyToNumber = (x: string) => {
   return parseFloat(x.replace(/,/g, ""));
 };
 
-export const isNumNull = (x: number | undefined) => {
+export const isNumNull = (x: number | undefined | null) => {
   if (!x) {
     return 0;
   }

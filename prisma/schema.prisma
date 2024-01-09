@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Control {
-  id        Int     @id @default(autoincrement())
+  no        String
   es_id     BigInt  @unique
   tsic_code Int
   size12    String
@@ -129,6 +129,7 @@ model Report {
   PRVS     Int?    @db.SmallInt
   PIN      String? @db.VarChar(3)
   PDE      String? @db.VarChar(3)
+  EMP      Int?
   STO      String?
   DAY      Int?    @db.SmallInt
   OP1      Int?    @db.SmallInt

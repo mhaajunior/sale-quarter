@@ -20,6 +20,11 @@ export const GET = async (
       });
     }
 
+    for (const [key, value] of Object.entries(report)) {
+      if (!value) {
+        delete report[key as keyof typeof report];
+      }
+    }
     return NextResponse.json(report);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {

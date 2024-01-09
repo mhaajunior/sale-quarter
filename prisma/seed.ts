@@ -5,6 +5,7 @@ const controls = require("./csvjson.json");
 async function main() {
   controls.map(async (control: any) => {
     const {
+      no,
       es_id,
       tsic_code,
       size12,
@@ -34,6 +35,7 @@ async function main() {
     } = control;
     const response = await prisma.control.create({
       data: {
+        no,
         es_id,
         tsic_code,
         size12,

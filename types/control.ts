@@ -2,6 +2,7 @@ import { Identification } from "./identification";
 import { CompanyData } from "./report";
 
 export interface InitialControl {
+  no: string;
   es_id: string;
   tsic_code: number;
   size12: string;
@@ -31,10 +32,10 @@ export interface InitialControl {
 }
 
 export interface ReportControl extends Identification, CompanyData {
-  LG: string | null;
-  LG1: string | null;
+  LG?: string;
+  LG1?: string;
   LG1_temp: string;
-  LG2: string | null;
-  LG3: string | null;
-  LG4: string | null;
+  LG2?: string;
+  LG3?: string;
+  LG4?: string;
 }

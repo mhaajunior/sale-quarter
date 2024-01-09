@@ -1,5 +1,4 @@
 import prisma from "@/prisma/db";
-import { InitialControl, ReportControl } from "@/types/control";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,7 +9,7 @@ export const GET = async (
   const companyId = params.id;
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
   const year = Number(req.nextUrl.searchParams.get("year"));
-  let obj: InitialControl | ReportControl | null = null;
+  let obj: any = null;
 
   try {
     const control = await prisma.control.findUnique({
@@ -74,6 +73,11 @@ export const GET = async (
         },
       });
       if (report) {
+        for (const [key, value] of Object.entries(report)) {
+          if (!value) {
+            delete report[key as keyof typeof report];
+          }
+        }
         obj = report;
       } else {
         return NextResponse.json("กรุณาส่งแบบฟอร์มในไตรมาสก่อนหน้านี้ก่อน", {

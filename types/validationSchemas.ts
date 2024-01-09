@@ -221,7 +221,8 @@ export const createReportSchema = z
     DES_TYPE: z
       .string()
       .min(1, "กรุณากรอกรายละเอียดประเภทกิจการ")
-      .max(60, "รายละเอียดประเภทกิจการห้ามยาวเกินกว่า 60 ตัวอักษร"),
+      .max(60, "รายละเอียดประเภทกิจการห้ามยาวเกินกว่า 60 ตัวอักษร")
+      .optional(),
     TSIC_CHG: z.union([
       z
         .number({ invalid_type_error: "กรุณากรอกรหัส TSIC นอกข่ายการสำรวจฯ" })
@@ -242,7 +243,6 @@ export const createReportSchema = z
       .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
       .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-      .nullable()
       .optional(),
     LG1_temp: z.string().length(1).optional(),
     LG2: z
@@ -250,20 +250,17 @@ export const createReportSchema = z
       .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
       .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-      .nullable()
       .optional(),
     LG3: z
       .string()
       .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
       .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-      .nullable()
       .optional(),
     LG4: z
       .string()
       .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .max(60, "ข้อมูลในช่องนี้ห้ามเกิน 60 ตัวอักษร")
-      .nullable()
       .optional(),
     TYPE: z
       .number({ invalid_type_error: "กรุณาเลือกประเภทกิจการ" })
@@ -467,7 +464,8 @@ export const createReportSchema = z
           .refine(
             (data) => Number(currencyToNumber(data)),
             "มูลค่าสินค่าคงเหลือต้องเป็นตัวเลข"
-          ),
+          )
+          .nullable(),
         z.literal(""),
       ])
       .optional(),
@@ -477,8 +475,9 @@ export const createReportSchema = z
         .number({ invalid_type_error: "จำนวนวันต้องเป็นตัวเลข" })
         .int("จำนวนวันต้องเป็นจำนวนเต็ม")
         .nonnegative("จำนวนวันห้ามเป็นลบ")
-        .lte(365, "จำนวนวันห้ามเกิน 365 วัน"),
-      z.literal(""),
+        .lte(365, "จำนวนวันห้ามเกิน 365 วัน")
+        .nullable(),
+      z.literal(null),
     ]),
     OP1: z
       .number({ invalid_type_error: "กรุณาเลือกความคิดเห็นในข้อนี้" })
@@ -540,10 +539,26 @@ export const createReportSchema = z
       .gte(1, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .lte(5, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .optional(),
-    P1: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P2: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P3: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P4: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P1: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
+      z.literal(""),
+      z.literal(undefined),
+    ]),
+    P2: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
+      z.literal(""),
+      z.literal(undefined),
+    ]),
+    P3: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
+      z.literal(""),
+      z.literal(undefined),
+    ]),
+    P4: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
+      z.literal(""),
+      z.literal(undefined),
+    ]),
   })
   .superRefine(
     (
