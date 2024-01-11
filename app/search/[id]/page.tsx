@@ -153,8 +153,10 @@ const FormPage = () => {
   }, [si7]);
 
   useEffect(() => {
-    if (chg === 1) setValue("FAC", undefined);
-    setValue("FAC_1", undefined);
+    if (chg === 1) {
+      setValue("FAC", undefined);
+      setValue("FAC_1", undefined);
+    }
   }, [chg]);
 
   useEffect(() => {
@@ -559,28 +561,28 @@ const FormPage = () => {
           setValue("SI6", SI6 === 1 ? true : false);
           setValue("SI7", SI7 === 1 ? true : false);
           setValue("SI8", SI8);
-          setValue("SI11", Number(SI11));
-          setValue("SI22", Number(SI22));
-          setValue("SI33", Number(SI33));
-          setValue("SI44", Number(SI44));
-          setValue("SI55", Number(SI55));
-          setValue("SI66", Number(SI66));
-          setValue("SI77", Number(SI77));
-          setValue("F1", Number(F1));
-          setValue("F2", Number(F2));
-          setValue("F3", Number(F3));
-          setValue("F4", Number(F4));
-          setValue("F5", Number(F5));
+          setValue("SI11", Number(SI11) || undefined);
+          setValue("SI22", Number(SI22) || undefined);
+          setValue("SI33", Number(SI33) || undefined);
+          setValue("SI44", Number(SI44) || undefined);
+          setValue("SI55", Number(SI55) || undefined);
+          setValue("SI66", Number(SI66) || undefined);
+          setValue("SI77", Number(SI77) || undefined);
+          setValue("F1", Number(F1) || undefined);
+          setValue("F2", Number(F2) || undefined);
+          setValue("F3", Number(F3) || undefined);
+          setValue("F4", Number(F4) || undefined);
+          setValue("F5", Number(F5) || undefined);
           setValue("CHG", CHG);
-          setValue("CIN", Number(CIN));
-          setValue("CDE", Number(CDE));
-          setValue("FAC", Number(FAC));
+          setValue("CIN", Number(CIN) || undefined);
+          setValue("CDE", Number(CDE) || undefined);
+          setValue("FAC", Number(FAC) || undefined);
           setValue("FAC_1", FAC_1);
           setValue("PRVS", PRVS);
-          setValue("PIN", Number(PIN));
-          setValue("PDE", Number(PDE));
+          setValue("PIN", Number(PIN) || undefined);
+          setValue("PDE", Number(PDE) || undefined);
           setValue("EMP", EMP);
-          setValue("STO_temp", STO);
+          setValue("STO_temp", STO || "");
           setValue("DAY", DAY);
           setValue("OP1", OP1);
           setValue("OP2", OP2);
@@ -594,10 +596,10 @@ const FormPage = () => {
           setValue("OP10", OP10);
           setValue("OP11", OP11);
           setValue("OP12", OP12);
-          setValue("P1", P1);
-          setValue("P2", P2);
-          setValue("P3", P3);
-          setValue("P4", P4);
+          setValue("P1", P1 || "");
+          setValue("P2", P2 || "");
+          setValue("P3", P3 || "");
+          setValue("P4", P4 || "");
           if (LG) {
             setValue("LG", Number(LG));
             switch (Number(LG)) {
@@ -649,6 +651,7 @@ const FormPage = () => {
       return;
     } else {
       const result = validateFormData(data);
+      console.log(result);
       try {
         setLoading(true);
         const res = await axios.post("/api/report", result, {
@@ -1710,7 +1713,7 @@ const FormPage = () => {
                                   <Input
                                     name="F3"
                                     type="number"
-                                    placeholder="F1"
+                                    placeholder="F3"
                                     register={register}
                                     className="w-28"
                                     errors={errors.F3}
@@ -2103,11 +2106,11 @@ const FormPage = () => {
                       <p>ด้าน</p>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(1)</h5>
+                      <h5>(5)</h5>
                       <h4>เพิ่มขึ้นมาก</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(2)</h5>
+                      <h5>(4)</h5>
                       <h4>เพิ่มขึ้นเล็กน้อย</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
@@ -2115,11 +2118,11 @@ const FormPage = () => {
                       <h4>เท่าเดิม</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(4)</h5>
+                      <h5>(2)</h5>
                       <h4>ลดลงเล็กน้อย</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(5)</h5>
+                      <h5>(1)</h5>
                       <h4>ลดลงมาก</h4>
                     </Col>
                   </Row>
@@ -2144,19 +2147,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2185,19 +2188,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2226,19 +2229,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2267,19 +2270,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2308,19 +2311,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2349,19 +2352,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2394,19 +2397,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2435,19 +2438,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2476,19 +2479,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2517,19 +2520,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2558,19 +2561,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2599,19 +2602,19 @@ const FormPage = () => {
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={2} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={4} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={2} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2671,8 +2674,12 @@ const FormPage = () => {
             </div>
           </div>
           <div className="w-full flex justify-center">
-            <Button type="submit" primary>
-              บันทึก
+            <Button
+              type="submit"
+              primary={mode === "create"}
+              warning={mode === "edit"}
+            >
+              {mode === "create" ? "บันทึก" : "แก้ไข"}
             </Button>
           </div>
         </form>

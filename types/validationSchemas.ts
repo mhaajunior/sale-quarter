@@ -416,7 +416,7 @@ export const createReportSchema = z
       .positive("ร้อยละที่กรอกต้องเป็นจำนวนบวก")
       .lte(100, "ร้อยละที่กรอกต้องห้ามเกิน 100")
       .optional(),
-    CDE: z
+    CDE: z.coerce
       .number({ invalid_type_error: "กรุณากรอกร้อยละ" })
       .int("ร้อยละที่กรอกต้องเป็นจำนวนเต็ม")
       .positive("ร้อยละที่กรอกต้องเป็นจำนวนบวก")
@@ -459,13 +459,11 @@ export const createReportSchema = z
       .union([
         z
           .string()
-          .min(1, "กรุณากรอกมูลค่าสินค่าคงเหลือ")
           .max(15, "มูลค่าสินค่าคงเหลือห้ามเกินกว่า 12 หลัก")
           .refine(
             (data) => Number(currencyToNumber(data)),
             "มูลค่าสินค่าคงเหลือต้องเป็นตัวเลข"
-          )
-          .nullable(),
+          ),
         z.literal(""),
       ])
       .optional(),
@@ -539,26 +537,10 @@ export const createReportSchema = z
       .gte(1, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .lte(5, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .optional(),
-    P1: z.union([
-      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
-      z.literal(""),
-      z.literal(undefined),
-    ]),
-    P2: z.union([
-      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
-      z.literal(""),
-      z.literal(undefined),
-    ]),
-    P3: z.union([
-      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
-      z.literal(""),
-      z.literal(undefined),
-    ]),
-    P4: z.union([
-      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").nullable(),
-      z.literal(""),
-      z.literal(undefined),
-    ]),
+    P1: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P2: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P3: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P4: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
   })
   .superRefine(
     (
@@ -582,6 +564,8 @@ export const createReportSchema = z
         SI55,
         SI66,
         SI77,
+        CHG,
+        FAC,
       },
       ctx
     ) => {
@@ -593,6 +577,14 @@ export const createReportSchema = z
             path: ["LG1"],
           });
         }
+      }
+
+      if (CHG !== 1 && !FAC) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "กรุณาเลือกตัวเลือกในข้อ 8",
+          path: ["FAC"],
+        });
       }
 
       if (currencyToNumber(TR_temp as string) !== TR) {

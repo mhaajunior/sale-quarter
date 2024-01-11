@@ -3,6 +3,7 @@ import { Sarabun } from "next/font/google";
 import "./globals.css";
 import { ConfigProvider } from "antd";
 import { Toaster } from "sonner";
+import AuthProvider from "@/components/AuthProvider";
 
 const sarabun = Sarabun({ subsets: ["thai"], weight: "500" });
 
@@ -29,10 +30,12 @@ export default function RootLayout({
             },
           }}
         >
-          <Toaster richColors={true} position="top-right" />
-          <div className="sm:px-16 md:px-24 px-6 py-5">
-            <div className="pt-8">{children}</div>
-          </div>
+          <AuthProvider>
+            <Toaster richColors={true} position="top-right" />
+            <div className="sm:px-16 md:px-24 px-6 py-5">
+              <div className="pt-8">{children}</div>
+            </div>
+          </AuthProvider>
         </ConfigProvider>
       </body>
     </html>
