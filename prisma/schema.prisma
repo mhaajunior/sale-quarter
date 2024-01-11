@@ -178,3 +178,21 @@ model ReportStatus {
 
   @@unique(fields: [ID, year], name: "yearID")
 }
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  fullname String
+  province Int
+  role     Role
+
+  @@index([username])
+}
+
+enum Role {
+  INTERVIEWER
+  SUPERVISOR
+  SUBJECT
+  ADMIN
+}
