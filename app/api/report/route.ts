@@ -1,7 +1,7 @@
 import { padZero } from "@/helpers/common";
 import prisma from "@/prisma/db";
-import { CompanyReport } from "@/types/report";
-import { createReportSchema } from "@/types/validationSchemas";
+import { CompanyReport } from "@/types/dto/report";
+import { createReportSchema } from "@/types/schemas/validationSchema";
 import { rangeCheck } from "@/utils/rangeCheck";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -52,6 +52,7 @@ export const POST = async (req: NextRequest) => {
     E_MAIL,
     WEBSITE,
     SOCIAL,
+    ANSWER,
     TSIC_CHG,
     LG,
     LG1,
@@ -175,7 +176,7 @@ export const POST = async (req: NextRequest) => {
         EA: padZero(EA, rangeCheck.EA),
         VIL: padZero(VIL, rangeCheck.VIL),
         TSIC_R,
-        SIZE_R: padZero(SIZE_R, rangeCheck.SIZE_R),
+        SIZE_R: (SIZE_R && padZero(SIZE_R, rangeCheck.SIZE_R)) || null,
         ENU: padZero(ENU, rangeCheck.ENU),
         TITLE,
         RANK,
@@ -197,6 +198,7 @@ export const POST = async (req: NextRequest) => {
         E_MAIL,
         WEBSITE,
         SOCIAL,
+        ANSWER,
         TSIC_CHG: TSIC_CHG || null,
         LG: (LG && padZero(LG, rangeCheck.LG)) || null,
         LG1: LG1 || null,
@@ -274,7 +276,7 @@ export const POST = async (req: NextRequest) => {
         VIL: padZero(VIL, rangeCheck.VIL),
         TSIC_R,
         TSIC_L,
-        SIZE_R: padZero(SIZE_R, rangeCheck.SIZE_R),
+        SIZE_R: SIZE_R && padZero(SIZE_R, rangeCheck.SIZE_R),
         SIZE_L: padZero(SIZE_L, rangeCheck.SIZE_L),
         NO: padZero(NO, rangeCheck.NO),
         QTR,
@@ -300,6 +302,7 @@ export const POST = async (req: NextRequest) => {
         E_MAIL,
         WEBSITE,
         SOCIAL,
+        ANSWER,
         TSIC_CHG,
         LG: LG && padZero(LG, rangeCheck.LG),
         LG1,

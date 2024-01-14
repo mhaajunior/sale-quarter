@@ -1,4 +1,4 @@
-import { SelectOption } from "@/types/common";
+import { SelectOption } from "@/types/dto/common";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
 import "@/styles/Dropdown.css";
@@ -62,7 +62,7 @@ const Dropdown = ({
             )}
           />
           {showName && (
-            <div className="absolute text-[9px] text-gray-400  top-[-8px] left-2 z-10 bg-white p-[2px]">
+            <div className="absolute text-[9px] text-gray-400  top-[-8px] left-2 bg-white p-[2px]">
               {placeholder}
             </div>
           )}

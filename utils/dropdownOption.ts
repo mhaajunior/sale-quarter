@@ -1,6 +1,6 @@
-import { SelectOption } from "@/types/common";
+import { SelectOption } from "@/types/dto/common";
 
-const typeOption: SelectOption[] = [
+export const typeOption: SelectOption[] = [
   { label: "การขายปลีก", value: 1 },
   { label: "ที่พักแรม", value: 2 },
   { label: "การบริการอาหารและเครื่องดื่ม", value: 3 },
@@ -22,4 +22,23 @@ const typeOption: SelectOption[] = [
   },
 ];
 
-export default typeOption;
+export const answerOption: SelectOption[] = [
+  { label: "สัมภาษณ์", value: 1 },
+  { label: "เว็บแอปพลิเคชั่น", value: 2 },
+];
+
+export const titleOption: SelectOption[] = [
+  { label: "นาย", value: "นาย" },
+  { label: "นาง", value: "นาง" },
+  { label: "นางสาว", value: "นางสาว" },
+  { label: "ไม่ทราบ", value: "ไม่ทราบ" },
+  { label: "ไม่มี", value: "-" },
+];
+
+export const estTitleOption: SelectOption[] = [
+  { label: "ไม่มี", value: "-" },
+  { label: "หสม.", value: "หสม." },
+  { label: "หสน.", value: "หสน." },
+  { label: "หจก.", value: "หจก." },
+  { label: "บจก.", value: "บจก." },
+];

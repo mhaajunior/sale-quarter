@@ -1,6 +1,7 @@
-import { ReportForm } from "@/types/validationSchemas";
+import { ReportForm } from "@/types/schemas/validationSchema";
 import { between, currencyToNumber } from "./common";
-import { FormErrors } from "@/types/common";
+import { FormErrors } from "@/types/dto/common";
+import { Role } from "@prisma/client";
 
 export const validateFormData = (data: ReportForm) => {
   if (data.R1_temp) data.R1 = currencyToNumber(data.R1_temp);
@@ -11,9 +12,18 @@ export const validateFormData = (data: ReportForm) => {
   return data;
 };
 
-export const consistencyCheck1 = (data: ReportForm) => {
+export const consistencyCheck1 = (data: ReportForm, role: Role | undefined) => {
   const errData: FormErrors[] = [];
-  const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
+  const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY, P1, P2, P3 } = data;
+
+  if (role && role === Role.INTERVIEWER) {
+    if (!(P1 && P2 && P3)) {
+      errData.push({
+        label: ["P1", "P2", "P3"],
+        message: "กรุณากรอกรหัสเจ้าหน้าที่อย่างน้อย 1 ช่อง",
+      });
+    }
+  }
 
   if (
     EMP &&
@@ -36,72 +46,74 @@ export const consistencyCheck1 = (data: ReportForm) => {
     });
   }
 
-  if (
-    (TYPE === 1 && !between(TSIC_R, 47111, 47991)) ||
-    (TYPE === 2 && !between(TSIC_R, 55101, 55909)) ||
-    (TYPE === 3 && !between(TSIC_R, 56101, 56302)) ||
-    (TYPE === 4 && !between(TSIC_R, 59111, 63912)) ||
-    (TYPE === 5 && !between(TSIC_R, 77210, 78101)) ||
-    (TYPE === 6 && !between(TSIC_R, 90001, 93299)) ||
-    (TYPE === 7 && !between(TSIC_R, 95210, 96309))
-  ) {
-    errData.push({
-      label: ["TYPE", "TSIC_R"],
-      message: "TYPE กับ TSIC_R ไม่สอดคล้องกัน",
-    });
-  }
+  if (TSIC_R) {
+    if (
+      (TYPE === 1 && !between(TSIC_R, 47111, 47991)) ||
+      (TYPE === 2 && !between(TSIC_R, 55101, 55909)) ||
+      (TYPE === 3 && !between(TSIC_R, 56101, 56302)) ||
+      (TYPE === 4 && !between(TSIC_R, 59111, 63912)) ||
+      (TYPE === 5 && !between(TSIC_R, 77210, 78101)) ||
+      (TYPE === 6 && !between(TSIC_R, 90001, 93299)) ||
+      (TYPE === 7 && !between(TSIC_R, 95210, 96309))
+    ) {
+      errData.push({
+        label: ["TYPE", "TSIC_R"],
+        message: "TYPE กับ TSIC_R ไม่สอดคล้องกัน",
+      });
+    }
 
-  if (
-    between(TSIC_R, 47111, 47991) &&
-    (!STO_temp ||
-      currencyToNumber(STO_temp) <= 0 ||
-      [
-        9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999,
-        9999999999, 99999999999, 999999999999,
-      ].includes(currencyToNumber(STO_temp)))
-  ) {
-    errData.push({
-      label: ["TSIC_R", "STO"],
-      message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
-    });
-  }
+    if (
+      between(TSIC_R, 47111, 47991) &&
+      (!STO_temp ||
+        currencyToNumber(STO_temp) <= 0 ||
+        [
+          9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999,
+          9999999999, 99999999999, 999999999999,
+        ].includes(currencyToNumber(STO_temp)))
+    ) {
+      errData.push({
+        label: ["TSIC_R", "STO"],
+        message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
+      });
+    }
 
-  if (between(TSIC_R, 55101, 96309) && STO_temp) {
-    errData.push({
-      label: ["TSIC_R", "STO"],
-      message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
-    });
-  }
+    if (between(TSIC_R, 55101, 96309) && STO_temp) {
+      errData.push({
+        label: ["TSIC_R", "STO"],
+        message: "TSIC_R กับ STO ไม่สอดคล้องกัน",
+      });
+    }
 
-  if (
-    STO_temp &&
-    currencyToNumber(STO_temp) > 0 &&
-    between(TSIC_R, 47111, 47991) &&
-    !DAY
-  ) {
-    errData.push({
-      label: ["TSIC_R", "STO", "DAY"],
-      message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
-    });
-  }
+    if (
+      STO_temp &&
+      currencyToNumber(STO_temp) > 0 &&
+      between(TSIC_R, 47111, 47991) &&
+      !DAY
+    ) {
+      errData.push({
+        label: ["TSIC_R", "STO", "DAY"],
+        message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
+      });
+    }
 
-  if (between(TSIC_R, 55101, 96309) && DAY) {
-    errData.push({
-      label: ["TSIC_R", "DAY"],
-      message: "TSIC_R กับ DAY ไม่สอดคล้องกัน",
-    });
-  }
+    if (between(TSIC_R, 55101, 96309) && DAY) {
+      errData.push({
+        label: ["TSIC_R", "DAY"],
+        message: "TSIC_R กับ DAY ไม่สอดคล้องกัน",
+      });
+    }
 
-  if (
-    STO_temp &&
-    currencyToNumber(STO_temp) > 0 &&
-    between(TSIC_R, 47111, 47991) &&
-    !(DAY !== 1 && DAY !== 999)
-  ) {
-    errData.push({
-      label: ["TSIC_R", "STO", "DAY"],
-      message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
-    });
+    if (
+      STO_temp &&
+      currencyToNumber(STO_temp) > 0 &&
+      between(TSIC_R, 47111, 47991) &&
+      !(DAY !== 1 && DAY !== 999)
+    ) {
+      errData.push({
+        label: ["TSIC_R", "STO", "DAY"],
+        message: "TSIC_R, STO กับ DAY ไม่สอดคล้องกัน",
+      });
+    }
   }
 
   if (TYPE) {
@@ -125,9 +137,18 @@ export const consistencyCheck1 = (data: ReportForm) => {
   return errData;
 };
 
-export const consistencyCheck2 = (data: ReportForm) => {
+export const consistencyCheck2 = (data: ReportForm, role: Role | undefined) => {
   const errData: FormErrors[] = [];
-  const { SIZE_R, TSIC_R, TSIC_L, SIZE_L } = data;
+  const { SIZE_R, TSIC_R, TSIC_L, SIZE_L, P1, P2, P3 } = data;
+
+  if (role && role === Role.INTERVIEWER) {
+    if (!(P1 && P2 && P3)) {
+      errData.push({
+        label: ["P1", "P2", "P3"],
+        message: "กรุณากรอกรหัสเจ้าหน้าที่อย่างน้อย 1 ช่อง",
+      });
+    }
+  }
 
   if (TSIC_R !== TSIC_L) {
     errData.push({

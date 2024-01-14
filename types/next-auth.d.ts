@@ -8,11 +8,10 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
-  interface JWT extends IUser {}
-}
-
-interface IUser extends User {
-  role?: Role;
-  surname?: string;
+interface IUser {
+  id: number;
+  role: Role;
+  fullname: string;
+  province: string;
+  accessToken: string;
 }

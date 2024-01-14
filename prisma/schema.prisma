@@ -53,9 +53,9 @@ model Report {
   MUN    Int    @db.SmallInt
   EA     String @db.VarChar(4)
   VIL    String @db.VarChar(2)
-  TSIC_R Int
+  TSIC_R Int?
   TSIC_L Int
-  SIZE_R String @db.VarChar(2)
+  SIZE_R String? @db.VarChar(2)
   SIZE_L String @db.VarChar(2)
   NO     String @db.VarChar(4)
   QTR    Int    @db.SmallInt
@@ -82,6 +82,7 @@ model Report {
   E_MAIL    String @db.VarChar(30)
   WEBSITE   String @db.VarChar(30)
   SOCIAL    String @db.VarChar(30)
+  ANSWER    Int    @db.SmallInt
 
   TSIC_CHG Int?
   LG       String? @db.VarChar(2)
@@ -165,6 +166,7 @@ model ReportStatus {
   id            Int     @id @default(autoincrement())
   ID            String
   year          Int
+  province      Int
   canCreateQtr1 Boolean
   canCreateQtr2 Boolean
   canCreateQtr3 Boolean

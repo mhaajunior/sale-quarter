@@ -17,24 +17,34 @@ import {
   consistencyCheck2,
   validateFormData,
 } from "@/helpers/validate";
-import { ReportForm, createReportSchema } from "@/types/validationSchemas";
-import typeOption from "@/utils/typeOption";
+import {
+  ReportForm,
+  createReportSchema,
+} from "@/types/schemas/validationSchema";
+import {
+  typeOption,
+  answerOption,
+  titleOption,
+  estTitleOption,
+} from "@/utils/dropdownOption";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, Col, Radio, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import _ from "lodash";
-import { FormErrors } from "@/types/common";
+import { FormErrors } from "@/types/dto/common";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import moment from "moment";
 import axios from "axios";
 import { errorHandler } from "@/helpers/errorHandler";
-import { InitialControl, ReportControl } from "@/types/control";
+import { InitialControl, ReportControl } from "@/types/dto/control";
 import Loading from "@/components/Loading";
 import { IoChevronBack } from "react-icons/io5";
 import Swal from "sweetalert2";
-import { CompanyReport } from "@/types/report";
+import { CompanyReport } from "@/types/dto/report";
+import useClientSession from "@/hooks/use-client-session";
+import { Role } from "@prisma/client";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
@@ -52,6 +62,8 @@ const FormPage = () => {
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
   const router = useRouter();
+  const session = useClientSession();
+  console.log(session);
   const {
     register,
     watch,
@@ -88,6 +100,7 @@ const FormPage = () => {
   const chg = watch("CHG");
   const sto = watch("STO_temp");
   const enu = watch("ENU");
+  const lg1_temp = watch("LG1_temp");
 
   useEffect(() => {
     if (
@@ -448,6 +461,7 @@ const FormPage = () => {
             E_MAIL,
             WEBSITE,
             SOCIAL,
+            ANSWER,
             TSIC_CHG,
             LG,
             LG1,
@@ -544,6 +558,7 @@ const FormPage = () => {
           setValue("E_MAIL", E_MAIL);
           setValue("WEBSITE", WEBSITE);
           setValue("SOCIAL", SOCIAL);
+          setValue("ANSWER", ANSWER);
           setValue("TSIC_CHG", TSIC_CHG);
           setValue("TYPE", TYPE);
           setValue("DES_TYPE", DES_TYPE);
@@ -640,9 +655,9 @@ const FormPage = () => {
   const onSubmit = handleSubmit(async (data) => {
     let err: FormErrors[] = [];
     if (data.ENU === 1) {
-      err = consistencyCheck1(data);
+      err = consistencyCheck1(data, session?.user.role);
     } else {
-      err = consistencyCheck2(data);
+      err = consistencyCheck2(data, session?.user.role);
     }
     if (err.length > 0) {
       setFormErrors(err);
@@ -651,7 +666,6 @@ const FormPage = () => {
       return;
     } else {
       const result = validateFormData(data);
-      console.log(result);
       try {
         setLoading(true);
         const res = await axios.post("/api/report", result, {
@@ -728,282 +742,285 @@ const FormPage = () => {
             </div>
           )}
 
-          <div className="card w-full">
-            <div>IDENTIFICATION</div>
-            <div className="flex flex-wrap gap-5 mt-5">
-              <div className="flex items-center gap-5">
-                <label className="w-10">REG</label>
-                <Input
-                  name="REG"
-                  type="number"
-                  placeholder="REG"
-                  register={register}
-                  className="w-20"
-                  errors={errors.REG}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">CWT</label>
-                <Input
-                  name="CWT"
-                  type="number"
-                  placeholder="CWT"
-                  register={register}
-                  className="w-20"
-                  errors={errors.CWT}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">AMP</label>
-                <Input
-                  name="AMP"
-                  type="number"
-                  placeholder="AMP"
-                  register={register}
-                  className="w-20"
-                  errors={errors.AMP}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">TAM</label>
-                <Input
-                  name="TAM"
-                  type="number"
-                  placeholder="TAM"
-                  register={register}
-                  className="w-20"
-                  errors={errors.TAM}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">MUN</label>
-                <Input
-                  name="MUN"
-                  type="number"
-                  placeholder="MUN"
-                  register={register}
-                  className="w-20"
-                  errors={errors.MUN}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">EA</label>
-                <Input
-                  name="EA"
-                  type="number"
-                  placeholder="EA"
-                  register={register}
-                  className="w-20"
-                  errors={errors.EA}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">VIL</label>
-                <Input
-                  name="VIL"
-                  type="number"
-                  placeholder="VIL"
-                  register={register}
-                  className="w-20"
-                  errors={errors.VIL}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">TSIC_R</label>
-                <Input
-                  name="TSIC_R"
-                  type="number"
-                  placeholder="TSIC_R"
-                  register={register}
-                  className="w-20"
-                  errors={errors.TSIC_R}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">TSIC_L</label>
-                <Input
-                  name="TSIC_L"
-                  type="number"
-                  placeholder="TSIC_L"
-                  register={register}
-                  className="w-20"
-                  errors={errors.TSIC_L}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">SIZE_R</label>
-                <Input
-                  name="SIZE_R"
-                  type="number"
-                  placeholder="SIZE_R"
-                  register={register}
-                  className="w-20"
-                  errors={errors.SIZE_R}
-                  isNumber
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">SIZE_L</label>
-                <Input
-                  name="SIZE_L"
-                  type="number"
-                  placeholder="SIZE_L"
-                  register={register}
-                  className="w-20"
-                  errors={errors.SIZE_L}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">NO</label>
-                <Input
-                  name="NO"
-                  type="number"
-                  placeholder="NO"
-                  register={register}
-                  className="w-20"
-                  errors={errors.NO}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">QTR</label>
-                <Input
-                  name="QTR"
-                  type="number"
-                  placeholder="QTR"
-                  register={register}
-                  className="w-20"
-                  errors={errors.QTR}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">YR</label>
-                <Input
-                  name="YR"
-                  type="number"
-                  placeholder="YR"
-                  register={register}
-                  className="w-20"
-                  errors={errors.YR}
-                  isNumber
-                  disabled
-                  right
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label className="w-10">ENU</label>
-                <Input
-                  name="ENU"
-                  type="number"
-                  placeholder="ENU"
-                  register={register}
-                  className="w-20"
-                  errors={errors.ENU}
-                  isNumber
-                  right
-                />
+          {session && (
+            <div className="card w-full">
+              <div>IDENTIFICATION</div>
+              <div className="flex flex-wrap gap-5 mt-5">
+                <div className="flex items-center gap-5">
+                  <label className="w-10">REG</label>
+                  <Input
+                    name="REG"
+                    type="number"
+                    placeholder="REG"
+                    register={register}
+                    className="w-20"
+                    errors={errors.REG}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">CWT</label>
+                  <Input
+                    name="CWT"
+                    type="number"
+                    placeholder="CWT"
+                    register={register}
+                    className="w-20"
+                    errors={errors.CWT}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">AMP</label>
+                  <Input
+                    name="AMP"
+                    type="number"
+                    placeholder="AMP"
+                    register={register}
+                    className="w-20"
+                    errors={errors.AMP}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">TAM</label>
+                  <Input
+                    name="TAM"
+                    type="number"
+                    placeholder="TAM"
+                    register={register}
+                    className="w-20"
+                    errors={errors.TAM}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">MUN</label>
+                  <Input
+                    name="MUN"
+                    type="number"
+                    placeholder="MUN"
+                    register={register}
+                    className="w-20"
+                    errors={errors.MUN}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">EA</label>
+                  <Input
+                    name="EA"
+                    type="number"
+                    placeholder="EA"
+                    register={register}
+                    className="w-20"
+                    errors={errors.EA}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">VIL</label>
+                  <Input
+                    name="VIL"
+                    type="number"
+                    placeholder="VIL"
+                    register={register}
+                    className="w-20"
+                    errors={errors.VIL}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">TSIC_R</label>
+                  <Input
+                    name="TSIC_R"
+                    type="number"
+                    placeholder="TSIC_R"
+                    register={register}
+                    className="w-20"
+                    errors={errors.TSIC_R}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">TSIC_L</label>
+                  <Input
+                    name="TSIC_L"
+                    type="number"
+                    placeholder="TSIC_L"
+                    register={register}
+                    className="w-20"
+                    errors={errors.TSIC_L}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">SIZE_R</label>
+                  <Input
+                    name="SIZE_R"
+                    type="number"
+                    placeholder="SIZE_R"
+                    register={register}
+                    className="w-20"
+                    errors={errors.SIZE_R}
+                    isNumber
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">SIZE_L</label>
+                  <Input
+                    name="SIZE_L"
+                    type="number"
+                    placeholder="SIZE_L"
+                    register={register}
+                    className="w-20"
+                    errors={errors.SIZE_L}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">NO</label>
+                  <Input
+                    name="NO"
+                    type="number"
+                    placeholder="NO"
+                    register={register}
+                    className="w-20"
+                    errors={errors.NO}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">QTR</label>
+                  <Input
+                    name="QTR"
+                    type="number"
+                    placeholder="QTR"
+                    register={register}
+                    className="w-20"
+                    errors={errors.QTR}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">YR</label>
+                  <Input
+                    name="YR"
+                    type="number"
+                    placeholder="YR"
+                    register={register}
+                    className="w-20"
+                    errors={errors.YR}
+                    isNumber
+                    disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">ENU</label>
+                  <Input
+                    name="ENU"
+                    type="number"
+                    placeholder="ENU"
+                    register={register}
+                    className="w-20"
+                    errors={errors.ENU}
+                    isNumber
+                    right
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
-          <div className="card w-full flex flex-wrap gap-5">
+          <div className="card w-full flex flex-wrap gap-y-5 justify-between">
             <div className="w-full">1. ข้อมูลสถานประกอบการ</div>
             <p className="w-full text-blue-500">
               *** กรุณากรอกข้อมูลให้ครบทุกช่อง
               หากช่องไหนไม่มีข้อมูลให้ใช้เครื่องหมายขีด ( - )
             </p>
             <div className="flex items-center gap-5">
-              <label>คำนำหน้านาม</label>
-              <Input
+              <label className="w-32">คำนำหน้านาม</label>
+              <Dropdown
                 name="TITLE"
-                placeholder="TITLE"
-                register={register}
-                className="w-24"
+                placeholder={session ? "TITLE" : "กรุณาเลือก"}
+                options={titleOption}
+                className="w-60 md:w-72"
                 errors={errors.TITLE}
-                showName
+                control={control}
+                showName={!!session}
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ยศ</label>
+              <label className="w-32">ยศ</label>
               <Input
                 name="RANK"
-                placeholder="RANK"
+                placeholder={session ? "RANK" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.RANK}
                 showName
               />
             </div>
-            <div className="flex flex-wrap gap-5">
-              <div className="flex items-center gap-5">
-                <label>ชื่อเจ้าของ/หัวหน้าครัวเรือน</label>
-                <Input
-                  name="FIRSTNAME"
-                  placeholder="FIRSTNAME"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.FIRSTNAME}
-                  showName
-                />
-              </div>
-              <div className="flex items-center gap-5">
-                <label>นามสกุล</label>
-                <Input
-                  name="LASTNAME"
-                  placeholder="LASTNAME"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.LASTNAME}
-                  showName
-                />
-              </div>
-            </div>
             <div className="flex items-center gap-5">
-              <label>คำนำหน้าชื่อสถานประกอบการ</label>
+              <label className="w-32">ชื่อเจ้าของ/หัวหน้าครัวเรือน</label>
               <Input
-                name="EST_TITLE"
-                placeholder="EST_TITLE"
+                name="FIRSTNAME"
+                placeholder={session ? "FIRSTNAME" : ""}
                 register={register}
-                className="w-28"
-                errors={errors.EST_TITLE}
+                className="w-60 md:w-72"
+                errors={errors.FIRSTNAME}
                 showName
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ชื่อสถานประกอบการ</label>
+              <label className="w-32">นามสกุล</label>
+              <Input
+                name="LASTNAME"
+                placeholder={session ? "LASTNAME" : ""}
+                register={register}
+                className="w-60 md:w-72"
+                errors={errors.LASTNAME}
+                showName
+              />
+            </div>
+
+            <div className="flex items-center gap-5">
+              <label className="w-32">คำนำหน้าชื่อสถานประกอบการ</label>
+              <Dropdown
+                name="EST_TITLE"
+                placeholder={session ? "EST_TITLE" : "กรุณาเลือก"}
+                options={estTitleOption}
+                className="w-60 md:w-72"
+                errors={errors.EST_TITLE}
+                control={control}
+                showName={!!session}
+              />
+            </div>
+            <div className="flex items-center gap-5">
+              <label className="w-32">ชื่อสถานประกอบการ</label>
               <Input
                 name="EST_NAME"
-                placeholder="EST_NAME"
+                placeholder={session ? "EST_NAME" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.EST_NAME}
@@ -1011,21 +1028,21 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>เลขที่</label>
+              <label className="w-32">เลขที่</label>
               <Input
                 name="ADD_NO"
-                placeholder="ADD_NO"
+                placeholder={session ? "ADD_NO" : ""}
                 register={register}
-                className="w-28"
+                className="w-60 md:w-72"
                 errors={errors.ADD_NO}
                 showName
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ชื่ออาคาร/หมู่บ้าน</label>
+              <label className="w-32">ชื่ออาคาร/หมู่บ้าน</label>
               <Input
                 name="BUILDING"
-                placeholder="BUILDING"
+                placeholder={session ? "BUILDING" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.BUILDING}
@@ -1033,21 +1050,21 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ห้องเลขที่/ชั้นที่</label>
+              <label className="w-32">ห้องเลขที่/ชั้นที่</label>
               <Input
                 name="ROOM"
-                placeholder="ROOM"
+                placeholder={session ? "ROOM" : ""}
                 register={register}
-                className="w-28"
+                className="w-60 md:w-72"
                 errors={errors.ROOM}
                 showName
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ถนน</label>
+              <label className="w-32">ถนน</label>
               <Input
                 name="STREET"
-                placeholder="STREET"
+                placeholder={session ? "STREET" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.STREET}
@@ -1055,10 +1072,10 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ตรอก</label>
+              <label className="w-32">ตรอก</label>
               <Input
                 name="BLK"
-                placeholder="BLK"
+                placeholder={session ? "BLK" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.BLK}
@@ -1066,10 +1083,10 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ซอย</label>
+              <label className="w-32">ซอย</label>
               <Input
                 name="SOI"
-                placeholder="SOI"
+                placeholder={session ? "SOI" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.SOI}
@@ -1077,10 +1094,10 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>ตำบล/แขวง</label>
+              <label className="w-32">ตำบล/แขวง</label>
               <Input
                 name="SUB_DIST"
-                placeholder="SUB_DIST"
+                placeholder={session ? "SUB_DIST" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.SUB_DIST}
@@ -1088,10 +1105,10 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>อำเภอ/เขต</label>
+              <label className="w-32">อำเภอ/เขต</label>
               <Input
                 name="DISTRICT"
-                placeholder="DISTRICT"
+                placeholder={session ? "DISTRICT" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.DISTRICT}
@@ -1099,41 +1116,39 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>จังหวัด</label>
-              <div>{getValues("PROVINCE")}</div>
+              <label className="w-32">จังหวัด</label>
+              <div className="w-60 md:w-72">{getValues("PROVINCE")}</div>
             </div>
             <div className="flex items-center gap-5">
-              <label>รหัสไปรษณีย์</label>
+              <label className="w-32">รหัสไปรษณีย์</label>
               <Input
                 name="POST_CODE"
-                placeholder="POST_CODE"
+                placeholder={session ? "POST_CODE" : ""}
                 register={register}
-                className="w-36"
+                className="w-60 md:w-72"
                 errors={errors.POST_CODE}
                 showName
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>
+              <label className="w-32">
                 โทรศัพท์
-                <span className="text-blue-500 text-xs ml-3">
-                  *กรอกเฉพาะตัวเลข
-                </span>
+                <p className="text-blue-500 text-xs">*กรอกเฉพาะตัวเลข</p>
               </label>
               <Input
                 name="TEL_NO"
-                placeholder="TEL_NO"
+                placeholder={session ? "TEL_NO" : "เช่น 0xxxxxxxxx"}
                 register={register}
-                className="w-36"
+                className="w-60 md:w-72"
                 errors={errors.TEL_NO}
-                showName
+                showName={!!session}
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>อีเมล</label>
+              <label className="w-32">อีเมล</label>
               <Input
                 name="E_MAIL"
-                placeholder="E_MAIL"
+                placeholder={session ? "E_MAIL" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.E_MAIL}
@@ -1141,10 +1156,10 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>Website</label>
+              <label className="w-32">Website</label>
               <Input
                 name="WEBSITE"
-                placeholder="WEBSITE"
+                placeholder={session ? "WEBSITE" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.WEBSITE}
@@ -1152,19 +1167,31 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label>Social Media</label>
+              <label className="w-32">Social Media</label>
               <Input
                 name="SOCIAL"
-                placeholder="SOCIAL"
+                placeholder={session ? "SOCIAL" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.SOCIAL}
                 showName
               />
             </div>
+            <div className="flex items-center gap-5">
+              <label className="w-32">วิธีการตอบแบบสอบถาม</label>
+              <Dropdown
+                name="ANSWER"
+                placeholder={session ? "ANSWER" : "กรุณาเลือก"}
+                options={answerOption}
+                className="w-60 md:w-72"
+                errors={errors.ANSWER}
+                control={control}
+                showName={!!session}
+              />
+            </div>
             {enu === 8 && (
-              <div className="flex items-center gap-5 w-full">
-                <label>
+              <div className="flex items-center gap-5">
+                <label className="w-32">
                   รหัส TSIC นอกข่ายการสำรวจฯ
                   <span className="text-red-500">*</span>
                 </label>
@@ -1187,7 +1214,9 @@ const FormPage = () => {
               <div className="card w-500 flex flex-col gap-3">
                 <div>
                   2. รูปแบบการจัดตั้งตามกฎหมาย
-                  <span className="ml-3 !text-xs text-gray-400">[LG]</span>
+                  {session && (
+                    <span className="ml-3 !text-xs text-gray-400">[LG]</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
@@ -1227,11 +1256,17 @@ const FormPage = () => {
                                 />
                                 <Input
                                   name="LG1"
-                                  placeholder="LG1"
+                                  placeholder={
+                                    session
+                                      ? "LG1"
+                                      : lg1_temp === "1"
+                                      ? "เลขบัตรประจำตัวประชาชน"
+                                      : "เลขทะเบียนพาณิชย์"
+                                  }
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG1}
-                                  showName
+                                  showName={!!session}
                                 />
                               </div>
                             )}
@@ -1243,11 +1278,13 @@ const FormPage = () => {
                                 <p>เลขทะเบียนนิติบุคคล</p>
                                 <Input
                                   name="LG2"
-                                  placeholder="LG2"
+                                  placeholder={
+                                    session ? "LG2" : "เลขทะเบียนนิติบุคคล"
+                                  }
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG2}
-                                  showName
+                                  showName={!!session}
                                 />
                               </div>
                             )}
@@ -1259,11 +1296,13 @@ const FormPage = () => {
                                 <p>เลขทะเบียนนิติบุคคล</p>
                                 <Input
                                   name="LG3"
-                                  placeholder="LG3"
+                                  placeholder={
+                                    session ? "LG3" : "เลขทะเบียนนิติบุคคล"
+                                  }
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG3}
-                                  showName
+                                  showName={!!session}
                                 />
                               </div>
                             )}
@@ -1293,11 +1332,11 @@ const FormPage = () => {
                               <div className="my-1 flex flex-col gap-2">
                                 <Input
                                   name="LG4"
-                                  placeholder="LG4"
+                                  placeholder={session ? "LG4" : "ระบุ"}
                                   register={register}
                                   className="w-60 md:w-72"
                                   errors={errors.LG4}
-                                  showName
+                                  showName={!!session}
                                 />
                               </div>
                             )}
@@ -1329,21 +1368,26 @@ const FormPage = () => {
                 <div className="flex flex-col gap-5">
                   <Input
                     name="DES_TYPE"
-                    placeholder="DES_TYPE"
+                    placeholder={session ? "DES_TYPE" : "ประเภทของกิจการ"}
                     register={register}
                     className="w-60 md:w-72"
                     errors={errors.DES_TYPE}
-                    showName
+                    showName={!!session}
                   />
-                  <Dropdown
-                    name="TYPE"
-                    placeholder="TYPE"
-                    options={typeOption}
-                    className="w-60 md:w-72"
-                    errors={errors.TYPE}
-                    control={control}
-                    showName
-                  />
+                  {session && (
+                    <>
+                      <p>เจ้าหน้าที่เลือกประเภทของกิจการ</p>
+                      <Dropdown
+                        name="TYPE"
+                        placeholder="TYPE"
+                        options={typeOption}
+                        className="w-60 md:w-72"
+                        errors={errors.TYPE}
+                        control={control}
+                        showName
+                      />
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -1352,13 +1396,13 @@ const FormPage = () => {
                 <Input
                   name="EMP"
                   type="number"
-                  placeholder="EMP"
+                  placeholder={session ? "EMP" : "จำนวน"}
                   register={register}
                   className="w-40"
                   errors={errors.EMP}
                   showWord="คน"
                   isNumber
-                  showName
+                  showName={!!session}
                   right
                 />
               </div>
@@ -1374,12 +1418,16 @@ const FormPage = () => {
                     <p>เดือน {quarterData.monthRange[0]}</p>
                     <Input
                       name="R1_temp"
-                      placeholder="R1"
+                      placeholder={
+                        session
+                          ? "R1"
+                          : `ยอดขายเดือน ${quarterData.monthRange[0]}`
+                      }
                       register={register}
                       className="w-60 md:w-72"
                       errors={errors.R1_temp}
                       showWord="บาท"
-                      showName
+                      showName={!!session}
                       right
                     />
                   </div>
@@ -1387,12 +1435,16 @@ const FormPage = () => {
                     <p>เดือน {quarterData.monthRange[1]}</p>
                     <Input
                       name="R2_temp"
-                      placeholder="R2"
+                      placeholder={
+                        session
+                          ? "R2"
+                          : `ยอดขายเดือน ${quarterData.monthRange[1]}`
+                      }
                       register={register}
                       className="w-60 md:w-72"
                       errors={errors.R2_temp}
                       showWord="บาท"
-                      showName
+                      showName={!!session}
                       right
                     />
                   </div>
@@ -1400,12 +1452,16 @@ const FormPage = () => {
                     <p>เดือน {quarterData.monthRange[2]}</p>
                     <Input
                       name="R3_temp"
-                      placeholder="R3"
+                      placeholder={
+                        session
+                          ? "R3"
+                          : `ยอดขายเดือน ${quarterData.monthRange[2]}`
+                      }
                       register={register}
                       className="w-60 md:w-72"
                       errors={errors.R3_temp}
                       showWord="บาท"
-                      showName
+                      showName={!!session}
                       right
                     />
                   </div>
@@ -1413,12 +1469,12 @@ const FormPage = () => {
                     <p className="font-bold">รวม 3 เดือน</p>
                     <Input
                       name="TR_temp"
-                      placeholder="TR"
+                      placeholder={session ? "TR" : "ยอดขายรวมทั้ง 3 เดือน"}
                       register={register}
                       className="w-60 md:w-72"
                       errors={errors.TR_temp}
                       showWord="บาท"
-                      showName
+                      showName={!!session}
                       right
                     />
                   </div>
@@ -1431,7 +1487,9 @@ const FormPage = () => {
               <div className="card w-500 flex flex-col gap-3">
                 <div>
                   6. ในไตรมาสนี้ มีการขายสินค้าหรือบริการทางอินเทอร์เน็ตหรือไม่
-                  <span className="ml-3 !text-xs text-gray-400">[SI]</span>
+                  {session && (
+                    <span className="ml-3 !text-xs text-gray-400">[SI]</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
@@ -1463,13 +1521,13 @@ const FormPage = () => {
                       <Input
                         name="ITR"
                         type="number"
-                        placeholder="ITR"
+                        placeholder={session ? "ITR" : "ร้อยละ"}
                         register={register}
                         className="w-28"
                         errors={errors.ITR}
                         showWord="%"
                         isNumber
-                        showName
+                        showName={!!session}
                         right
                       />
                     </div>
@@ -1497,9 +1555,11 @@ const FormPage = () => {
                             >
                               1. Social media เช่น Facebook, Instagram, Twitter,
                               Line
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI1]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI1]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-3 items-center text-[14px]">
@@ -1507,13 +1567,13 @@ const FormPage = () => {
                                 <Input
                                   name="SI11"
                                   type="number"
-                                  placeholder="SI11"
+                                  placeholder={session ? "SI11" : "ร้อยละ"}
                                   register={register}
                                   className="w-28"
                                   errors={errors.SI11}
                                   showWord="%"
                                   isNumber
-                                  showName
+                                  showName={!!session}
                                   right
                                 />
                               </div>
@@ -1535,9 +1595,11 @@ const FormPage = () => {
                               checked={value}
                             >
                               2. Website หรือ Application ของตนเอง
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI2]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI2]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-3 items-center text-[14px]">
@@ -1545,13 +1607,13 @@ const FormPage = () => {
                                 <Input
                                   name="SI22"
                                   type="number"
-                                  placeholder="SI22"
+                                  placeholder={session ? "SI22" : "ร้อยละ"}
                                   register={register}
                                   className="w-28"
                                   errors={errors.SI22}
                                   showWord="%"
                                   isNumber
-                                  showName
+                                  showName={!!session}
                                   right
                                 />
                               </div>
@@ -1574,9 +1636,11 @@ const FormPage = () => {
                             >
                               3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
                               Shopee
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI3]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI3]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-5">
@@ -1585,13 +1649,13 @@ const FormPage = () => {
                                   <Input
                                     name="SI33"
                                     type="number"
-                                    placeholder="SI33"
+                                    placeholder={session ? "SI33" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.SI33}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1600,13 +1664,13 @@ const FormPage = () => {
                                   <Input
                                     name="F1"
                                     type="number"
-                                    placeholder="F1"
+                                    placeholder={session ? "F1" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.F1}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1630,9 +1694,11 @@ const FormPage = () => {
                             >
                               4. Cross-border platform (ตลาดต่างประเทศ) เช่น
                               Tmall Toaboa, Alibaba, Amazon
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI4]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI4]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-5">
@@ -1641,13 +1707,13 @@ const FormPage = () => {
                                   <Input
                                     name="SI44"
                                     type="number"
-                                    placeholder="SI44"
+                                    placeholder={session ? "SI44" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.SI44}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1656,13 +1722,13 @@ const FormPage = () => {
                                   <Input
                                     name="F2"
                                     type="number"
-                                    placeholder="F2"
+                                    placeholder={session ? "F2" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.F2}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1687,9 +1753,11 @@ const FormPage = () => {
                               5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
                               บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
                               Panda
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI5]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI5]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-5">
@@ -1698,13 +1766,13 @@ const FormPage = () => {
                                   <Input
                                     name="SI55"
                                     type="number"
-                                    placeholder="SI55"
+                                    placeholder={session ? "SI55" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.SI55}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1713,13 +1781,13 @@ const FormPage = () => {
                                   <Input
                                     name="F3"
                                     type="number"
-                                    placeholder="F3"
+                                    placeholder={session ? "F3" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.F3}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1743,9 +1811,11 @@ const FormPage = () => {
                             >
                               6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
                               Agoda, Booking, Airbnb, Traveloka
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI6]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI6]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <div className="flex gap-5">
@@ -1754,13 +1824,13 @@ const FormPage = () => {
                                   <Input
                                     name="SI66"
                                     type="number"
-                                    placeholder="SI66"
+                                    placeholder={session ? "SI66" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.SI66}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1769,13 +1839,13 @@ const FormPage = () => {
                                   <Input
                                     name="F4"
                                     type="number"
-                                    placeholder="F4"
+                                    placeholder={session ? "F4" : "ร้อยละ"}
                                     register={register}
                                     className="w-28"
                                     errors={errors.F4}
                                     showWord="%"
                                     isNumber
-                                    showName
+                                    showName={!!session}
                                     right
                                   />
                                 </div>
@@ -1798,20 +1868,22 @@ const FormPage = () => {
                               checked={value}
                             >
                               7. อื่นๆ (ระบุ)
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [SI7]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [SI7]
+                                </span>
+                              )}
                             </Checkbox>
                             {value && (
                               <>
                                 <div>
                                   <Input
                                     name="SI8"
-                                    placeholder="SI8"
+                                    placeholder={session ? "SI8" : "ระบุ"}
                                     register={register}
                                     className="w-60 md:w-72"
                                     errors={errors.SI8}
-                                    showName
+                                    showName={!!session}
                                   />
                                 </div>
                                 <div className="flex gap-5">
@@ -1820,13 +1892,13 @@ const FormPage = () => {
                                     <Input
                                       name="SI77"
                                       type="number"
-                                      placeholder="SI77"
+                                      placeholder={session ? "SI77" : "ร้อยละ"}
                                       register={register}
                                       className="w-28"
                                       errors={errors.SI77}
                                       showWord="%"
                                       isNumber
-                                      showName
+                                      showName={!!session}
                                       right
                                     />
                                   </div>
@@ -1835,13 +1907,13 @@ const FormPage = () => {
                                     <Input
                                       name="F5"
                                       type="number"
-                                      placeholder="F5"
+                                      placeholder={session ? "F5" : "ร้อยละ"}
                                       register={register}
                                       className="w-28"
                                       errors={errors.F5}
                                       showWord="%"
                                       isNumber
-                                      showName
+                                      showName={!!session}
                                       right
                                     />
                                   </div>
@@ -1861,7 +1933,9 @@ const FormPage = () => {
                 <div>
                   7. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสก่อนหน้านั้นหรือไม่ อย่างไร
-                  <span className="ml-3 !text-xs text-gray-400">[CHG]</span>
+                  {session && (
+                    <span className="ml-3 !text-xs text-gray-400">[CHG]</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
@@ -1885,13 +1959,13 @@ const FormPage = () => {
                               <Input
                                 name="CIN"
                                 type="number"
-                                placeholder="CIN"
+                                placeholder={session ? "CIN" : "ร้อยละ"}
                                 register={register}
                                 className="w-28 mt-2"
                                 errors={errors.CIN}
                                 showWord="%"
                                 isNumber
-                                showName
+                                showName={!!session}
                                 right
                               />
                             )}
@@ -1902,13 +1976,13 @@ const FormPage = () => {
                               <Input
                                 name="CDE"
                                 type="number"
-                                placeholder="CDE"
+                                placeholder={session ? "CDE" : "ร้อยละ"}
                                 register={register}
                                 className="w-28 mt-2"
                                 errors={errors.CDE}
                                 showWord="%"
                                 isNumber
-                                showName
+                                showName={!!session}
                                 right
                               />
                             )}
@@ -1929,7 +2003,9 @@ const FormPage = () => {
                 <div>
                   8. ถ้ายอดขาย/รายรับสูงขึ้นหรือลดลง
                   โปรดระบุสิ่งที่มีผลทำให้ยอดขาย/รายรับของกิจการเปลี่ยนแปลงมากที่สุด
-                  <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
+                  {session && (
+                    <span className="ml-3 !text-xs text-gray-400">[FAC]</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <Controller
@@ -1979,10 +2055,11 @@ const FormPage = () => {
                               {value === 10 && (
                                 <Input
                                   name="FAC_1"
-                                  placeholder="FAC_1"
+                                  placeholder={session ? "FAC_1" : "ระบุ"}
                                   register={register}
                                   className="w-full mt-2"
                                   errors={errors.FAC_1}
+                                  showName={!!session}
                                 />
                               )}
                             </Radio>
@@ -1999,7 +2076,9 @@ const FormPage = () => {
                 <div>
                   9. ในไตรมาสนี้
                   ยอดขาย/รายรับเปลี่ยนแปลงไปจากไตรมาสเดียวกันกับปีก่อนหรือไม่
-                  <span className="ml-3 !text-xs text-gray-400">[PRVS]</span>
+                  {session && (
+                    <span className="ml-3 !text-xs text-gray-400">[PRVS]</span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1 items-start">
                   <Controller
@@ -2022,13 +2101,13 @@ const FormPage = () => {
                               <Input
                                 name="PIN"
                                 type="number"
-                                placeholder="PIN"
+                                placeholder={session ? "PIN" : "ร้อยละ"}
                                 register={register}
                                 className="w-28 mt-2"
                                 errors={errors.PIN}
                                 showWord="%"
                                 isNumber
-                                showName
+                                showName={!!session}
                                 right
                               />
                             )}
@@ -2039,13 +2118,13 @@ const FormPage = () => {
                               <Input
                                 name="PDE"
                                 type="number"
-                                placeholder="PDE"
+                                placeholder={session ? "PDE" : "ร้อยละ"}
                                 register={register}
                                 className="w-28 mt-2"
                                 errors={errors.PDE}
                                 showWord="%"
                                 isNumber
-                                showName
+                                showName={!!session}
                                 right
                               />
                             )}
@@ -2069,12 +2148,12 @@ const FormPage = () => {
                   จำนวน
                   <Input
                     name="STO_temp"
-                    placeholder="STO"
+                    placeholder={session ? "STO" : "มูลค่าคงเหลือ"}
                     register={register}
                     className="w-60 md:w-72"
                     errors={errors.STO_temp}
                     showWord="บาท"
-                    showName
+                    showName={!!session}
                     right
                   />
                 </div>
@@ -2085,12 +2164,12 @@ const FormPage = () => {
                 <Input
                   name="DAY"
                   type="number"
-                  placeholder="DAY"
+                  placeholder={session ? "DAY" : "วัน"}
                   register={register}
                   className="w-28"
                   errors={errors.DAY}
                   showWord="วัน"
-                  showName
+                  showName={!!session}
                   right
                 />
               </div>
@@ -2106,11 +2185,11 @@ const FormPage = () => {
                       <p>ด้าน</p>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(5)</h5>
+                      <h5>(1)</h5>
                       <h4>เพิ่มขึ้นมาก</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(4)</h5>
+                      <h5>(2)</h5>
                       <h4>เพิ่มขึ้นเล็กน้อย</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
@@ -2118,11 +2197,11 @@ const FormPage = () => {
                       <h4>เท่าเดิม</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(2)</h5>
+                      <h5>(4)</h5>
                       <h4>ลดลงเล็กน้อย</h4>
                     </Col>
                     <Col className="gutter-row" span={3}>
-                      <h5>(1)</h5>
+                      <h5>(5)</h5>
                       <h4>ลดลงมาก</h4>
                     </Col>
                   </Row>
@@ -2141,25 +2220,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - ต้นทุน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP1]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP1]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2182,25 +2263,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - กำไร
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP2]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP2]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2223,25 +2306,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - ราคาขายสินค้า/บริการของท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP3]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP3]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2264,25 +2349,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - สภาพการแข่งขันของธุรกิจในพื้นที่
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP4]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP4]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2305,25 +2392,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - สภาพคล่องทางการเงินของธุรกิจท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP5]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP5]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2346,25 +2435,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - แนวโน้มการลงทุนในกิจการของท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP6]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP6]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2391,25 +2482,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - ต้นทุน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP7]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP7]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2432,25 +2525,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - กำไร
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP8]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP8]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2473,25 +2568,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - ราคาขายสินค้า/บริการของท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP9]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP9]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2514,25 +2611,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - สภาพการแข่งขันของธุรกิจในพื้นที่
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP10]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP10]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2555,25 +2654,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - สภาพคล่องทางการเงินของธุรกิจท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP11]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP11]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2596,25 +2697,27 @@ const FormPage = () => {
                           <Col className="gutter-row text-left" span={8}>
                             <p>
                               - แนวโน้มการลงทุนในกิจการของท่าน
-                              <span className="ml-3 !text-xs text-gray-400">
-                                [OP12]
-                              </span>
+                              {session && (
+                                <span className="ml-3 !text-xs text-gray-400">
+                                  [OP12]
+                                </span>
+                              )}
                             </p>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={5} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={4} className="zero"></Radio>
-                          </Col>
-                          <Col className="gutter-row f-center" span={3}>
-                            <Radio value={3} className="zero"></Radio>
+                            <Radio value={1} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
                             <Radio value={2} className="zero"></Radio>
                           </Col>
                           <Col className="gutter-row f-center" span={3}>
-                            <Radio value={1} className="zero"></Radio>
+                            <Radio value={3} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={4} className="zero"></Radio>
+                          </Col>
+                          <Col className="gutter-row f-center" span={3}>
+                            <Radio value={5} className="zero"></Radio>
                           </Col>
                         </Row>
                       </Radio.Group>
@@ -2627,50 +2730,58 @@ const FormPage = () => {
           )}
           <div className="w-full">
             <div className="flex flex-col gap-3 justify-end items-end">
-              <div className="flex gap-5 items-center">
-                เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
-                <Input
-                  name="P1"
-                  placeholder="P1"
-                  register={register}
-                  className="w-28"
-                  errors={errors.P1}
-                  showName
-                />
-              </div>
-              <div className="flex gap-5 items-center">
-                เจ้าหน้าที่บรรณาธิกรและลงรหัส
-                <Input
-                  name="P2"
-                  placeholder="P2"
-                  register={register}
-                  className="w-28"
-                  errors={errors.P2}
-                  showName
-                />
-              </div>
-              <div className="flex gap-5 items-center">
-                เจ้าหน้าที่บันทึกข้อมูล
-                <Input
-                  name="P3"
-                  placeholder="P3"
-                  register={register}
-                  className="w-28"
-                  errors={errors.P3}
-                  showName
-                />
-              </div>
-              <div className="flex gap-5 items-center">
-                ผู้ตรวจ
-                <Input
-                  name="P4"
-                  placeholder="P4"
-                  register={register}
-                  className="w-28"
-                  errors={errors.P4}
-                  showName
-                />
-              </div>
+              {(session?.user.role === Role.INTERVIEWER ||
+                session?.user.role === Role.SUBJECT) && (
+                <>
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
+                    <Input
+                      name="P1"
+                      placeholder="P1"
+                      register={register}
+                      className="w-36"
+                      errors={errors.P1}
+                      showName
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่บรรณาธิกรและลงรหัส
+                    <Input
+                      name="P2"
+                      placeholder="P2"
+                      register={register}
+                      className="w-36"
+                      errors={errors.P2}
+                      showName
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    เจ้าหน้าที่บันทึกข้อมูล
+                    <Input
+                      name="P3"
+                      placeholder="P3"
+                      register={register}
+                      className="w-36"
+                      errors={errors.P3}
+                      showName
+                    />
+                  </div>
+                </>
+              )}
+              {(session?.user.role === Role.SUPERVISOR ||
+                session?.user.role === Role.SUBJECT) && (
+                <div className="flex gap-5 items-center">
+                  ผู้ตรวจ
+                  <Input
+                    name="P4"
+                    placeholder="P4"
+                    register={register}
+                    className="w-36"
+                    errors={errors.P4}
+                    showName
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="w-full flex justify-center">

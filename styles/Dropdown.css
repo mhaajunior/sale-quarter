@@ -12,6 +12,7 @@
 
 .dropdown__placeholder {
   color: rgb(209 213 219) !important;
+  font-size: 14px !important;
 }
 
 .select {

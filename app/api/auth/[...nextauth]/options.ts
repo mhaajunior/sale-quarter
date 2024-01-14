@@ -1,19 +1,19 @@
 import prisma from "@/prisma/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { Session } from "next-auth";
+import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import { IUser } from "@/types/next-auth";
+import { signJwtAccessToken } from "@/helpers/jwt";
 
 export const options = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: {
-          label: "อีเมล",
-          type: "text",
-          placeholder: "อีเมล",
+        username: {
+          label: "ชื่อผู้ใช้",
+          type: "username",
+          placeholder: "ชื่อผู้ใช้",
         },
         password: {
           label: "รหัสผ่าน",
@@ -22,37 +22,36 @@ export const options = {
         },
       },
       async authorize(credentials) {
-        // if (credentials) {
-        //   try {
-        //     const foundUser = await prisma.user.findUnique({
-        //       where: {
-        //         email: credentials.email,
-        //       },
-        //     });
-
-        //     if (
-        //       foundUser &&
-        //       (await bcrypt.compare(credentials.password, foundUser.password))
-        //     ) {
-        //       foundUser.password = "";
-        //       return foundUser;
-        //     }
-        //   } catch (error) {
-        //     console.log(error);
-        //   }
-        // }
+        if (credentials) {
+          try {
+            const foundUser = await prisma.user.findUnique({
+              where: {
+                username: credentials.username,
+              },
+            });
+            if (
+              foundUser &&
+              (await bcrypt.compare(credentials.password, foundUser.password))
+            ) {
+              const accessToken = signJwtAccessToken(foundUser);
+              const result: any = { ...foundUser, accessToken };
+              delete result.password;
+              return result;
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
         return null;
       },
     }),
   ],
+  pages: {
+    signIn: "/signIn",
+  },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: IUser }): Promise<JWT> {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.surname = user.surname;
-      }
-      return token;
+    async jwt({ token, user }: { token: JWT; user: User }): Promise<JWT> {
+      return { ...token, ...user };
     },
     async session({
       session,
@@ -61,11 +60,7 @@ export const options = {
       session: Session;
       token: JWT;
     }): Promise<Session> {
-      if (session?.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.surname = token.surname;
-      }
+      session.user = token as any;
       return session;
     },
   },

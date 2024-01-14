@@ -1,5 +1,4 @@
 import { ReportControl } from "./control";
-import { Identification } from "./identification";
 
 export interface CompanyData {
   ID: string;
@@ -23,13 +22,11 @@ export interface CompanyData {
   E_MAIL: string;
   WEBSITE: string;
   SOCIAL: string;
+  ANSWER: number;
   TSIC_CHG?: number;
 }
 
-export interface CompanyReport
-  extends Identification,
-    CompanyData,
-    ReportControl {
+export interface CompanyReport extends ReportControl {
   DES_TYPE?: string;
   TYPE?: number;
   M1?: string;
@@ -104,5 +101,6 @@ export interface ReportStatus {
   isSendQtr3: boolean;
   isSendQtr4: boolean;
   year: number;
+  province: number;
   report: { updatedAt: string }[];
 }

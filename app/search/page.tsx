@@ -5,8 +5,8 @@ import Input from "@/components/Input";
 import Loading from "@/components/Loading";
 import Title from "@/components/Title";
 import { errorHandler } from "@/helpers/errorHandler";
-import { ReportStatus } from "@/types/report";
-import { SearchForm, searchIdSchema } from "@/types/searchSchema";
+import { ReportStatus } from "@/types/dto/report";
+import { SearchForm, searchIdSchema } from "@/types/schemas/searchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Empty, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
+import useClientSession from "@/hooks/use-client-session";
 
 interface Response {
   hasControl: boolean;
@@ -61,6 +62,8 @@ const SearchPage = () => {
   } = useForm<SearchForm>({
     resolver: zodResolver(searchIdSchema),
   });
+
+  const session = useClientSession();
 
   const mapTagColor = (tag: string) => {
     let color = "";
@@ -331,7 +334,7 @@ const SearchPage = () => {
   ];
 
   const data: DataType[] = [];
-  if (response.hasControl) {
+  if (response.hasControl && response.reportStatus.length > 0) {
     for (const item of response.reportStatus) {
       const {
         id,
@@ -416,7 +419,16 @@ const SearchPage = () => {
   const onSearchId = handleSubmit(async (data) => {
     try {
       setLoading(true);
-      const res = await axios.post("/api/searchId", data);
+      let res;
+      if (session) {
+        res = await axios.post(
+          "/api/searchId",
+          { data, province: session.user.province },
+          { headers: { accessToken: session.user.accessToken } }
+        );
+      } else {
+        res = await axios.post("/api/searchId", { data });
+      }
 
       if (res.status === 200) {
         setResponse(res.data);
@@ -437,7 +449,7 @@ const SearchPage = () => {
       <div className="card">
         <form onSubmit={onSearchId} className="flex flex-col gap-5">
           <label className="w-ful">
-            กรุณากรอกเลขสถานประกอบการของท่าน{" "}
+            กรุณากรอกเลขที่สถานประกอบการของท่าน{" "}
             <span className="text-blue-500">
               (กดปุ่ม Enter หรือ Icon แว่นขยายเพื่อทำการค้นหา)
             </span>
@@ -466,12 +478,12 @@ const SearchPage = () => {
           </>
         ) : (
           isSubmitSuccessful &&
-          (response.hasControl ? (
+          (response.hasControl && response.reportStatus.length > 0 ? (
             <>
               <hr className="my-5" />
               <div className="flex flex-col gap-3">
                 <h1>ตารางรายงานสถานะการส่งแบบฟอร์มของ</h1>
-                <p>เลขที่สถานประกอบการ: {response.reportStatus[0].ID}</p>
+                <p>เลขที่สถานประกอบการ: {id}</p>
                 <Table
                   columns={columns}
                   dataSource={data}

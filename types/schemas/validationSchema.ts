@@ -75,7 +75,8 @@ export const createReportSchema = z
       })
       .gte(47111, "TSIC_R ที่กรอกไม่ถูกต้อง")
       .lte(96309, "TSIC_R ที่กรอกไม่ถูกต้อง")
-      .refine((data) => TSIC_R_ARR.includes(data), "TSIC_R ที่กรอกไม่ถูกต้อง"),
+      .refine((data) => TSIC_R_ARR.includes(data), "TSIC_R ที่กรอกไม่ถูกต้อง")
+      .optional(),
     TSIC_L: z
       .number({
         required_error: "กรุณากรอก TSIC_L",
@@ -90,7 +91,8 @@ export const createReportSchema = z
         invalid_type_error: "SIZE_R ที่กรอกไม่ถูกต้อง",
       })
       .gte(1, "SIZE_R ที่กรอกไม่ถูกต้อง")
-      .lte(12, "SIZE_R ที่กรอกไม่ถูกต้อง"),
+      .lte(12, "SIZE_R ที่กรอกไม่ถูกต้อง")
+      .optional(),
     SIZE_L: z
       .number({
         required_error: "กรุณากรอก SIZE_L",
@@ -123,11 +125,10 @@ export const createReportSchema = z
       })
       .gte(1, "ENU ที่กรอกไม่ถูกต้อง")
       .lte(11, "ENU ที่กรอกไม่ถูกต้อง"),
-    TITLE: z
-      .string()
-      .min(1, "กรุณากรอกคำนำหน้านาม")
-      .max(10, "คำนำหน้านามห้ามยาวเกินกว่า 10 ตัวอักษร")
-      .refine((data) => !hasNumber(data), "คำนำหน้านามห้ามมีตัวเลข"),
+    TITLE: z.string({
+      required_error: "กรุณาเลือกคำนำหน้านาม",
+      invalid_type_error: "คำนำหน้านามไม่ถูกต้อง",
+    }),
     RANK: z
       .string()
       .min(1, "กรุณากรอกยศ")
@@ -143,10 +144,10 @@ export const createReportSchema = z
       .min(1, "กรุณากรอกนามสกุล")
       .max(60, "นามสกุลห้ามยาวเกินกว่า 60 ตัวอักษร")
       .refine((data) => !hasNumber(data), "นามสกุลห้ามมีตัวเลข"),
-    EST_TITLE: z
-      .string()
-      .min(1, "กรุณากรอกคำนำหน้าชื่อสถานประกอบการ")
-      .max(10, "คำนำหน้าชื่อสถานประกอบการห้ามยาวเกินกว่า 10 ตัวอักษร"),
+    EST_TITLE: z.string({
+      required_error: "กรุณาเลือกคำนำหน้าชื่อสถานประกอบการ",
+      invalid_type_error: "คำนำหน้าชื่อสถานประกอบการไม่ถูกต้อง",
+    }),
     EST_NAME: z
       .string()
       .min(1, "กรุณากรอกชื่อสถานประกอบการ")
@@ -218,6 +219,13 @@ export const createReportSchema = z
       .string()
       .min(1, "กรุณากรอก Social Media")
       .max(30, "Social Media ห้ามยาวเกินกว่า 30 ตัวอักษร"),
+    ANSWER: z
+      .number({
+        required_error: "กรุณาเลือกวิธีตอบแบบสอบถาม",
+        invalid_type_error: "วิธีตอบแบบสอบถามไม่ถูกต้อง",
+      })
+      .gte(1, "วิธีตอบแบบสอบถามไม่ถูกต้อง")
+      .lte(2, "วิธีตอบแบบสอบถามไม่ถูกต้อง"),
     DES_TYPE: z
       .string()
       .min(1, "กรุณากรอกรายละเอียดประเภทกิจการ")
@@ -537,10 +545,23 @@ export const createReportSchema = z
       .gte(1, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .lte(5, "ความคิดเห็นที่เลือกไม่ถูกต้อง")
       .optional(),
-    P1: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P2: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P3: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
-    P4: z.union([z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง"), z.literal("")]),
+    P1: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").optional(),
+      z.literal(""),
+    ]),
+    P2: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").optional(),
+      z.literal(""),
+    ]),
+    P3: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").optional(),
+      z.literal(""),
+    ]),
+    P4: z
+      .string()
+      .min(1, "กรุณากรอกรหัสเจ้าหน้าที่")
+      .length(7, "รหัสที่กรอกไม่ถูกต้อง")
+      .optional(),
   })
   .superRefine(
     (

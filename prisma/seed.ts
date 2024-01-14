@@ -45,6 +45,7 @@ async function main() {
       create: {
         ID: es_id.toString(),
         year: 67,
+        province: cwt,
         canCreateQtr1: true,
         canCreateQtr2: false,
         canCreateQtr3: false,

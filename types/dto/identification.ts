@@ -6,9 +6,9 @@ export interface Identification {
   MUN: number;
   EA: string;
   VIL: string;
-  TSIC_R: number;
+  TSIC_R?: number;
   TSIC_L: number;
-  SIZE_R: string;
+  SIZE_R?: string;
   SIZE_L: string;
   NO: string;
   QTR: number;
