@@ -390,12 +390,12 @@ const SearchPage = () => {
       let res;
       if (session) {
         res = await axios.post(
-          "/api/searchId",
+          "/api/report_status",
           { data, province: session.user.province },
           { headers: { accessToken: session.user.accessToken } }
         );
       } else {
-        res = await axios.post("/api/searchId", { data });
+        res = await axios.post("/api/report_status", { data });
       }
 
       if (res.status === 200) {

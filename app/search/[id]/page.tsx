@@ -204,7 +204,7 @@ const FormPage = () => {
   const getIdenFromControl = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/searchId/${params.id}`);
+      const res = await axios.get(`/api/control/${params.id}`);
       if (res.status === 200) {
         if (res.data) {
           const {
@@ -300,7 +300,7 @@ const FormPage = () => {
   const getIdenFromPrevQtr = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/searchId/${params.id}`, {
+      const res = await axios.get(`/api/control/${params.id}`, {
         params: { quarter: qtr, year: yr },
       });
 
