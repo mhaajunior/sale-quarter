@@ -13,6 +13,7 @@ import {
 } from "@/helpers/common";
 import { calcQuarter, checkDateBetween, quarterMap } from "@/helpers/quarter";
 import {
+  checkErrorFromRole,
   consistencyCheck1,
   consistencyCheck2,
   validateFormData,
@@ -63,7 +64,7 @@ const FormPage = () => {
   const mode = searchParams.get("mode");
   const router = useRouter();
   const session = useClientSession();
-  console.log(session);
+
   const {
     register,
     watch,
@@ -81,10 +82,10 @@ const FormPage = () => {
       R3_temp: "",
       TR_temp: "",
       LG1_temp: "1",
-      TYPE: 0,
       QTR: qtr,
       YR: yr,
       ENU: 1,
+      TYPE: session ? 0 : undefined,
     },
   });
   const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[
@@ -534,7 +535,7 @@ const FormPage = () => {
           setValue("VIL", Number(VIL));
           setValue("TSIC_R", TSIC_R);
           setValue("TSIC_L", TSIC_L);
-          setValue("SIZE_R", Number(SIZE_R));
+          setValue("SIZE_R", Number(SIZE_R) || undefined);
           setValue("SIZE_L", Number(SIZE_L));
           setValue("NO", Number(NO));
           setValue("ENU", Number(ENU));
@@ -567,7 +568,7 @@ const FormPage = () => {
           setValue("R3_temp", R3?.toString());
           setValue("TR_temp", TR?.toString());
           setValue("SI", SI);
-          setValue("ITR", Number(ITR));
+          setValue("ITR", Number(ITR) || undefined);
           setValue("SI1", SI1 === 1 ? true : false);
           setValue("SI2", SI2 === 1 ? true : false);
           setValue("SI3", SI3 === 1 ? true : false);
@@ -655,9 +656,9 @@ const FormPage = () => {
   const onSubmit = handleSubmit(async (data) => {
     let err: FormErrors[] = [];
     if (data.ENU === 1) {
-      err = consistencyCheck1(data, session?.user.role);
+      err = checkErrorFromRole(data, session?.user.role, 1);
     } else {
-      err = consistencyCheck2(data, session?.user.role);
+      err = checkErrorFromRole(data, session?.user.role, 2);
     }
     if (err.length > 0) {
       setFormErrors(err);
@@ -669,7 +670,7 @@ const FormPage = () => {
       try {
         setLoading(true);
         const res = await axios.post("/api/report", result, {
-          headers: { mode },
+          headers: { mode, role: session?.user.role },
         });
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");
@@ -712,8 +713,6 @@ const FormPage = () => {
       }
     });
   };
-
-  console.log(errors);
 
   return (
     <>

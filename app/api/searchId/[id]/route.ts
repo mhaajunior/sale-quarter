@@ -2,6 +2,7 @@ import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// get related data from previous quarter to be new control for current quarter
 export const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -73,6 +74,19 @@ export const GET = async (
         },
       });
       if (report) {
+        const qtr1Report = await prisma.report.findUnique({
+          where: {
+            uniqueReport: { ID: companyId, YR: year, QTR: 1 },
+          },
+          select: {
+            TSIC_R: true,
+            SIZE_R: true,
+          },
+        });
+
+        report.TSIC_L = qtr1Report?.TSIC_R!;
+        report.SIZE_L = qtr1Report?.SIZE_R!;
+
         for (const [key, value] of Object.entries(report)) {
           if (!value) {
             delete report[key as keyof typeof report];

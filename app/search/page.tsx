@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 import useClientSession from "@/hooks/use-client-session";
+import { quarterMap } from "@/helpers/quarter";
 
 interface Response {
   hasControl: boolean;
@@ -30,13 +31,22 @@ interface QtrAction {
   isSend: boolean;
 }
 
+interface SendStatus {
+  passOpenDate: boolean;
+  company: string;
+  p1: string;
+  p2: string;
+  p3: string;
+  p4: string;
+}
+
 interface DataType {
   key: React.Key;
   year: number;
-  qtr1Status: string[];
-  qtr2Status: string[];
-  qtr3Status: string[];
-  qtr4Status: string[];
+  qtr1Status: SendStatus;
+  qtr2Status: SendStatus;
+  qtr3Status: SendStatus;
+  qtr4Status: SendStatus;
   qtr1Action: QtrAction;
   qtr2Action: QtrAction;
   qtr3Action: QtrAction;
@@ -57,7 +67,6 @@ const SearchPage = () => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<SearchForm>({
     resolver: zodResolver(searchIdSchema),
@@ -81,6 +90,71 @@ const SearchPage = () => {
     return color;
   };
 
+  const renderTags = (status: SendStatus) => {
+    if (!status.passOpenDate) {
+      return <Tag color="default">ไม่อยู่ในช่วงเวลา</Tag>;
+    }
+
+    if (!session) {
+      return <Tag color={mapTagColor(status.company)}>{status.company}</Tag>;
+    } else {
+      return (
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3 items-center justify-between">
+            <p className="text-left">สถานประกอบการ</p>
+            <div>
+              <Tag color={mapTagColor(status.company)}>{status.company}</Tag>
+            </div>
+          </div>
+          <div className="flex gap-3 items-center justify-between">
+            <p className="text-left">เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล</p>
+            <div>
+              <Tag color={mapTagColor(status.p1)}>{status.p1}</Tag>
+            </div>
+          </div>
+          <div className="flex gap-3 items-center justify-between">
+            <p className="text-left">เจ้าหน้าที่บรรณาธิกรและลงรหัส</p>
+            <div>
+              <Tag color={mapTagColor(status.p2)}>{status.p2}</Tag>
+            </div>
+          </div>
+          <div className="flex gap-3 items-center justify-between">
+            <p className="text-left">เจ้าหน้าที่บันทึกข้อมูล</p>
+            <div>
+              <Tag color={mapTagColor(status.p3)}>{status.p3}</Tag>
+            </div>
+          </div>
+          <div className="flex gap-3 items-center justify-between">
+            <p className="text-left">ผู้ตรวจ</p>
+            <div>
+              <Tag color={mapTagColor(status.p4)}>{status.p4}</Tag>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  const renderActions = (actions: QtrAction) => {
+    return (
+      <div className="flex justify-center">
+        {actions.canCreate ? (
+          actions.isSend ? (
+            <Link href={`/search/${id}?yr=${actions.year}&qtr=1&mode=edit`}>
+              <Button warning>แก้ไข</Button>
+            </Link>
+          ) : (
+            <Link href={`/search/${id}?yr=${actions.year}&qtr=1&mode=create`}>
+              <Button secondary>สร้าง</Button>
+            </Link>
+          )
+        ) : (
+          ""
+        )}
+      </div>
+    );
+  };
+
   const columns: ColumnsType<DataType> = [
     {
       title: "ปี",
@@ -100,54 +174,23 @@ const SearchPage = () => {
               title: "สถานะ",
               dataIndex: "qtr1Status",
               key: "qtr1Status",
-              width: "8%",
+              width: "12%",
               align: "center",
-              render: (_, { qtr1Status }) => (
-                <>
-                  {qtr1Status.map((tag, index) => {
-                    let color = mapTagColor(tag);
-                    return (
-                      <Tag color={color} key={index}>
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </>
-              ),
+              render: (_, { qtr1Status }) => renderTags(qtr1Status),
             },
             {
               title: "แบบฟอร์ม",
               dataIndex: "qtr1Action",
               key: "qtr1Action",
-              width: "8%",
+              width: "6%",
               align: "center",
-              render: (_, { qtr1Action }) => (
-                <div className="flex justify-center">
-                  {qtr1Action.canCreate ? (
-                    qtr1Action.isSend ? (
-                      <Link
-                        href={`/search/${id}?yr=${qtr1Action.year}&qtr=1&mode=edit`}
-                      >
-                        <Button warning>แก้ไข</Button>
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/search/${id}?yr=${qtr1Action.year}&qtr=1&mode=create`}
-                      >
-                        <Button secondary>สร้าง</Button>
-                      </Link>
-                    )
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ),
+              render: (_, { qtr1Action }) => renderActions(qtr1Action),
             },
             {
               title: "วันแก้ไขล่าสุด",
               dataIndex: "qtr1DateModified",
               key: "qtr1DateModified",
-              width: "8%",
+              width: "6%",
               align: "center",
             },
           ],
@@ -159,54 +202,23 @@ const SearchPage = () => {
               title: "สถานะ",
               dataIndex: "qtr2Status",
               key: "qtr2Status",
-              width: "8%",
+              width: "12%",
               align: "center",
-              render: (_, { qtr2Status }) => (
-                <>
-                  {qtr2Status.map((tag, index) => {
-                    let color = mapTagColor(tag);
-                    return (
-                      <Tag color={color} key={index}>
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </>
-              ),
+              render: (_, { qtr2Status }) => renderTags(qtr2Status),
             },
             {
               title: "แบบฟอร์ม",
               dataIndex: "qtr2Action",
               key: "qtr2Action",
-              width: "8%",
+              width: "6%",
               align: "center",
-              render: (_, { qtr2Action }) => (
-                <div className="flex justify-center">
-                  {qtr2Action.canCreate ? (
-                    qtr2Action.isSend ? (
-                      <Link
-                        href={`/search/${id}?yr=${qtr2Action.year}&qtr=1&mode=edit`}
-                      >
-                        <Button warning>แก้ไข</Button>
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/search/${id}?yr=${qtr2Action.year}&qtr=1&mode=create`}
-                      >
-                        <Button secondary>สร้าง</Button>
-                      </Link>
-                    )
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ),
+              render: (_, { qtr2Action }) => renderActions(qtr2Action),
             },
             {
               title: "วันแก้ไขล่าสุด",
               dataIndex: "qtr2DateModified",
               key: "qtr2DateModified",
-              width: "8%",
+              width: "6%",
               align: "center",
             },
           ],
@@ -218,54 +230,23 @@ const SearchPage = () => {
               title: "สถานะ",
               dataIndex: "qtr3Status",
               key: "qtr3Status",
-              width: "8%",
+              width: "12%",
               align: "center",
-              render: (_, { qtr3Status }) => (
-                <>
-                  {qtr3Status.map((tag, index) => {
-                    let color = mapTagColor(tag);
-                    return (
-                      <Tag color={color} key={index}>
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </>
-              ),
+              render: (_, { qtr3Status }) => renderTags(qtr3Status),
             },
             {
               title: "แบบฟอร์ม",
               dataIndex: "qtr3Action",
               key: "qtr3Action",
-              width: "8%",
+              width: "6%",
               align: "center",
-              render: (_, { qtr3Action }) => (
-                <div className="flex justify-center">
-                  {qtr3Action.canCreate ? (
-                    qtr3Action.isSend ? (
-                      <Link
-                        href={`/search/${id}?yr=${qtr3Action.year}&qtr=1&mode=edit`}
-                      >
-                        <Button warning>แก้ไข</Button>
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/search/${id}?yr=${qtr3Action.year}&qtr=1&mode=create`}
-                      >
-                        <Button secondary>สร้าง</Button>
-                      </Link>
-                    )
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ),
+              render: (_, { qtr3Action }) => renderActions(qtr3Action),
             },
             {
               title: "วันแก้ไขล่าสุด",
               dataIndex: "qtr3DateModified",
               key: "qtr3DateModified",
-              width: "8%",
+              width: "6%",
               align: "center",
             },
           ],
@@ -277,54 +258,23 @@ const SearchPage = () => {
               title: "สถานะ",
               dataIndex: "qtr4Status",
               key: "qtr4Status",
-              width: "8%",
+              width: "12%",
               align: "center",
-              render: (_, { qtr4Status }) => (
-                <>
-                  {qtr4Status.map((tag, index) => {
-                    let color = mapTagColor(tag);
-                    return (
-                      <Tag color={color} key={index}>
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </>
-              ),
+              render: (_, { qtr4Status }) => renderTags(qtr4Status),
             },
             {
               title: "แบบฟอร์ม",
               dataIndex: "qtr4Action",
               key: "qtr4Action",
-              width: "8%",
+              width: "6%",
               align: "center",
-              render: (_, { qtr4Action }) => (
-                <div className="flex justify-center">
-                  {qtr4Action.canCreate ? (
-                    qtr4Action.isSend ? (
-                      <Link
-                        href={`/search/${id}?yr=${qtr4Action.year}&qtr=1&mode=edit`}
-                      >
-                        <Button warning>แก้ไข</Button>
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/search/${id}?yr=${qtr4Action.year}&qtr=1&mode=create`}
-                      >
-                        <Button secondary>สร้าง</Button>
-                      </Link>
-                    )
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ),
+              render: (_, { qtr4Action }) => renderActions(qtr4Action),
             },
             {
               title: "วันแก้ไขล่าสุด",
               dataIndex: "qtr4DateModified",
               key: "qtr4DateModified",
-              width: "8%",
+              width: "6%",
               align: "center",
             },
           ],
@@ -348,54 +298,72 @@ const SearchPage = () => {
         isSendQtr3,
         isSendQtr4,
       } = item;
-      const qtr1Tag = [];
-      const qtr2Tag = [];
-      const qtr3Tag = [];
-      const qtr4Tag = [];
 
-      if (isSendQtr1) {
-        qtr1Tag.push("ส่งแล้ว");
-      } else {
-        if (!canCreateQtr1) {
-          qtr1Tag.push("ไม่อยู่ในช่วงเวลา");
-        } else {
-          qtr1Tag.push("ยังไม่ส่ง");
+      const quarterStatus: SendStatus[] = [];
+      for (let i = 0; i < 4; i++) {
+        const qtrTag: SendStatus = {
+          passOpenDate: false,
+          company: "ยังไม่ส่ง",
+          p1: "ยังไม่ส่ง",
+          p2: "ยังไม่ส่ง",
+          p3: "ยังไม่ส่ง",
+          p4: "ยังไม่ส่ง",
+        };
+        let isSend;
+        const res = quarterMap(Number("25" + year) - 543);
+        const startDate = moment(res[i].formSubmittedRange[0]);
+        const now = moment();
+
+        if (now > startDate) {
+          qtrTag.passOpenDate = true;
+        }
+
+        switch (i) {
+          case 0:
+            isSend = isSendQtr1;
+            break;
+          case 1:
+            isSend = isSendQtr2;
+            break;
+          case 2:
+            isSend = isSendQtr3;
+            break;
+          case 3:
+            isSend = isSendQtr4;
+            break;
+        }
+
+        if (isSend) {
+          qtrTag.company = "ส่งแล้ว";
+        }
+
+        if (item.report) {
+          const reportQtr = item.report[i] || null;
+          if (reportQtr) {
+            if (reportQtr.P1) {
+              qtrTag.p1 = "ส่งแล้ว";
+            }
+            if (reportQtr.P2) {
+              qtrTag.p2 = "ส่งแล้ว";
+            }
+            if (reportQtr.P3) {
+              qtrTag.p3 = "ส่งแล้ว";
+            }
+            if (reportQtr.P4) {
+              qtrTag.p4 = "ส่งแล้ว";
+            }
+          }
+          quarterStatus.push(qtrTag);
         }
       }
-      if (isSendQtr2) {
-        qtr2Tag.push("ส่งแล้ว");
-      } else {
-        if (!canCreateQtr2) {
-          qtr2Tag.push("ไม่อยู่ในช่วงเวลา");
-        } else {
-          qtr2Tag.push("ยังไม่ส่ง");
-        }
-      }
-      if (isSendQtr3) {
-        qtr3Tag.push("ส่งแล้ว");
-      } else {
-        if (!canCreateQtr3) {
-          qtr3Tag.push("ไม่อยู่ในช่วงเวลา");
-        } else {
-          qtr3Tag.push("ยังไม่ส่ง");
-        }
-      }
-      if (isSendQtr4) {
-        qtr4Tag.push("ส่งแล้ว");
-      } else {
-        if (!canCreateQtr4) {
-          qtr4Tag.push("ไม่อยู่ในช่วงเวลา");
-        } else {
-          qtr4Tag.push("ยังไม่ส่ง");
-        }
-      }
+
       data.push({
         key: id,
         year,
-        qtr1Status: qtr1Tag,
-        qtr2Status: qtr2Tag,
-        qtr3Status: qtr3Tag,
-        qtr4Status: qtr4Tag,
+        qtr1Status: quarterStatus[0],
+        qtr2Status: quarterStatus[1],
+        qtr3Status: quarterStatus[2],
+        qtr4Status: quarterStatus[3],
         qtr1Action: { year, canCreate: canCreateQtr1, isSend: isSendQtr1 },
         qtr2Action: { year, canCreate: canCreateQtr2, isSend: isSendQtr2 },
         qtr3Action: { year, canCreate: canCreateQtr3, isSend: isSendQtr3 },
@@ -438,7 +406,6 @@ const SearchPage = () => {
       errorHandler(err);
     }
     setLoading(false);
-    reset();
   });
 
   return (
@@ -482,14 +449,14 @@ const SearchPage = () => {
             <>
               <hr className="my-5" />
               <div className="flex flex-col gap-3">
-                <h1>ตารางรายงานสถานะการส่งแบบฟอร์มของ</h1>
+                <h1>ตารางรายงานสถานะการส่งแบบฟอร์ม</h1>
                 <p>เลขที่สถานประกอบการ: {id}</p>
                 <Table
                   columns={columns}
                   dataSource={data}
                   bordered
                   size="middle"
-                  scroll={{ x: "calc(1200px + 50%)" }}
+                  scroll={{ x: "calc(1500px + 50%)" }}
                   pagination={false}
                 />
               </div>

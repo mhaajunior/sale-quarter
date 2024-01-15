@@ -70,8 +70,7 @@ export const createReportSchema = z
       .lte(99, "หมู่บ้านที่กรอกไม่ถูกต้อง"),
     TSIC_R: z
       .number({
-        required_error: "กรุณากรอก TSIC_R",
-        invalid_type_error: "TSIC_R ที่กรอกไม่ถูกต้อง",
+        invalid_type_error: "กรุณากรอก TSIC_R",
       })
       .gte(47111, "TSIC_R ที่กรอกไม่ถูกต้อง")
       .lte(96309, "TSIC_R ที่กรอกไม่ถูกต้อง")
@@ -87,8 +86,7 @@ export const createReportSchema = z
       .refine((data) => TSIC_R_ARR.includes(data), "TSIC_L ที่กรอกไม่ถูกต้อง"),
     SIZE_R: z
       .number({
-        required_error: "กรุณากรอก SIZE_R",
-        invalid_type_error: "SIZE_R ที่กรอกไม่ถูกต้อง",
+        invalid_type_error: "กรุณากรอก SIZE_R",
       })
       .gte(1, "SIZE_R ที่กรอกไม่ถูกต้อง")
       .lte(12, "SIZE_R ที่กรอกไม่ถูกต้อง")
@@ -557,11 +555,10 @@ export const createReportSchema = z
       z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").optional(),
       z.literal(""),
     ]),
-    P4: z
-      .string()
-      .min(1, "กรุณากรอกรหัสเจ้าหน้าที่")
-      .length(7, "รหัสที่กรอกไม่ถูกต้อง")
-      .optional(),
+    P4: z.union([
+      z.string().length(7, "รหัสที่กรอกไม่ถูกต้อง").optional(),
+      z.literal(""),
+    ]),
   })
   .superRefine(
     (

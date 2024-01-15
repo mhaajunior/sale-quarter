@@ -4,6 +4,7 @@ import { searchIdSchema } from "@/types/schemas/searchSchema";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// find company id in search page and return status
 export const POST = async (req: NextRequest) => {
   const accessToken = req.headers.get("accessToken");
   const body = await req.json();
@@ -43,7 +44,7 @@ export const POST = async (req: NextRequest) => {
         orderBy: [{ year: "desc" }],
         include: {
           report: {
-            select: { updatedAt: true },
+            select: { updatedAt: true, P1: true, P2: true, P3: true, P4: true },
             orderBy: { QTR: "asc" },
           },
         },

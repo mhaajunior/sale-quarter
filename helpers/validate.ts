@@ -12,18 +12,64 @@ export const validateFormData = (data: ReportForm) => {
   return data;
 };
 
-export const consistencyCheck1 = (data: ReportForm, role: Role | undefined) => {
-  const errData: FormErrors[] = [];
-  const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY, P1, P2, P3 } = data;
-
-  if (role && role === Role.INTERVIEWER) {
-    if (!(P1 && P2 && P3)) {
+export const checkErrorFromRole = (
+  data: ReportForm,
+  role: Role | undefined,
+  mode: number
+) => {
+  let errData: FormErrors[] = [];
+  const { TSIC_R, SIZE_R, TYPE, P1, P2, P3, P4 } = data;
+  if (role) {
+    if (!TSIC_R) {
       errData.push({
-        label: ["P1", "P2", "P3"],
-        message: "กรุณากรอกรหัสเจ้าหน้าที่อย่างน้อย 1 ช่อง",
+        label: ["TSIC_R"],
+        message: "กรุณากรอก TSIC_R",
       });
     }
+
+    if (!SIZE_R) {
+      errData.push({
+        label: ["SIZE_R"],
+        message: "กรุณากรอก SIZE_R",
+      });
+    }
+
+    if (!TYPE) {
+      errData.push({
+        label: ["TYPE"],
+        message: "กรุณากรอก TYPE",
+      });
+    }
+
+    if (role === Role.INTERVIEWER) {
+      if (!(P1 || P2 || P3)) {
+        errData.push({
+          label: ["P1", "P2", "P3"],
+          message: "กรุณากรอกรหัสเจ้าหน้าที่อย่างน้อย 1 ช่อง",
+        });
+      }
+    } else if (role === Role.SUPERVISOR) {
+      if (!P4) {
+        errData.push({
+          label: ["P4"],
+          message: "กรุณากรอก P4",
+        });
+      }
+    }
   }
+  let res;
+  if (mode === 1) {
+    res = consistencyCheck1(data);
+  } else {
+    res = consistencyCheck2(data);
+  }
+  errData = [...errData, ...res];
+  return errData;
+};
+
+export const consistencyCheck1 = (data: ReportForm) => {
+  const errData: FormErrors[] = [];
+  const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
 
   if (
     EMP &&
@@ -137,18 +183,9 @@ export const consistencyCheck1 = (data: ReportForm, role: Role | undefined) => {
   return errData;
 };
 
-export const consistencyCheck2 = (data: ReportForm, role: Role | undefined) => {
+export const consistencyCheck2 = (data: ReportForm) => {
   const errData: FormErrors[] = [];
-  const { SIZE_R, TSIC_R, TSIC_L, SIZE_L, P1, P2, P3 } = data;
-
-  if (role && role === Role.INTERVIEWER) {
-    if (!(P1 && P2 && P3)) {
-      errData.push({
-        label: ["P1", "P2", "P3"],
-        message: "กรุณากรอกรหัสเจ้าหน้าที่อย่างน้อย 1 ช่อง",
-      });
-    }
-  }
+  const { SIZE_R, TSIC_R, TSIC_L, SIZE_L } = data;
 
   if (TSIC_R !== TSIC_L) {
     errData.push({

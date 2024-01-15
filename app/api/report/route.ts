@@ -3,12 +3,14 @@ import prisma from "@/prisma/db";
 import { CompanyReport } from "@/types/dto/report";
 import { createReportSchema } from "@/types/schemas/validationSchema";
 import { rangeCheck } from "@/utils/rangeCheck";
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// create and edit report
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const mode = req.headers.get("mode");
+  const role = req.headers.get("role");
 
   const validation = createReportSchema.safeParse(body);
   if (!validation.success) {
@@ -127,6 +129,7 @@ export const POST = async (req: NextRequest) => {
   let si5 = null;
   let si6 = null;
   let si7 = null;
+  let p4 = P4;
 
   if (SI === 2) {
     if (SI1) {
@@ -167,6 +170,21 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
+    if (mode === "edit" && role !== Role.SUPERVISOR) {
+      const report = await prisma.report.findUnique({
+        where: {
+          uniqueReport: { ID, YR, QTR },
+        },
+        select: {
+          P4: true,
+        },
+      });
+
+      if (report?.P4) {
+        p4 = null;
+      }
+    }
+
     await prisma.report.upsert({
       where: { uniqueReport: { ID, YR, QTR } },
       update: {
@@ -260,10 +278,10 @@ export const POST = async (req: NextRequest) => {
         OP10: OP10 || null,
         OP11: OP11 || null,
         OP12: OP12 || null,
-        P1: P1 || null,
-        P2: P2 || null,
-        P3: P3 || null,
-        P4: P4 || null,
+        P1,
+        P2,
+        P3,
+        P4: p4,
       },
       create: {
         ID,

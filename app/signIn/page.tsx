@@ -79,7 +79,7 @@ const SignInPage = (props: Props) => {
             <Image src={logo} alt="nso logo" width={200} priority />
           </div>
           <form
-            className="w-[500px] flex flex-col gap-8 items-center relative !px-16"
+            className="w-[300px] md:w-[500px] flex flex-col gap-8 items-center relative !px-5 md:!px-16"
             onSubmit={onSubmit}
           >
             <div>

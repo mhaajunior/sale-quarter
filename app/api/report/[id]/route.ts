@@ -2,6 +2,7 @@ import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// get all report data when user want to edit report
 export const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }

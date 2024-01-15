@@ -102,5 +102,11 @@ export interface ReportStatus {
   isSendQtr4: boolean;
   year: number;
   province: number;
-  report: { updatedAt: string }[];
+  report: {
+    updatedAt: string;
+    P1: string;
+    P2: string;
+    P3: string;
+    P4: string;
+  }[];
 }
