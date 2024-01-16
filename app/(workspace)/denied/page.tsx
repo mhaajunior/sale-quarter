@@ -29,12 +29,8 @@ const DeniedPage = () => {
     <div className="flex flex-col gap-5 font-bold justify-center items-center">
       <FaUserLock className="text-[200px]" />
       {renderedMessage()}
-      <Button
-        className="m-auto p-5"
-        primary
-        onClick={() => router.push("/search")}
-      >
-        กลับไปหน้าค้นหา
+      <Button className="m-auto p-5" primary onClick={() => router.push("/")}>
+        กลับไปหน้าแรก
       </Button>
     </div>
   );

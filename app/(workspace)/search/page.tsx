@@ -411,7 +411,7 @@ const SearchPage = () => {
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title="ค้นหาสถานประกอบการ" />
+        <Title title="ค้นหาสถานประกอบการ"></Title>
       </div>
       <div className="card">
         <form onSubmit={onSearchId} className="flex flex-col gap-5">

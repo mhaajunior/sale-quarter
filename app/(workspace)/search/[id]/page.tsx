@@ -12,12 +12,7 @@ import {
   removeNonNumeric,
 } from "@/helpers/common";
 import { calcQuarter, checkDateBetween, quarterMap } from "@/helpers/quarter";
-import {
-  checkErrorFromRole,
-  consistencyCheck1,
-  consistencyCheck2,
-  validateFormData,
-} from "@/helpers/validate";
+import { checkErrorFromRole, validateFormData } from "@/helpers/validate";
 import {
   ReportForm,
   createReportSchema,
@@ -85,7 +80,6 @@ const FormPage = () => {
       QTR: qtr,
       YR: yr,
       ENU: 1,
-      TYPE: session ? 0 : undefined,
     },
   });
   const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[
@@ -674,7 +668,11 @@ const FormPage = () => {
         });
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");
-          router.push("/search");
+          if (session?.user.role === Role.SUPERVISOR) {
+            router.push("/list");
+          } else {
+            router.push("/search");
+          }
         }
       } catch (err: any) {
         errorHandler(err);
@@ -1190,10 +1188,7 @@ const FormPage = () => {
             </div>
             {enu === 8 && (
               <div className="flex items-center gap-5">
-                <label className="w-32">
-                  รหัส TSIC นอกข่ายการสำรวจฯ
-                  <span className="text-red-500">*</span>
-                </label>
+                <label className="w-32">รหัส TSIC นอกข่ายการสำรวจฯ</label>
                 <Input
                   name="TSIC_CHG"
                   type="number"

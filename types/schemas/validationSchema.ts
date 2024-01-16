@@ -474,15 +474,13 @@ export const createReportSchema = z
       ])
       .optional(),
     STO: z.number().max(999999999999).nonnegative().optional(),
-    DAY: z.union([
-      z.coerce
-        .number({ invalid_type_error: "จำนวนวันต้องเป็นตัวเลข" })
-        .int("จำนวนวันต้องเป็นจำนวนเต็ม")
-        .nonnegative("จำนวนวันห้ามเป็นลบ")
-        .lte(365, "จำนวนวันห้ามเกิน 365 วัน")
-        .nullable(),
-      z.literal(null),
-    ]),
+    DAY: z.coerce
+      .number({ invalid_type_error: "จำนวนวันต้องเป็นตัวเลข" })
+      .int("จำนวนวันต้องเป็นจำนวนเต็ม")
+      .nonnegative("จำนวนวันห้ามเป็นลบ")
+      .lte(365, "จำนวนวันห้ามเกิน 365 วัน")
+      .nullable()
+      .optional(),
     OP1: z
       .number({ invalid_type_error: "กรุณาเลือกความคิดเห็นในข้อนี้" })
       .gte(1, "ความคิดเห็นที่เลือกไม่ถูกต้อง")

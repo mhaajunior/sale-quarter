@@ -110,14 +110,24 @@ const SignInPage = (props: Props) => {
               icon={visible ? <FaRegEyeSlash /> : <FaRegEye />}
               onIconClick={() => setVisible((prevState) => !prevState)}
             />
-            <Button
-              type="submit"
-              primary
-              className="w-60 md:w-72"
-              loading={loading}
-            >
-              เข้าสู่ระบบ
-            </Button>
+            <div>
+              <Button
+                type="submit"
+                primary
+                className="w-60 md:w-72"
+                loading={loading}
+              >
+                เข้าสู่ระบบ
+              </Button>
+              <p className="text-center">
+                <span
+                  className="cursor-pointer hover:text-black"
+                  onClick={() => router.push("/")}
+                >
+                  กลับไปหน้าแรก
+                </span>
+              </p>
+            </div>
           </form>
         </div>
       </div>

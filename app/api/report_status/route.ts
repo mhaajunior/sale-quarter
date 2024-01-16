@@ -14,7 +14,7 @@ export const POST = async (req: NextRequest) => {
 
   if (accessToken) {
     if (!verifyJwt(accessToken)) {
-      return NextResponse.json("unauthorized", { status: 401 });
+      return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
     if (!body.province) {
       return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
@@ -51,6 +51,42 @@ export const POST = async (req: NextRequest) => {
       });
     }
     return NextResponse.json({ hasControl, reportStatus });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};
+
+// get all company in the province and return form status for supervisor
+export const GET = async (req: NextRequest) => {
+  const accessToken = req.headers.get("accessToken");
+  const quarter = Number(req.nextUrl.searchParams.get("quarter"));
+  const year = Number(req.nextUrl.searchParams.get("year"));
+  const province = Number(req.nextUrl.searchParams.get("province"));
+
+  if (!accessToken || !verifyJwt(accessToken)) {
+    return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+  }
+
+  if (!province || !quarter || !year) {
+    return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
+  }
+
+  try {
+    const reportStatus = await prisma.reportStatus.findMany({
+      where: { province, year },
+      orderBy: [{ ID: "asc" }],
+      include: {
+        report: {
+          where: { QTR: quarter },
+          select: { updatedAt: true, P1: true, P2: true, P3: true, P4: true },
+        },
+      },
+    });
+
+    return NextResponse.json(reportStatus);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);
