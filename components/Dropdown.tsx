@@ -12,6 +12,7 @@ const Dropdown = ({
   isControl = true,
   showName = false,
   errors,
+  defaultValue,
   ...rest
 }: {
   name: string;
@@ -19,14 +20,15 @@ const Dropdown = ({
   options: SelectOption[];
   isControl?: boolean;
   showName?: boolean;
-  errors: any;
+  errors?: any;
+  defaultValue?: string | number;
   [rest: string]: any;
 }) => {
   const classes = classNames(rest.className, "relative", {
     error: errors,
   });
 
-  const getValue = (value: number) => {
+  const getValue = (value: number | string | null) => {
     if (value) {
       for (let option of options) {
         if (option.value === value) {
@@ -74,6 +76,7 @@ const Dropdown = ({
           onChange={(option: SelectOption | null) =>
             rest.setterFn(option?.value)
           }
+          value={getValue(defaultValue || null)}
           name={name}
           classNamePrefix="dropdown"
           placeholder={placeholder}

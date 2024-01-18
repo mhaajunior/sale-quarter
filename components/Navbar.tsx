@@ -41,7 +41,7 @@ const Navbar = () => {
       role: Role.INTERVIEWER,
     },
     {
-      title: "ตรวจสอบสถานประกอบการ",
+      title: "อนุมัติสถานประกอบการ",
       link: "/list",
       role: Role.SUPERVISOR,
     },

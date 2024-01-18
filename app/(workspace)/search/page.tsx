@@ -19,6 +19,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 import useClientSession from "@/hooks/use-client-session";
 import { quarterMap } from "@/helpers/quarter";
+import { Role } from "@prisma/client";
 
 interface Response {
   hasControl: boolean;
@@ -138,6 +139,7 @@ const SearchPage = () => {
   const renderActions = (actions: QtrAction) => {
     return (
       <div className="flex justify-center">
+        {session && session.user.role === Role.SUPERVISOR}
         {actions.canCreate ? (
           actions.isSend ? (
             <Link href={`/search/${id}?yr=${actions.year}&qtr=1&mode=edit`}>
@@ -297,6 +299,7 @@ const SearchPage = () => {
         isSendQtr2,
         isSendQtr3,
         isSendQtr4,
+        report,
       } = item;
 
       const quarterStatus: SendStatus[] = [];
@@ -337,8 +340,8 @@ const SearchPage = () => {
           qtrTag.company = "ส่งแล้ว";
         }
 
-        if (item.report) {
-          const reportQtr = item.report[i] || null;
+        if (report) {
+          const reportQtr = report[i] || null;
           if (reportQtr) {
             if (reportQtr.P1) {
               qtrTag.p1 = "ส่งแล้ว";
@@ -392,7 +395,7 @@ const SearchPage = () => {
         res = await axios.post(
           "/api/report_status",
           { data, province: session.user.province },
-          { headers: { accessToken: session.user.accessToken } }
+          { headers: { authorization: session.user.accessToken } }
         );
       } else {
         res = await axios.post("/api/report_status", { data });

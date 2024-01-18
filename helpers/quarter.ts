@@ -46,3 +46,9 @@ export const checkDateBetween = (
 ) => {
   return moment(date1).isBetween(date2, date3);
 };
+
+export const getThaiYear = (date: number) => {
+  const thaiYear = date + 543;
+  const yearSlice = Number(thaiYear.toString().slice(2));
+  return { thaiYear, yearSlice };
+};

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // find company id in search page and return status
 export const POST = async (req: NextRequest) => {
-  const accessToken = req.headers.get("accessToken");
+  const accessToken = req.headers.get("authorization");
   const body = await req.json();
   const { ID } = body.data;
   let hasControl = false;
@@ -61,10 +61,11 @@ export const POST = async (req: NextRequest) => {
 
 // get all company in the province and return form status for supervisor
 export const GET = async (req: NextRequest) => {
-  const accessToken = req.headers.get("accessToken");
+  const accessToken = req.headers.get("authorization");
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
   const year = Number(req.nextUrl.searchParams.get("year"));
   const province = Number(req.nextUrl.searchParams.get("province"));
+  const mode = Number(req.nextUrl.searchParams.get("mode"));
 
   if (!accessToken || !verifyJwt(accessToken)) {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
@@ -86,7 +87,26 @@ export const GET = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json(reportStatus);
+    let count = 0;
+    const company: string[] = [];
+    for (const item of reportStatus) {
+      if (item.report.length === 0) {
+        count++;
+        company.push(item.ID);
+      } else {
+        if (!item.report[0].P4) {
+          count++;
+          company.push(item.ID);
+        }
+      }
+    }
+
+    let result = reportStatus;
+    if (mode === 2) {
+      result = reportStatus.filter((item) => company.includes(item.ID));
+    }
+
+    return NextResponse.json({ reportStatus: result, notApproveCount: count });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

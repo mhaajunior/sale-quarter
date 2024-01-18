@@ -231,3 +231,7 @@ h5 {
     transform: translateX(1);
   }
 }
+
+.ant-btn-primary {
+  background-color: blue;
+}

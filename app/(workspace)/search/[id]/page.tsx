@@ -121,6 +121,13 @@ const FormPage = () => {
       return;
     }
 
+    if (session && session.user.role === Role.SUPERVISOR) {
+      if (mode === "create") {
+        router.push("/denied?code=3");
+        return;
+      }
+    }
+
     if (mode === "create") {
       if (qtr === 1) {
         getIdenFromControl();
@@ -698,7 +705,7 @@ const FormPage = () => {
   const onClickBack = () => {
     Swal.fire({
       title: "คำเตือน",
-      text: "ข้อมูลที่ยังไม่ได้ถูกบันทึกจะหายทั้งหมด คุณแน่ใจหรือไม่ที่จะกลับไปหน้าค้นหา",
+      text: "ข้อมูลที่ยังไม่ได้ถูกบันทึกจะหายทั้งหมด คุณแน่ใจหรือไม่ที่จะย้อนกลับไป",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -707,7 +714,11 @@ const FormPage = () => {
       confirmButtonText: "ใช่",
     }).then((result) => {
       if (result.isConfirmed) {
-        router.push("/search");
+        if (session?.user.role === Role.SUPERVISOR) {
+          router.push("/list");
+        } else {
+          router.push("/search");
+        }
       }
     });
   };
@@ -2779,12 +2790,8 @@ const FormPage = () => {
             </div>
           </div>
           <div className="w-full flex justify-center">
-            <Button
-              type="submit"
-              primary={mode === "create"}
-              warning={mode === "edit"}
-            >
-              {mode === "create" ? "บันทึก" : "แก้ไข"}
+            <Button type="submit" primary>
+              บันทึก
             </Button>
           </div>
         </form>

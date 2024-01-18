@@ -6,11 +6,13 @@ const Badge = ({
   color,
   active,
   count,
+  disabled = false,
   ...rest
 }: {
   children: React.ReactNode;
   color: string;
   active: boolean;
+  disabled?: boolean;
   count?: number;
   [rest: string]: any;
 }) => {
@@ -19,9 +21,11 @@ const Badge = ({
   };
   const classes = classNames(
     rest.className,
-    "text-center relative p-2 text-sm text-white rounded-t-xl hover:cursor-pointer opacity-50 hover:opacity-100 w-[100px] whitespace-nowrap overflow-hidden text-ellipsis",
+    "text-center relative p-2 text-sm text-white rounded-t-xl w-[100px] whitespace-nowrap overflow-hidden text-ellipsis",
     {
       "border-t-[5px] border-gray-400 !opacity-100": active,
+      "hover:cursor-not-allowed opacity-10": disabled,
+      "hover:cursor-pointer hover:opacity-100 opacity-50": !disabled,
     }
   );
 
