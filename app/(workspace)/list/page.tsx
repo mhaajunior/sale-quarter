@@ -1,46 +1,22 @@
 "use client";
 
 import Badge from "@/components/Badge";
+import Dropdown from "@/components/Dropdown";
+import Loading from "@/components/Loading";
+import MyTooltip from "@/components/MyTooltip";
 import Title from "@/components/Title";
 import { errorHandler } from "@/helpers/errorHandler";
-import useClientSession from "@/hooks/use-client-session";
-import { ReportStatus } from "@/types/dto/report";
-import { Table } from "antd";
-import { ColumnsType, TableProps } from "antd/es/table";
-import axios from "axios";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Button from "@/components/Button";
-import Loading from "@/components/Loading";
-import moment from "moment";
 import { getThaiYear, quarterMap } from "@/helpers/quarter";
-import Dropdown from "@/components/Dropdown";
-import { SelectOption } from "@/types/dto/common";
-import { numberWithCommas } from "@/helpers/common";
-
-interface QuarterArr {
-  label: string;
-  value: number;
-  color: string;
-  passOpenDate: boolean;
-}
-
-interface DataType {
-  key: React.Key;
-  id: string;
-  company: boolean;
-  p1: boolean;
-  p2: boolean;
-  p3: boolean;
-  p4: boolean;
-  action: { data: any; canEdit: boolean };
-}
-
-interface Response {
-  reportStatus: ReportStatus[];
-  notApproveCount: number;
-}
+import useClientSession from "@/hooks/use-client-session";
+import { QuarterArr } from "@/types/dto/common";
+import { ProvinceGroup } from "@/types/dto/report";
+import { yearOptions } from "@/utils/dropdownOption";
+import { Collapse, CollapseProps } from "antd";
+import axios from "axios";
+import moment from "moment";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const ListPage = () => {
   const [quarter, setQuarter] = useState(1);
@@ -48,18 +24,79 @@ const ListPage = () => {
     getThaiYear(new Date().getFullYear()).yearSlice
   );
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<Response>({
-    reportStatus: [],
-    notApproveCount: 0,
-  });
-  const [mode, setMode] = useState(1);
+  const [response, setResponse] = useState<ProvinceGroup | null>(null);
   const session = useClientSession();
 
   useEffect(() => {
     if (session) {
-      fetchCompanyStatus();
+      fetchProvinceStatus();
     }
-  }, [session, quarter, mode, year]);
+  }, [session, quarter, year]);
+
+  const genExtra = (id: number) => (
+    <div className="flex items-center gap-2">
+      <MyTooltip title="ไปหน้าอนุมัติ">
+        <Link href={`/approve?id=${id}&yr=${year}&qtr=${quarter}`}>
+          <FaExternalLinkAlt />
+        </Link>
+      </MyTooltip>
+    </div>
+  );
+
+  const itemsNest1: CollapseProps["items"] = [];
+  const itemsNest2: CollapseProps["items"] = [];
+  const itemsNest3: CollapseProps["items"] = [];
+  const itemsNest4: CollapseProps["items"] = [];
+  const itemsNest5: CollapseProps["items"] = [];
+  const nestArr = [itemsNest1, itemsNest2, itemsNest3, itemsNest4, itemsNest5];
+
+  if (response) {
+    for (const [key, value] of Object.entries(response)) {
+      for (const item of value) {
+        nestArr[Number(key) - 1].push({
+          key: item.id,
+          label: item.name,
+          children: (
+            <div className="flex flex-col gap-3">
+              <p>จำนวนสถานประกอบการทั้งหมด: {item.totalCompany}</p>
+              <p className="text-red-500">
+                จำนวนสถานประกอบการที่ยังไม่อนุมัติ: {item.notApprove}
+              </p>
+            </div>
+          ),
+          extra: genExtra(item.id),
+        });
+      }
+    }
+  }
+
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: "กรุงเทพมหานคร",
+      children: <Collapse items={nestArr[0]} />,
+    },
+    {
+      key: "2",
+      label: "ปริมณฑลและภาคกลาง",
+      children: <Collapse items={nestArr[1]} />,
+    },
+    {
+      key: "3",
+      label: "ภาคเหนือ",
+      children: <Collapse items={nestArr[2]} />,
+    },
+    {
+      key: "4",
+      label: "ภาคตะวันออกเฉียงเหนือ",
+      children: <Collapse items={nestArr[3]} />,
+    },
+    {
+      key: "5",
+      label: "ภาคใต้",
+      children: <Collapse items={nestArr[4]} />,
+    },
+  ];
 
   const quarterArr: QuarterArr[] = [];
   for (let i = 1; i <= 4; i++) {
@@ -79,198 +116,14 @@ const ListPage = () => {
     });
   }
 
-  let data: DataType[] = [];
-  const filters: { text: string; value: string }[] = [];
-
-  response.reportStatus.forEach(function (value, i) {
-    filters.push({ text: value.ID, value: value.ID });
-    const status: DataType = {
-      key: i,
-      id: value.ID,
-      company: false,
-      p1: false,
-      p2: false,
-      p3: false,
-      p4: false,
-      action: { data: value, canEdit: false },
-    };
-    let isSend = false;
-    switch (quarter) {
-      case 1:
-        isSend = value.isSendQtr1;
-        break;
-      case 2:
-        isSend = value.isSendQtr2;
-        break;
-      case 3:
-        isSend = value.isSendQtr3;
-        break;
-      case 4:
-        isSend = value.isSendQtr4;
-        break;
-      default:
-        break;
-    }
-
-    if (isSend && value.report[0]) {
-      status.company = true;
-      status.p1 = !!value.report[0].P1;
-      status.p2 = !!value.report[0].P2;
-      status.p3 = !!value.report[0].P3;
-      status.p4 = !!value.report[0].P4;
-
-      if (status.company && status.p1 && status.p2 && status.p3) {
-        status.action.canEdit = true;
-      }
-    }
-    data.push(status);
-  });
-
-  const columns: ColumnsType<DataType> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "key",
-      key: "key",
-      width: "10%",
-      align: "center",
-      render: (item, record, index) => <>{index + 1}</>,
-    },
-    {
-      title: "เลขที่สถานประกอบการ",
-      dataIndex: "id",
-      key: "id",
-      width: "20%",
-      align: "center",
-      filters: filters,
-      filterSearch: true,
-      onFilter: (value: any, record: DataType) => record.id === value,
-    },
-    {
-      title: "สถานะการส่ง/อนุมัติแบบฟอร์ม",
-      children: [
-        {
-          title: "สถานประกอบการ",
-          dataIndex: "company",
-          key: "company",
-          width: "10%",
-          align: "center",
-          render: (_, { company }) => (
-            <div className="flex justify-center items-center">
-              {company ? (
-                <FaCheckCircle className="text-green-500 text-xl" />
-              ) : (
-                <FaTimesCircle className="text-red-500 text-xl" />
-              )}
-            </div>
-          ),
-        },
-        {
-          title: "เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล",
-          dataIndex: "p1",
-          key: "p1",
-          width: "10%",
-          align: "center",
-          render: (_, { p1 }) => (
-            <div className="flex justify-center items-center">
-              {p1 ? (
-                <FaCheckCircle className="text-green-500 text-xl" />
-              ) : (
-                <FaTimesCircle className="text-red-500 text-xl" />
-              )}
-            </div>
-          ),
-        },
-        {
-          title: "เจ้าหน้าที่บรรณาธิกรและลงรหัส",
-          dataIndex: "p2",
-          key: "p2",
-          width: "10%",
-          align: "center",
-          render: (_, { p2 }) => (
-            <div className="flex justify-center items-center">
-              {p2 ? (
-                <FaCheckCircle className="text-green-500 text-xl" />
-              ) : (
-                <FaTimesCircle className="text-red-500 text-xl" />
-              )}
-            </div>
-          ),
-        },
-        {
-          title: "เจ้าหน้าที่บันทึกข้อมูล",
-          dataIndex: "p3",
-          key: "p3",
-          width: "10%",
-          align: "center",
-          render: (_, { p3 }) => (
-            <div className="flex justify-center items-center">
-              {p3 ? (
-                <FaCheckCircle className="text-green-500 text-xl" />
-              ) : (
-                <FaTimesCircle className="text-red-500 text-xl" />
-              )}
-            </div>
-          ),
-        },
-        {
-          title: "ผู้ตรวจ",
-          dataIndex: "p4",
-          key: "p4",
-          width: "10%",
-          align: "center",
-          render: (_, { p4 }) => (
-            <div className="flex justify-center items-center">
-              {p4 ? (
-                <FaCheckCircle className="text-green-500 text-xl" />
-              ) : (
-                <FaTimesCircle className="text-red-500 text-xl" />
-              )}
-            </div>
-          ),
-        },
-      ],
-    },
-    {
-      title: "ตรวจสอบ",
-      dataIndex: "action",
-      key: "action",
-      width: "20%",
-      align: "center",
-      render: (_, { action }) => (
-        <div className="flex justify-center items-center">
-          {action.canEdit ? (
-            <Link
-              href={`/search/${action.data.ID}?yr=${action.data.year}&qtr=${quarter}&mode=edit`}
-            >
-              <Button primary>ตรวจสอบ</Button>
-            </Link>
-          ) : (
-            <p className="px-5">เจ้าหน้าที่ทุกคนต้องส่ง/อนุมัติแบบฟอร์มก่อน</p>
-          )}
-        </div>
-      ),
-    },
-  ];
-
-  const onChange: TableProps<DataType>["onChange"] = (
-    pagination,
-    filters,
-    sorter,
-    extra
-  ) => {
-    // console.log("params", pagination, filters, sorter, extra);
-  };
-
-  const fetchCompanyStatus = async () => {
+  const fetchProvinceStatus = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/report_status", {
+      const res = await axios.get("/api/province_status", {
         method: "GET",
         params: {
           quarter,
-          province: session?.user.province,
           year,
-          mode,
         },
         headers: { authorization: session?.user.accessToken },
       });
@@ -284,57 +137,29 @@ const ListPage = () => {
     setLoading(false);
   };
 
-  const yearOptions: SelectOption[] = [];
-  for (let i = 2024; i <= new Date().getFullYear(); i++) {
-    const { thaiYear, yearSlice } = getThaiYear(i);
-    yearOptions.push({ label: thaiYear.toString(), value: yearSlice });
-  }
+  const onChange = (key: string | string[]) => {
+    // console.log(key);
+  };
 
-  const approveOptions = [
-    { label: "ทั้งหมด", value: 1 },
-    { label: "ยังไม่อนุมัติ", value: 2 },
-  ];
+  console.log(response);
 
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title="อนุมัติสถานประกอบการ"></Title>
+        <Title title="ตรวจสอบรายจังหวัด"></Title>
       </div>
       <div className="card flex flex-col gap-5">
-        <div className="md:flex justify-between items-center w-full">
-          <h1 className="mb-3 md:mb-0">
-            ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการในขอบเขตจังหวัดที่รับผิดชอบ
-          </h1>
-          <div className="flex items-center gap-3">
-            <label>ปีที่ค้นหา</label>
-            <Dropdown
-              name="year"
-              placeholder="ปี"
-              options={yearOptions}
-              className="w-36"
-              isControl={false}
-              setterFn={(year: number) => setYear(year)}
-              defaultValue={year}
-            />
-          </div>
-        </div>
-        <div className="md:flex justify-between items-center w-full">
-          <div className="text-red-500 mb-3 md:mb-0">
-            จำนวนแบบฟอร์มที่ยังไม่อนุมัติ:{" "}
-            {numberWithCommas(response.notApproveCount) || 0}
-          </div>
-          <div className="flex items-center gap-3">
-            <label>สถานะอนุมัติ</label>
-            <Dropdown
-              name="approve"
-              placeholder="ค้นหา"
-              options={approveOptions}
-              className="w-36"
-              isControl={false}
-              setterFn={(val: number) => setMode(val)}
-              defaultValue={mode}
-            />
-          </div>
+        <div className="flex items-center gap-3 w-full justify-end">
+          <label>ปีที่ค้นหา</label>
+          <Dropdown
+            name="year"
+            placeholder="ปี"
+            options={yearOptions}
+            className="w-36"
+            isControl={false}
+            setterFn={(year: number) => setYear(year)}
+            defaultValue={year}
+          />
         </div>
         <div className="flex flex-wrap">
           {quarterArr.map((item) => (
@@ -348,19 +173,14 @@ const ListPage = () => {
               {item.label}
             </Badge>
           ))}
-          <div className="w-full min-h-40 flex items-center">
+          <div className="w-full min-h-40">
             {loading ? (
-              <Loading type="partial" />
+              <>
+                <br />
+                <Loading type="partial" />
+              </>
             ) : (
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChange}
-                bordered
-                size="middle"
-                scroll={{ x: "calc(700px + 50%)" }}
-                showSorterTooltip={false}
-              />
+              <Collapse onChange={onChange} items={items} />
             )}
           </div>
         </div>

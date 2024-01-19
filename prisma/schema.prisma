@@ -38,7 +38,9 @@ model Control {
   cwt       Int
   cwt_name  String
   reg       Int
+  yr        Int
 
+  @@unique(fields: [es_id, yr], name: "yearID")
   @@index([es_id])
 }
 
@@ -46,21 +48,21 @@ model Report {
   id String @id @default(uuid())
 
   ID     String
-  REG    Int    @db.SmallInt
-  CWT    Int    @db.SmallInt
-  AMP    String @db.VarChar(2)
-  TAM    String @db.VarChar(2)
-  MUN    Int    @db.SmallInt
-  EA     String @db.VarChar(4)
-  VIL    String @db.VarChar(2)
+  REG    Int     @db.SmallInt
+  CWT    Int     @db.SmallInt
+  AMP    String  @db.VarChar(2)
+  TAM    String  @db.VarChar(2)
+  MUN    Int     @db.SmallInt
+  EA     String  @db.VarChar(4)
+  VIL    String  @db.VarChar(2)
   TSIC_R Int?
   TSIC_L Int
   SIZE_R String? @db.VarChar(2)
-  SIZE_L String @db.VarChar(2)
-  NO     String @db.VarChar(4)
-  QTR    Int    @db.SmallInt
-  YR     Int    @db.SmallInt
-  ENU    String @db.VarChar(2)
+  SIZE_L String  @db.VarChar(2)
+  NO     String  @db.VarChar(4)
+  QTR    Int     @db.SmallInt
+  YR     Int     @db.SmallInt
+  ENU    String  @db.VarChar(2)
 
   TITLE     String @db.VarChar(10)
   RANK      String @db.VarChar(20)
@@ -167,6 +169,8 @@ model ReportStatus {
   ID            String
   year          Int
   province      Int
+  province_name String
+  region        Int
   canCreateQtr1 Boolean
   canCreateQtr2 Boolean
   canCreateQtr3 Boolean

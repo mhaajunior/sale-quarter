@@ -676,7 +676,7 @@ const FormPage = () => {
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");
           if (session?.user.role === Role.SUPERVISOR) {
-            router.push("/list");
+            router.push("/approve");
           } else {
             router.push("/search");
           }
@@ -715,7 +715,7 @@ const FormPage = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         if (session?.user.role === Role.SUPERVISOR) {
-          router.push("/list");
+          router.push("/approve");
         } else {
           router.push("/search");
         }

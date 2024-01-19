@@ -45,7 +45,9 @@ async function main() {
       create: {
         ID: es_id.toString(),
         year: 67,
+        region: reg,
         province: cwt,
+        province_name: cwt_name,
         canCreateQtr1: true,
         canCreateQtr2: false,
         canCreateQtr3: false,
@@ -58,7 +60,7 @@ async function main() {
     });
 
     await prisma.control.upsert({
-      where: { es_id },
+      where: { yearID: { es_id, yr: 67 } },
       update: {},
       create: {
         no,
@@ -88,6 +90,7 @@ async function main() {
         cwt,
         cwt_name,
         reg,
+        yr: 67,
       },
     });
   }

@@ -1,3 +1,4 @@
+import { getThaiYear } from "@/helpers/quarter";
 import { SelectOption } from "@/types/dto/common";
 
 export const typeOption: SelectOption[] = [
@@ -42,3 +43,10 @@ export const estTitleOption: SelectOption[] = [
   { label: "หจก.", value: "หจก." },
   { label: "บจก.", value: "บจก." },
 ];
+
+const yearOptions: SelectOption[] = [];
+for (let i = 2024; i <= new Date().getFullYear(); i++) {
+  const { thaiYear, yearSlice } = getThaiYear(i);
+  yearOptions.push({ label: thaiYear.toString(), value: yearSlice });
+}
+export { yearOptions };

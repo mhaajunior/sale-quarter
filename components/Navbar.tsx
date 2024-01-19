@@ -42,8 +42,13 @@ const Navbar = () => {
     },
     {
       title: "อนุมัติสถานประกอบการ",
-      link: "/list",
+      link: "/approve",
       role: Role.SUPERVISOR,
+    },
+    {
+      title: "ตรวจสอบรายจังหวัด",
+      link: "/list",
+      role: Role.SUBJECT,
     },
   ];
 
@@ -63,6 +68,8 @@ const Navbar = () => {
     navItems = navItems.filter((item) => item.role === Role.INTERVIEWER);
   } else if (session?.user.role === Role.SUPERVISOR) {
     navItems = navItems.filter((item) => item.role === Role.SUPERVISOR);
+  } else if (session?.user.role === Role.SUBJECT) {
+    navItems = navItems.filter((item) => item.role === Role.SUBJECT);
   }
 
   return (

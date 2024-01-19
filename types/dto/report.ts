@@ -110,3 +110,10 @@ export interface ReportStatus {
     P4: string;
   }[];
 }
+
+export interface ProvinceGroup {
+  id: number;
+  name: string;
+  totalCompany: number;
+  notApprove: number;
+}
