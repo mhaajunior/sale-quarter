@@ -10,9 +10,9 @@ import {
   currencyToNumber,
   numberWithCommas,
   removeNonNumeric,
-} from "@/helpers/common";
-import { calcQuarter, checkDateBetween, quarterMap } from "@/helpers/quarter";
-import { checkErrorFromRole, validateFormData } from "@/helpers/validate";
+} from "@/lib/common";
+import { calcQuarter, checkDateBetween, quarterMap } from "@/lib/quarter";
+import { checkErrorFromRole, validateFormData } from "@/lib/validate";
 import {
   ReportForm,
   createReportSchema,
@@ -33,7 +33,7 @@ import { FormErrors } from "@/types/dto/common";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import moment from "moment";
 import axios from "axios";
-import { errorHandler } from "@/helpers/errorHandler";
+import { errorHandler } from "@/lib/errorHandler";
 import { InitialControl, ReportControl } from "@/types/dto/control";
 import Loading from "@/components/Loading";
 import { IoChevronBack } from "react-icons/io5";
@@ -57,6 +57,8 @@ const FormPage = () => {
   const yr = Number(searchParams.get("yr"));
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
+  const provinceId = Number(searchParams.get("id"));
+  const provinceName = searchParams.get("nm");
   const router = useRouter();
   const session = useClientSession();
 
@@ -677,6 +679,10 @@ const FormPage = () => {
           toast.success("ส่งข้อมูลสำเร็จ");
           if (session?.user.role === Role.SUPERVISOR) {
             router.push("/approve");
+          } else if (session?.user.role === Role.SUBJECT) {
+            router.push(
+              `/approve?id=${provinceId}&yr=${yr}&qtr=${qtr}&nm=${provinceName}`
+            );
           } else {
             router.push("/search");
           }
@@ -716,6 +722,10 @@ const FormPage = () => {
       if (result.isConfirmed) {
         if (session?.user.role === Role.SUPERVISOR) {
           router.push("/approve");
+        } else if (session?.user.role === Role.SUBJECT) {
+          router.push(
+            `/approve?id=${provinceId}&yr=${yr}&qtr=${qtr}&nm=${provinceName}`
+          );
         } else {
           router.push("/search");
         }

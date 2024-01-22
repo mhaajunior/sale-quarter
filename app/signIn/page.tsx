@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import Button from "@/components/Button";
 import Input from "@/components//Input";
-import { errorHandler } from "@/helpers/errorHandler";
+import { errorHandler } from "@/lib/errorHandler";
 import { signInSchema } from "@/types/schemas/authenSchema";
 import useClientSession from "@/hooks/use-client-session";
 import Image from "next/image";

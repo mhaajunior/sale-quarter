@@ -1,4 +1,4 @@
-import { verifyJwt } from "@/helpers/jwt";
+import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { searchIdSchema } from "@/types/schemas/searchSchema";
 import { Prisma } from "@prisma/client";
@@ -76,6 +76,12 @@ export const GET = async (req: NextRequest) => {
   }
 
   try {
+    const reportCount = await prisma.reportStatus.aggregate({
+      _count: {
+        ID: true,
+      },
+      where: { province, year },
+    });
     const reportStatus = await prisma.reportStatus.findMany({
       where: { province, year },
       orderBy: [{ ID: "asc" }],
@@ -88,6 +94,7 @@ export const GET = async (req: NextRequest) => {
     });
 
     let count = 0;
+    let totalCount = reportCount._count.ID;
     const company: string[] = [];
     for (const item of reportStatus) {
       if (item.report.length === 0) {
@@ -104,9 +111,14 @@ export const GET = async (req: NextRequest) => {
     let result = reportStatus;
     if (mode === 2) {
       result = reportStatus.filter((item) => company.includes(item.ID));
+      totalCount = company.length;
     }
 
-    return NextResponse.json({ reportStatus: result, notApproveCount: count });
+    return NextResponse.json({
+      reportStatus: result,
+      notApproveCount: count,
+      reportCount: totalCount,
+    });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

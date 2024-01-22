@@ -2,7 +2,7 @@
 
 import Badge from "@/components/Badge";
 import Title from "@/components/Title";
-import { errorHandler } from "@/helpers/errorHandler";
+import { errorHandler } from "@/lib/errorHandler";
 import useClientSession from "@/hooks/use-client-session";
 import { ReportStatus } from "@/types/dto/report";
 import { Table } from "antd";
@@ -14,11 +14,15 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
 import moment from "moment";
-import { getThaiYear, quarterMap } from "@/helpers/quarter";
+import { getThaiYear, quarterMap } from "@/lib/quarter";
 import Dropdown from "@/components/Dropdown";
-import { numberWithCommas } from "@/helpers/common";
+import { between, numberWithCommas } from "@/lib/common";
 import { yearOptions } from "@/utils/dropdownOption";
 import { QuarterArr } from "@/types/dto/common";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Role } from "@prisma/client";
+import { IoChevronBack } from "react-icons/io5";
+import PageControl from "@/components/PageControl";
 
 interface DataType {
   key: React.Key;
@@ -37,20 +41,53 @@ interface Response {
 }
 
 const ApprovePage = () => {
-  const [quarter, setQuarter] = useState(1);
+  const searchParams = useSearchParams();
+  const yr = Number(searchParams.get("yr"));
+  const qtr = Number(searchParams.get("qtr"));
+  const proviceId = searchParams.get("id");
+  const proviceName = searchParams.get("nm");
+  const [quarter, setQuarter] = useState(qtr || 1);
   const [year, setYear] = useState(
-    getThaiYear(new Date().getFullYear()).yearSlice
+    yr || getThaiYear(new Date().getFullYear()).yearSlice
   );
   const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [response, setResponse] = useState<Response>({
     reportStatus: [],
     notApproveCount: 0,
   });
   const [mode, setMode] = useState(1);
+  const router = useRouter();
   const session = useClientSession();
 
   useEffect(() => {
     if (session) {
+      if (session.user.role === Role.SUBJECT) {
+        if (!qtr || !between(qtr, 1, 4) || !proviceId || !yr || !proviceName) {
+          router.push("/notfound");
+          return;
+        }
+
+        const res = quarterMap(Number("25" + yr) - 543);
+        const startDate = moment(res[qtr - 1].formSubmittedRange[0]);
+        const now = moment();
+
+        if (now < startDate) {
+          router.push("/denied?code=1");
+          return;
+        }
+
+        if (yr > getThaiYear(new Date().getFullYear()).yearSlice) {
+          router.push("/denied?code=1");
+          return;
+        }
+      } else if (session.user.role === Role.SUPERVISOR) {
+        if (qtr || yr || proviceId || proviceName) {
+          router.push("/notfound");
+          return;
+        }
+      }
+
       fetchCompanyStatus();
     }
   }, [session, quarter, mode, year]);
@@ -62,7 +99,7 @@ const ApprovePage = () => {
     const startDate = moment(res[i - 1].formSubmittedRange[0]);
     const now = moment();
 
-    if (now > startDate) {
+    if (now >= startDate) {
       passOpenDate = true;
     }
     quarterArr.push({
@@ -234,7 +271,13 @@ const ApprovePage = () => {
         <div className="flex justify-center items-center">
           {action.canEdit ? (
             <Link
-              href={`/search/${action.data.ID}?yr=${action.data.year}&qtr=${quarter}&mode=edit`}
+              href={`/search/${action.data.ID}?yr=${
+                action.data.year
+              }&qtr=${quarter}&mode=edit${
+                session?.user.role === Role.SUBJECT
+                  ? `&id=${proviceId}&nm=${proviceName}`
+                  : ""
+              }`}
             >
               <Button primary>ตรวจสอบ</Button>
             </Link>
@@ -262,7 +305,7 @@ const ApprovePage = () => {
         method: "GET",
         params: {
           quarter,
-          province: session?.user.province,
+          province: proviceId || session?.user.province,
           year,
           mode,
         },
@@ -286,7 +329,18 @@ const ApprovePage = () => {
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title="อนุมัติสถานประกอบการ"></Title>
+        <Title
+          title={`อนุมัติสถานประกอบการ${
+            proviceName ? "จังหวัด" + proviceName : ""
+          }`}
+        >
+          {session?.user.role === Role.SUBJECT && (
+            <Button secondary onClick={() => router.push("/list")}>
+              <IoChevronBack className="mr-1" />
+              กลับ
+            </Button>
+          )}
+        </Title>
       </div>
       <div className="card flex flex-col gap-5">
         <div className="md:flex justify-between items-center w-full">
@@ -336,19 +390,24 @@ const ApprovePage = () => {
               {item.label}
             </Badge>
           ))}
-          <div className="w-full min-h-40 flex items-center">
+          <div className="w-full min-h-40 flex flex-col gap-3 items-center">
             {loading ? (
               <Loading type="partial" />
             ) : (
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChange}
-                bordered
-                size="middle"
-                scroll={{ x: "calc(700px + 50%)" }}
-                showSorterTooltip={false}
-              />
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={data}
+                  onChange={onChange}
+                  bordered
+                  size="middle"
+                  scroll={{ x: "calc(700px + 50%)" }}
+                  showSorterTooltip={false}
+                  pagination={{
+                    defaultPageSize: 100,
+                  }}
+                />
+              </>
             )}
           </div>
         </div>

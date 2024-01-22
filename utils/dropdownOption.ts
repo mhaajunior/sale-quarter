@@ -1,4 +1,4 @@
-import { getThaiYear } from "@/helpers/quarter";
+import { getThaiYear } from "@/lib/quarter";
 import { SelectOption } from "@/types/dto/common";
 
 export const typeOption: SelectOption[] = [

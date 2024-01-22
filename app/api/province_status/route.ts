@@ -1,4 +1,4 @@
-import { verifyJwt } from "@/helpers/jwt";
+import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { ProvinceGroup } from "@/types/dto/report";
 import { Prisma } from "@prisma/client";
@@ -20,13 +20,10 @@ export const GET = async (req: NextRequest) => {
 
   try {
     const report = await prisma.report.groupBy({
-      by: ["CWT", "P4"],
-      where: { YR: year, QTR: quarter },
+      by: ["CWT"],
+      where: { YR: year, QTR: quarter, P4: { not: null } },
       orderBy: [{ CWT: "asc" }],
       _count: { P4: true },
-      having: {
-        P4: { not: null },
-      },
     });
     let countObj: any = {};
     for (const item of report) {

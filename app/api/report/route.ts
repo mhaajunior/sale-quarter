@@ -1,4 +1,4 @@
-import { padZero } from "@/helpers/common";
+import { padZero } from "@/lib/common";
 import prisma from "@/prisma/db";
 import { CompanyReport } from "@/types/dto/report";
 import { createReportSchema } from "@/types/schemas/validationSchema";
@@ -170,7 +170,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
-    if (mode === "edit" && role !== Role.SUPERVISOR) {
+    if (mode === "edit" && role !== Role.SUPERVISOR && role !== Role.SUBJECT) {
       const report = await prisma.report.findUnique({
         where: {
           uniqueReport: { ID, YR, QTR },

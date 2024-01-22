@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import { signJwtAccessToken } from "@/helpers/jwt";
+import { signJwtAccessToken } from "@/lib/jwt";
 
 export const options = {
   providers: [
