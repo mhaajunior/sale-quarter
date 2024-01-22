@@ -51,7 +51,6 @@ const ApprovePage = () => {
     yr || getThaiYear(new Date().getFullYear()).yearSlice
   );
   const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState<number>(0);
   const [response, setResponse] = useState<Response>({
     reportStatus: [],
     notApproveCount: 0,
