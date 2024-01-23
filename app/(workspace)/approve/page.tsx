@@ -22,7 +22,6 @@ import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@prisma/client";
 import { IoChevronBack } from "react-icons/io5";
-import PageControl from "@/components/PageControl";
 
 interface DataType {
   key: React.Key;
@@ -110,10 +109,8 @@ const ApprovePage = () => {
   }
 
   let data: DataType[] = [];
-  const filters: { text: string; value: string }[] = [];
 
   response.reportStatus.forEach(function (value, i) {
-    filters.push({ text: value.ID, value: value.ID });
     const status: DataType = {
       key: i,
       id: value.ID,
@@ -171,9 +168,6 @@ const ApprovePage = () => {
       key: "id",
       width: "20%",
       align: "center",
-      filters: filters,
-      filterSearch: true,
-      onFilter: (value: any, record: DataType) => record.id === value,
     },
     {
       title: "สถานะการส่ง/อนุมัติแบบฟอร์ม",
@@ -266,6 +260,7 @@ const ApprovePage = () => {
       key: "action",
       width: "20%",
       align: "center",
+      fixed: "right",
       render: (_, { action }) => (
         <div className="flex justify-center items-center">
           {action.canEdit ? (
@@ -400,7 +395,7 @@ const ApprovePage = () => {
                   onChange={onChange}
                   bordered
                   size="middle"
-                  scroll={{ x: "calc(700px + 50%)" }}
+                  scroll={{ x: "calc(500px + 50%)" }}
                   showSorterTooltip={false}
                   pagination={{
                     defaultPageSize: 100,

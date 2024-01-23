@@ -188,3 +188,7 @@ h5 {
 .ant-collapse-header {
   align-items: center !important;
 }
+
+.dropdown__menu {
+  z-index: 5 !important;
+}
