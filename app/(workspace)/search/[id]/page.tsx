@@ -11,7 +11,7 @@ import {
   numberWithCommas,
   removeNonNumeric,
 } from "@/lib/common";
-import { calcQuarter, checkDateBetween, quarterMap } from "@/lib/quarter";
+import { quarterMap } from "@/lib/quarter";
 import { checkErrorFromRole, validateFormData } from "@/lib/validate";
 import {
   ReportForm,
@@ -31,7 +31,6 @@ import { toast } from "sonner";
 import _ from "lodash";
 import { FormErrors } from "@/types/dto/common";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import moment from "moment";
 import axios from "axios";
 import { errorHandler } from "@/lib/errorHandler";
 import { InitialControl, ReportControl } from "@/types/dto/control";
@@ -84,9 +83,7 @@ const FormPage = () => {
       ENU: 1,
     },
   });
-  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[
-    calcQuarter() - 1
-  ];
+  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[qtr - 1];
 
   const r1 = watch("R1_temp");
   const r2 = watch("R2_temp");
@@ -108,18 +105,6 @@ const FormPage = () => {
       !yr
     ) {
       router.push("/notfound");
-      return;
-    }
-
-    const format = "YYYY-MM-DD";
-    const date = new Date();
-    const currentDate = moment(date).format(format);
-    const startDate = quarterData.formSubmittedRange[0];
-    const endDate = quarterData.formSubmittedRange[1];
-    const canEdittedQtr = checkDateBetween(currentDate, startDate, endDate);
-
-    if (!canEdittedQtr) {
-      router.push("/denied?code=1");
       return;
     }
 
@@ -204,88 +189,109 @@ const FormPage = () => {
       setValue("STO_temp", numberWithCommas(removeNonNumeric(sto as string)));
   }, [sto]);
 
+  const getAccessStatus = async () => {
+    try {
+      const res = await axios.get(`/api/report_status/${params.id}`, {
+        params: {
+          quarter: qtr,
+          year: yr,
+        },
+      });
+
+      if (res.status === 200) {
+        return res.data;
+      }
+    } catch (err: any) {
+      errorHandler(err);
+    }
+  };
+
   const getIdenFromControl = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/control/${params.id}`);
-      if (res.status === 200) {
-        if (res.data) {
-          const {
-            amp,
-            amp_name,
-            building,
-            comp_name,
-            cwt,
-            cwt_name,
-            district,
-            e_mail,
-            ea,
-            econ_fm,
-            firstname,
-            house_no,
-            initial,
-            lastname,
-            no,
-            reg,
-            regis_cid,
-            regis_no,
-            size12,
-            soi,
-            street,
-            tam,
-            tam_name,
-            tel_no,
-            tsic_code,
-            vil,
-          } = res.data as InitialControl;
-          setValue("AMP", Number(amp));
-          setValue("DISTRICT", amp_name);
-          setValue("BUILDING", building ? building : "-");
-          setValue("EST_NAME", comp_name ? comp_name : "-");
-          setValue("CWT", cwt);
-          setValue("PROVINCE", cwt_name);
-          setValue("MUN", district);
-          setValue("E_MAIL", e_mail ? e_mail : "-");
-          setValue("EA", Number(ea));
-          setValue("LG", econ_fm);
-          setValue("FIRSTNAME", firstname ? firstname : "-");
-          setValue("ADD_NO", house_no);
-          setValue("TITLE", initial ? initial : "-");
-          setValue("LASTNAME", lastname ? lastname : "-");
-          setValue("NO", Number(no));
-          setValue("REG", reg);
-          setValue("SIZE_L", Number(size12));
-          setValue("SOI", soi ? soi : "-");
-          setValue("STREET", street ? street : "-");
-          setValue("TAM", Number(tam));
-          setValue("SUB_DIST", tam_name);
-          setValue("TEL_NO", tel_no ? tel_no.replace("-", "") : "-");
-          setValue("TSIC_L", tsic_code);
-          setValue("VIL", Number(vil));
-          if (regis_cid) {
-            if (econ_fm === 1) {
-              setValue("LG1_temp", "1");
-              setValue("LG1", regis_cid);
+      if (await getAccessStatus()) {
+        const res = await axios.get(`/api/control/${params.id}`);
+        if (res.status === 200) {
+          if (res.data) {
+            const {
+              amp,
+              amp_name,
+              building,
+              comp_name,
+              cwt,
+              cwt_name,
+              district,
+              e_mail,
+              ea,
+              econ_fm,
+              firstname,
+              house_no,
+              initial,
+              lastname,
+              no,
+              reg,
+              regis_cid,
+              regis_no,
+              size12,
+              soi,
+              street,
+              tam,
+              tam_name,
+              tel_no,
+              tsic_code,
+              vil,
+            } = res.data as InitialControl;
+            setValue("AMP", Number(amp));
+            setValue("DISTRICT", amp_name);
+            setValue("BUILDING", building ? building : "-");
+            setValue("EST_NAME", comp_name ? comp_name : "-");
+            setValue("CWT", cwt);
+            setValue("PROVINCE", cwt_name);
+            setValue("MUN", district);
+            setValue("E_MAIL", e_mail ? e_mail : "-");
+            setValue("EA", Number(ea));
+            setValue("LG", econ_fm);
+            setValue("FIRSTNAME", firstname ? firstname : "-");
+            setValue("ADD_NO", house_no);
+            setValue("TITLE", initial ? initial : "-");
+            setValue("LASTNAME", lastname ? lastname : "-");
+            setValue("NO", Number(no));
+            setValue("REG", reg);
+            setValue("SIZE_L", Number(size12));
+            setValue("SOI", soi ? soi : "-");
+            setValue("STREET", street ? street : "-");
+            setValue("TAM", Number(tam));
+            setValue("SUB_DIST", tam_name);
+            setValue("TEL_NO", tel_no ? tel_no.replace("-", "") : "-");
+            setValue("TSIC_L", tsic_code);
+            setValue("VIL", Number(vil));
+            if (regis_cid) {
+              if (econ_fm === 1) {
+                setValue("LG1_temp", "1");
+                setValue("LG1", regis_cid);
+              }
+            } else if (regis_no) {
+              switch (econ_fm) {
+                case 1:
+                  setValue("LG1_temp", "2");
+                  setValue("LG1", regis_no);
+                  break;
+                case 2:
+                  setValue("LG2", regis_no);
+                  break;
+                case 3:
+                  setValue("LG3", regis_no);
+                  break;
+                default:
+                  break;
+              }
             }
-          } else if (regis_no) {
-            switch (econ_fm) {
-              case 1:
-                setValue("LG1_temp", "2");
-                setValue("LG1", regis_no);
-                break;
-              case 2:
-                setValue("LG2", regis_no);
-                break;
-              case 3:
-                setValue("LG3", regis_no);
-                break;
-              default:
-                break;
-            }
+          } else {
+            router.push("/notfound");
           }
-        } else {
-          router.push("/notfound");
         }
+      } else {
+        router.push("/denied?code=1");
       }
       setLoading(false);
     } catch (err: any) {
@@ -303,111 +309,115 @@ const FormPage = () => {
   const getIdenFromPrevQtr = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/control/${params.id}`, {
-        params: { quarter: qtr, year: yr },
-      });
+      if (await getAccessStatus()) {
+        const res = await axios.get(`/api/control/${params.id}`, {
+          params: { quarter: qtr, year: yr },
+        });
 
-      if (res.status === 200) {
-        if (res.data) {
-          const {
-            REG,
-            CWT,
-            AMP,
-            TAM,
-            MUN,
-            EA,
-            VIL,
-            TSIC_R,
-            TSIC_L,
-            SIZE_R,
-            SIZE_L,
-            NO,
-            ENU,
-            TITLE,
-            RANK,
-            FIRSTNAME,
-            LASTNAME,
-            EST_TITLE,
-            EST_NAME,
-            ADD_NO,
-            BUILDING,
-            ROOM,
-            STREET,
-            BLK,
-            SOI,
-            SUB_DIST,
-            DISTRICT,
-            PROVINCE,
-            POST_CODE,
-            TEL_NO,
-            E_MAIL,
-            WEBSITE,
-            SOCIAL,
-            TSIC_CHG,
-            LG,
-            LG1,
-            LG1_temp,
-            LG2,
-            LG3,
-            LG4,
-          } = res.data as ReportControl;
-          setValue("REG", REG);
-          setValue("CWT", CWT);
-          setValue("AMP", Number(AMP));
-          setValue("TAM", Number(TAM));
-          setValue("MUN", MUN);
-          setValue("EA", Number(EA));
-          setValue("VIL", Number(VIL));
-          setValue("TSIC_R", TSIC_R);
-          setValue("TSIC_L", TSIC_L);
-          setValue("SIZE_R", Number(SIZE_R));
-          setValue("SIZE_L", Number(SIZE_L));
-          setValue("NO", Number(NO));
-          setValue("ENU", Number(ENU));
-          setValue("TITLE", TITLE);
-          setValue("RANK", RANK);
-          setValue("FIRSTNAME", FIRSTNAME);
-          setValue("LASTNAME", LASTNAME);
-          setValue("EST_TITLE", EST_TITLE);
-          setValue("EST_NAME", EST_NAME);
-          setValue("ADD_NO", ADD_NO);
-          setValue("BUILDING", BUILDING);
-          setValue("ROOM", ROOM);
-          setValue("STREET", STREET);
-          setValue("BLK", BLK);
-          setValue("SOI", SOI);
-          setValue("SUB_DIST", SUB_DIST);
-          setValue("DISTRICT", DISTRICT);
-          setValue("PROVINCE", PROVINCE);
-          setValue("POST_CODE", POST_CODE);
-          setValue("TEL_NO", TEL_NO);
-          setValue("E_MAIL", E_MAIL);
-          setValue("WEBSITE", WEBSITE);
-          setValue("SOCIAL", SOCIAL);
-          setValue("TSIC_CHG", TSIC_CHG);
-          if (LG) {
-            setValue("LG", Number(LG));
-            switch (Number(LG)) {
-              case 1:
-                setValue("LG1_temp", LG1_temp);
-                setValue("LG1", LG1);
-                break;
-              case 2:
-                setValue("LG2", LG2);
-                break;
-              case 3:
-                setValue("LG3", LG3);
-                break;
-              case 10:
-                setValue("LG4", LG4);
-                break;
-              default:
-                break;
+        if (res.status === 200) {
+          if (res.data) {
+            const {
+              REG,
+              CWT,
+              AMP,
+              TAM,
+              MUN,
+              EA,
+              VIL,
+              TSIC_R,
+              TSIC_L,
+              SIZE_R,
+              SIZE_L,
+              NO,
+              ENU,
+              TITLE,
+              RANK,
+              FIRSTNAME,
+              LASTNAME,
+              EST_TITLE,
+              EST_NAME,
+              ADD_NO,
+              BUILDING,
+              ROOM,
+              STREET,
+              BLK,
+              SOI,
+              SUB_DIST,
+              DISTRICT,
+              PROVINCE,
+              POST_CODE,
+              TEL_NO,
+              E_MAIL,
+              WEBSITE,
+              SOCIAL,
+              TSIC_CHG,
+              LG,
+              LG1,
+              LG1_temp,
+              LG2,
+              LG3,
+              LG4,
+            } = res.data as ReportControl;
+            setValue("REG", REG);
+            setValue("CWT", CWT);
+            setValue("AMP", Number(AMP));
+            setValue("TAM", Number(TAM));
+            setValue("MUN", MUN);
+            setValue("EA", Number(EA));
+            setValue("VIL", Number(VIL));
+            setValue("TSIC_R", TSIC_R);
+            setValue("TSIC_L", TSIC_L);
+            setValue("SIZE_R", Number(SIZE_R));
+            setValue("SIZE_L", Number(SIZE_L));
+            setValue("NO", Number(NO));
+            setValue("ENU", Number(ENU));
+            setValue("TITLE", TITLE);
+            setValue("RANK", RANK);
+            setValue("FIRSTNAME", FIRSTNAME);
+            setValue("LASTNAME", LASTNAME);
+            setValue("EST_TITLE", EST_TITLE);
+            setValue("EST_NAME", EST_NAME);
+            setValue("ADD_NO", ADD_NO);
+            setValue("BUILDING", BUILDING);
+            setValue("ROOM", ROOM);
+            setValue("STREET", STREET);
+            setValue("BLK", BLK);
+            setValue("SOI", SOI);
+            setValue("SUB_DIST", SUB_DIST);
+            setValue("DISTRICT", DISTRICT);
+            setValue("PROVINCE", PROVINCE);
+            setValue("POST_CODE", POST_CODE);
+            setValue("TEL_NO", TEL_NO);
+            setValue("E_MAIL", E_MAIL);
+            setValue("WEBSITE", WEBSITE);
+            setValue("SOCIAL", SOCIAL);
+            setValue("TSIC_CHG", TSIC_CHG);
+            if (LG) {
+              setValue("LG", Number(LG));
+              switch (Number(LG)) {
+                case 1:
+                  setValue("LG1_temp", LG1_temp);
+                  setValue("LG1", LG1);
+                  break;
+                case 2:
+                  setValue("LG2", LG2);
+                  break;
+                case 3:
+                  setValue("LG3", LG3);
+                  break;
+                case 10:
+                  setValue("LG4", LG4);
+                  break;
+                default:
+                  break;
+              }
             }
+          } else {
+            router.push("/notfound");
           }
-        } else {
-          router.push("/notfound");
         }
+      } else {
+        router.push("/denied?code=1");
       }
       setLoading(false);
     } catch (err: any) {
@@ -425,223 +435,227 @@ const FormPage = () => {
   const getQuarterReport = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/report/${params.id}`, {
-        params: { quarter: qtr, year: yr },
-      });
+      if (await getAccessStatus()) {
+        const res = await axios.get(`/api/report/${params.id}`, {
+          params: { quarter: qtr, year: yr },
+        });
 
-      if (res.status === 200) {
-        if (res.data) {
-          const {
-            REG,
-            CWT,
-            AMP,
-            TAM,
-            MUN,
-            EA,
-            VIL,
-            TSIC_R,
-            TSIC_L,
-            SIZE_R,
-            SIZE_L,
-            NO,
-            ENU,
-            TITLE,
-            RANK,
-            FIRSTNAME,
-            LASTNAME,
-            EST_TITLE,
-            EST_NAME,
-            ADD_NO,
-            BUILDING,
-            ROOM,
-            STREET,
-            BLK,
-            SOI,
-            SUB_DIST,
-            DISTRICT,
-            PROVINCE,
-            POST_CODE,
-            TEL_NO,
-            E_MAIL,
-            WEBSITE,
-            SOCIAL,
-            ANSWER,
-            TSIC_CHG,
-            LG,
-            LG1,
-            LG1_temp,
-            LG2,
-            LG3,
-            LG4,
-            DES_TYPE,
-            TYPE,
-            R1,
-            R2,
-            R3,
-            TR,
-            SI,
-            ITR,
-            SI1,
-            SI2,
-            SI3,
-            SI4,
-            SI5,
-            SI6,
-            SI7,
-            SI8,
-            SI11,
-            SI22,
-            SI33,
-            SI44,
-            SI55,
-            SI66,
-            SI77,
-            F1,
-            F2,
-            F3,
-            F4,
-            F5,
-            CHG,
-            CIN,
-            CDE,
-            FAC,
-            FAC_1,
-            PRVS,
-            PIN,
-            PDE,
-            EMP,
-            STO,
-            DAY,
-            OP1,
-            OP2,
-            OP3,
-            OP4,
-            OP5,
-            OP6,
-            OP7,
-            OP8,
-            OP9,
-            OP10,
-            OP11,
-            OP12,
-            P1,
-            P2,
-            P3,
-            P4,
-          } = res.data as CompanyReport;
-          setValue("REG", REG);
-          setValue("CWT", CWT);
-          setValue("AMP", Number(AMP));
-          setValue("TAM", Number(TAM));
-          setValue("MUN", MUN);
-          setValue("EA", Number(EA));
-          setValue("VIL", Number(VIL));
-          setValue("TSIC_R", TSIC_R);
-          setValue("TSIC_L", TSIC_L);
-          setValue("SIZE_R", Number(SIZE_R) || undefined);
-          setValue("SIZE_L", Number(SIZE_L));
-          setValue("NO", Number(NO));
-          setValue("ENU", Number(ENU));
-          setValue("TITLE", TITLE);
-          setValue("RANK", RANK);
-          setValue("FIRSTNAME", FIRSTNAME);
-          setValue("LASTNAME", LASTNAME);
-          setValue("EST_TITLE", EST_TITLE);
-          setValue("EST_NAME", EST_NAME);
-          setValue("ADD_NO", ADD_NO);
-          setValue("BUILDING", BUILDING);
-          setValue("ROOM", ROOM);
-          setValue("STREET", STREET);
-          setValue("BLK", BLK);
-          setValue("SOI", SOI);
-          setValue("SUB_DIST", SUB_DIST);
-          setValue("DISTRICT", DISTRICT);
-          setValue("PROVINCE", PROVINCE);
-          setValue("POST_CODE", POST_CODE);
-          setValue("TEL_NO", TEL_NO);
-          setValue("E_MAIL", E_MAIL);
-          setValue("WEBSITE", WEBSITE);
-          setValue("SOCIAL", SOCIAL);
-          setValue("ANSWER", ANSWER);
-          setValue("TSIC_CHG", TSIC_CHG);
-          setValue("TYPE", TYPE);
-          setValue("DES_TYPE", DES_TYPE);
-          setValue("R1_temp", R1?.toString());
-          setValue("R2_temp", R2?.toString());
-          setValue("R3_temp", R3?.toString());
-          setValue("TR_temp", TR?.toString());
-          setValue("SI", SI);
-          setValue("ITR", Number(ITR) || undefined);
-          setValue("SI1", SI1 === 1 ? true : false);
-          setValue("SI2", SI2 === 1 ? true : false);
-          setValue("SI3", SI3 === 1 ? true : false);
-          setValue("SI4", SI4 === 1 ? true : false);
-          setValue("SI5", SI5 === 1 ? true : false);
-          setValue("SI6", SI6 === 1 ? true : false);
-          setValue("SI7", SI7 === 1 ? true : false);
-          setValue("SI8", SI8);
-          setValue("SI11", Number(SI11) || undefined);
-          setValue("SI22", Number(SI22) || undefined);
-          setValue("SI33", Number(SI33) || undefined);
-          setValue("SI44", Number(SI44) || undefined);
-          setValue("SI55", Number(SI55) || undefined);
-          setValue("SI66", Number(SI66) || undefined);
-          setValue("SI77", Number(SI77) || undefined);
-          setValue("F1", Number(F1) || undefined);
-          setValue("F2", Number(F2) || undefined);
-          setValue("F3", Number(F3) || undefined);
-          setValue("F4", Number(F4) || undefined);
-          setValue("F5", Number(F5) || undefined);
-          setValue("CHG", CHG);
-          setValue("CIN", Number(CIN) || undefined);
-          setValue("CDE", Number(CDE) || undefined);
-          setValue("FAC", Number(FAC) || undefined);
-          setValue("FAC_1", FAC_1);
-          setValue("PRVS", PRVS);
-          setValue("PIN", Number(PIN) || undefined);
-          setValue("PDE", Number(PDE) || undefined);
-          setValue("EMP", EMP);
-          setValue("STO_temp", STO || "");
-          setValue("DAY", DAY);
-          setValue("OP1", OP1);
-          setValue("OP2", OP2);
-          setValue("OP3", OP3);
-          setValue("OP4", OP4);
-          setValue("OP5", OP5);
-          setValue("OP6", OP6);
-          setValue("OP7", OP7);
-          setValue("OP8", OP8);
-          setValue("OP9", OP9);
-          setValue("OP10", OP10);
-          setValue("OP11", OP11);
-          setValue("OP12", OP12);
-          setValue("P1", P1 || "");
-          setValue("P2", P2 || "");
-          setValue("P3", P3 || "");
-          setValue("P4", P4 || "");
-          if (LG) {
-            setValue("LG", Number(LG));
-            switch (Number(LG)) {
-              case 1:
-                setValue("LG1_temp", LG1_temp);
-                setValue("LG1", LG1);
-                break;
-              case 2:
-                setValue("LG2", LG2);
-                break;
-              case 3:
-                setValue("LG3", LG3);
-                break;
-              case 10:
-                setValue("LG4", LG4);
-                break;
-              default:
-                break;
+        if (res.status === 200) {
+          if (res.data) {
+            const {
+              REG,
+              CWT,
+              AMP,
+              TAM,
+              MUN,
+              EA,
+              VIL,
+              TSIC_R,
+              TSIC_L,
+              SIZE_R,
+              SIZE_L,
+              NO,
+              ENU,
+              TITLE,
+              RANK,
+              FIRSTNAME,
+              LASTNAME,
+              EST_TITLE,
+              EST_NAME,
+              ADD_NO,
+              BUILDING,
+              ROOM,
+              STREET,
+              BLK,
+              SOI,
+              SUB_DIST,
+              DISTRICT,
+              PROVINCE,
+              POST_CODE,
+              TEL_NO,
+              E_MAIL,
+              WEBSITE,
+              SOCIAL,
+              ANSWER,
+              TSIC_CHG,
+              LG,
+              LG1,
+              LG1_temp,
+              LG2,
+              LG3,
+              LG4,
+              DES_TYPE,
+              TYPE,
+              R1,
+              R2,
+              R3,
+              TR,
+              SI,
+              ITR,
+              SI1,
+              SI2,
+              SI3,
+              SI4,
+              SI5,
+              SI6,
+              SI7,
+              SI8,
+              SI11,
+              SI22,
+              SI33,
+              SI44,
+              SI55,
+              SI66,
+              SI77,
+              F1,
+              F2,
+              F3,
+              F4,
+              F5,
+              CHG,
+              CIN,
+              CDE,
+              FAC,
+              FAC_1,
+              PRVS,
+              PIN,
+              PDE,
+              EMP,
+              STO,
+              DAY,
+              OP1,
+              OP2,
+              OP3,
+              OP4,
+              OP5,
+              OP6,
+              OP7,
+              OP8,
+              OP9,
+              OP10,
+              OP11,
+              OP12,
+              P1,
+              P2,
+              P3,
+              P4,
+            } = res.data as CompanyReport;
+            setValue("REG", REG);
+            setValue("CWT", CWT);
+            setValue("AMP", Number(AMP));
+            setValue("TAM", Number(TAM));
+            setValue("MUN", MUN);
+            setValue("EA", Number(EA));
+            setValue("VIL", Number(VIL));
+            setValue("TSIC_R", TSIC_R);
+            setValue("TSIC_L", TSIC_L);
+            setValue("SIZE_R", Number(SIZE_R) || undefined);
+            setValue("SIZE_L", Number(SIZE_L));
+            setValue("NO", Number(NO));
+            setValue("ENU", Number(ENU));
+            setValue("TITLE", TITLE);
+            setValue("RANK", RANK);
+            setValue("FIRSTNAME", FIRSTNAME);
+            setValue("LASTNAME", LASTNAME);
+            setValue("EST_TITLE", EST_TITLE);
+            setValue("EST_NAME", EST_NAME);
+            setValue("ADD_NO", ADD_NO);
+            setValue("BUILDING", BUILDING);
+            setValue("ROOM", ROOM);
+            setValue("STREET", STREET);
+            setValue("BLK", BLK);
+            setValue("SOI", SOI);
+            setValue("SUB_DIST", SUB_DIST);
+            setValue("DISTRICT", DISTRICT);
+            setValue("PROVINCE", PROVINCE);
+            setValue("POST_CODE", POST_CODE);
+            setValue("TEL_NO", TEL_NO);
+            setValue("E_MAIL", E_MAIL);
+            setValue("WEBSITE", WEBSITE);
+            setValue("SOCIAL", SOCIAL);
+            setValue("ANSWER", ANSWER);
+            setValue("TSIC_CHG", TSIC_CHG);
+            setValue("TYPE", TYPE);
+            setValue("DES_TYPE", DES_TYPE);
+            setValue("R1_temp", R1?.toString());
+            setValue("R2_temp", R2?.toString());
+            setValue("R3_temp", R3?.toString());
+            setValue("TR_temp", TR?.toString());
+            setValue("SI", SI);
+            setValue("ITR", Number(ITR) || undefined);
+            setValue("SI1", SI1 === 1 ? true : false);
+            setValue("SI2", SI2 === 1 ? true : false);
+            setValue("SI3", SI3 === 1 ? true : false);
+            setValue("SI4", SI4 === 1 ? true : false);
+            setValue("SI5", SI5 === 1 ? true : false);
+            setValue("SI6", SI6 === 1 ? true : false);
+            setValue("SI7", SI7 === 1 ? true : false);
+            setValue("SI8", SI8);
+            setValue("SI11", Number(SI11) || undefined);
+            setValue("SI22", Number(SI22) || undefined);
+            setValue("SI33", Number(SI33) || undefined);
+            setValue("SI44", Number(SI44) || undefined);
+            setValue("SI55", Number(SI55) || undefined);
+            setValue("SI66", Number(SI66) || undefined);
+            setValue("SI77", Number(SI77) || undefined);
+            setValue("F1", Number(F1) || undefined);
+            setValue("F2", Number(F2) || undefined);
+            setValue("F3", Number(F3) || undefined);
+            setValue("F4", Number(F4) || undefined);
+            setValue("F5", Number(F5) || undefined);
+            setValue("CHG", CHG);
+            setValue("CIN", Number(CIN) || undefined);
+            setValue("CDE", Number(CDE) || undefined);
+            setValue("FAC", Number(FAC) || undefined);
+            setValue("FAC_1", FAC_1);
+            setValue("PRVS", PRVS);
+            setValue("PIN", Number(PIN) || undefined);
+            setValue("PDE", Number(PDE) || undefined);
+            setValue("EMP", EMP);
+            setValue("STO_temp", STO || "");
+            setValue("DAY", DAY);
+            setValue("OP1", OP1);
+            setValue("OP2", OP2);
+            setValue("OP3", OP3);
+            setValue("OP4", OP4);
+            setValue("OP5", OP5);
+            setValue("OP6", OP6);
+            setValue("OP7", OP7);
+            setValue("OP8", OP8);
+            setValue("OP9", OP9);
+            setValue("OP10", OP10);
+            setValue("OP11", OP11);
+            setValue("OP12", OP12);
+            setValue("P1", P1 || "");
+            setValue("P2", P2 || "");
+            setValue("P3", P3 || "");
+            setValue("P4", P4 || "");
+            if (LG) {
+              setValue("LG", Number(LG));
+              switch (Number(LG)) {
+                case 1:
+                  setValue("LG1_temp", LG1_temp);
+                  setValue("LG1", LG1);
+                  break;
+                case 2:
+                  setValue("LG2", LG2);
+                  break;
+                case 3:
+                  setValue("LG3", LG3);
+                  break;
+                case 10:
+                  setValue("LG4", LG4);
+                  break;
+                default:
+                  break;
+              }
             }
+          } else {
+            router.push("/notfound");
           }
-        } else {
-          router.push("/notfound");
         }
+      } else {
+        router.push("/denied?code=1");
       }
       setLoading(false);
     } catch (err: any) {
@@ -673,7 +687,7 @@ const FormPage = () => {
       try {
         setLoading(true);
         const res = await axios.post("/api/report", result, {
-          headers: { mode, role: session?.user.role },
+          headers: { mode, authorization: session?.user.accessToken },
         });
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");

@@ -21,7 +21,8 @@ import { yearOptions } from "@/utils/dropdownOption";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@prisma/client";
-import { IoChevronBack } from "react-icons/io5";
+import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
+import { CSVLink } from "react-csv";
 
 interface DataType {
   key: React.Key;
@@ -55,6 +56,7 @@ const ApprovePage = () => {
     notApproveCount: 0,
   });
   const [mode, setMode] = useState(1);
+  const [csvData, setCsvData] = useState([]);
   const router = useRouter();
   const session = useClientSession();
 
@@ -147,6 +149,10 @@ const ApprovePage = () => {
       status.p4 = !!value.report[0].P4;
 
       if (status.company && status.p1 && status.p2 && status.p3) {
+        status.action.canEdit = true;
+      }
+
+      if (session?.user.role === Role.SUBJECT) {
         status.action.canEdit = true;
       }
     }
@@ -296,7 +302,6 @@ const ApprovePage = () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/report_status", {
-        method: "GET",
         params: {
           quarter,
           province: proviceId || session?.user.province,
@@ -308,6 +313,12 @@ const ApprovePage = () => {
 
       if (res.status === 200) {
         setResponse(res.data);
+        if (
+          session?.user.role === Role.SUBJECT &&
+          res.data.notApproveCount === 0
+        ) {
+          downloadData();
+        }
       }
     } catch (err: any) {
       errorHandler(err);
@@ -319,6 +330,25 @@ const ApprovePage = () => {
     { label: "ทั้งหมด", value: 1 },
     { label: "ยังไม่อนุมัติ", value: 2 },
   ];
+
+  const downloadData = async () => {
+    try {
+      const res = await axios.get("/api/report", {
+        params: {
+          quarter,
+          province: proviceId,
+          year,
+        },
+        headers: { authorization: session?.user.accessToken },
+      });
+
+      if (res.status === 200) {
+        setCsvData(res.data);
+      }
+    } catch (err: any) {
+      errorHandler(err);
+    }
+  };
 
   return (
     <>
@@ -356,7 +386,7 @@ const ApprovePage = () => {
         </div>
         <div className="md:flex justify-between items-center w-full">
           <div className="text-red-500 mb-3 md:mb-0">
-            จำนวนแบบฟอร์มที่ยังไม่อนุมัติ:{" "}
+            จำนวนแบบฟอร์มที่ผู้ตรวจยังไม่อนุมัติ:{" "}
             {numberWithCommas(response.notApproveCount) || 0}
           </div>
           <div className="flex items-center gap-3">
@@ -372,6 +402,21 @@ const ApprovePage = () => {
             />
           </div>
         </div>
+        {session?.user.role === Role.SUBJECT &&
+          response.notApproveCount === 0 && (
+            <div className="w-full flex items-center gap-5">
+              ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
+              <CSVLink
+                data={csvData}
+                filename={`retail${yr}-${qtr}-${proviceId}.csv`}
+              >
+                <Button secondary>
+                  <IoCloudDownloadOutline className="mr-1" />
+                  ดาวน์โหลด
+                </Button>
+              </CSVLink>
+            </div>
+          )}
         <div className="flex flex-wrap">
           {quarterArr.map((item) => (
             <Badge

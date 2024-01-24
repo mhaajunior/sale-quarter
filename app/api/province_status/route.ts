@@ -1,8 +1,9 @@
 import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { ProvinceGroup } from "@/types/dto/report";
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { validateUserRole } from "../middleware";
 
 // get all province report status for subject
 export const GET = async (req: NextRequest) => {
@@ -12,6 +13,10 @@ export const GET = async (req: NextRequest) => {
 
   if (!accessToken || !verifyJwt(accessToken)) {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+  }
+
+  if (!validateUserRole(accessToken, [Role.SUBJECT])) {
+    return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
   }
 
   if (!quarter || !year) {

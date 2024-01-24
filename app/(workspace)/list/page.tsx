@@ -72,7 +72,7 @@ const ListPage = () => {
             <div className="flex flex-col gap-3">
               <p>จำนวนสถานประกอบการทั้งหมด: {item.totalCompany}</p>
               <p className="text-red-500">
-                จำนวนสถานประกอบการที่ยังไม่อนุมัติ: {item.notApprove}
+                จำนวนสถานประกอบการที่ผู้ตรวจยังไม่อนุมัติ: {item.notApprove}
               </p>
             </div>
           ),
@@ -132,7 +132,6 @@ const ListPage = () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/province_status", {
-        method: "GET",
         params: {
           quarter,
           year,

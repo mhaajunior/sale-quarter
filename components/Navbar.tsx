@@ -50,6 +50,11 @@ const Navbar = () => {
       link: "/list",
       role: Role.SUBJECT,
     },
+    {
+      title: "กำหนดสิทธิแก้ไขฟอร์ม",
+      link: "/accessControl",
+      role: Role.SUBJECT,
+    },
   ];
 
   let manageItems = [

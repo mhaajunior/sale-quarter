@@ -1,8 +1,9 @@
 import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { searchIdSchema } from "@/types/schemas/searchSchema";
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserRole, validateUserRole } from "../middleware";
 
 // find company id in search page and return status
 export const POST = async (req: NextRequest) => {
@@ -16,7 +17,9 @@ export const POST = async (req: NextRequest) => {
     if (!verifyJwt(accessToken)) {
       return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
-    if (!body.province) {
+
+    const role = getUserRole(accessToken);
+    if (!body.province && role === Role.INTERVIEWER) {
       return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
     }
   }
@@ -59,7 +62,7 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-// get all company in the province and return form status for supervisor
+// get all company in the province and return form status for supervisor and subject
 export const GET = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
@@ -71,17 +74,15 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
   }
 
+  if (!validateUserRole(accessToken, [Role.SUPERVISOR, Role.SUBJECT])) {
+    return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
+  }
+
   if (!province || !quarter || !year) {
     return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
   }
 
   try {
-    const reportCount = await prisma.reportStatus.aggregate({
-      _count: {
-        ID: true,
-      },
-      where: { province, year },
-    });
     const reportStatus = await prisma.reportStatus.findMany({
       where: { province, year },
       orderBy: [{ ID: "asc" }],
@@ -94,7 +95,6 @@ export const GET = async (req: NextRequest) => {
     });
 
     let count = 0;
-    let totalCount = reportCount._count.ID;
     const company: string[] = [];
     for (const item of reportStatus) {
       if (item.report.length === 0) {
@@ -111,14 +111,69 @@ export const GET = async (req: NextRequest) => {
     let result = reportStatus;
     if (mode === 2) {
       result = reportStatus.filter((item) => company.includes(item.ID));
-      totalCount = company.length;
     }
 
     return NextResponse.json({
       reportStatus: result,
       notApproveCount: count,
-      reportCount: totalCount,
     });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};
+
+// change access status in form for specific id for subject
+export const PATCH = async (req: NextRequest) => {
+  const accessToken = req.headers.get("authorization");
+  const body = await req.json();
+  const { id, checked, year, quarter } = body;
+
+  if (!accessToken || !verifyJwt(accessToken)) {
+    return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+  }
+
+  if (!validateUserRole(accessToken, [Role.SUBJECT])) {
+    return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
+  }
+
+  try {
+    const found = await prisma.reportStatus.findUnique({
+      where: { yearID: { ID: id, year } },
+    });
+
+    if (!found) {
+      return NextResponse.json("ไม่พบข้อมูลของสถานประกอบการนี้", {
+        status: 400,
+      });
+    }
+
+    let updatedData: any = {};
+    switch (quarter) {
+      case 1:
+        updatedData.canCreateQtr1 = checked;
+        break;
+      case 2:
+        updatedData.canCreateQtr2 = checked;
+        break;
+      case 3:
+        updatedData.canCreateQtr3 = checked;
+        break;
+      case 4:
+        updatedData.canCreateQtr4 = checked;
+        break;
+      default:
+        break;
+    }
+
+    await prisma.reportStatus.update({
+      where: { yearID: { ID: id, year } },
+      data: updatedData,
+    });
+
+    return NextResponse.json("เปลี่ยนสำเร็จ");
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

@@ -136,17 +136,21 @@ const SearchPage = () => {
     }
   };
 
-  const renderActions = (actions: QtrAction) => {
+  const renderActions = (actions: QtrAction, quarter: number) => {
     return (
       <div className="flex justify-center">
         {session && session.user.role === Role.SUPERVISOR}
         {actions.canCreate ? (
           actions.isSend ? (
-            <Link href={`/search/${id}?yr=${actions.year}&qtr=1&mode=edit`}>
+            <Link
+              href={`/search/${id}?yr=${actions.year}&qtr=${quarter}&mode=edit`}
+            >
               <Button warning>แก้ไข</Button>
             </Link>
           ) : (
-            <Link href={`/search/${id}?yr=${actions.year}&qtr=1&mode=create`}>
+            <Link
+              href={`/search/${id}?yr=${actions.year}&qtr=${quarter}&mode=create`}
+            >
               <Button secondary>สร้าง</Button>
             </Link>
           )
@@ -186,7 +190,7 @@ const SearchPage = () => {
               key: "qtr1Action",
               width: "6%",
               align: "center",
-              render: (_, { qtr1Action }) => renderActions(qtr1Action),
+              render: (_, { qtr1Action }) => renderActions(qtr1Action, 1),
             },
             {
               title: "วันแก้ไขล่าสุด",
@@ -214,7 +218,7 @@ const SearchPage = () => {
               key: "qtr2Action",
               width: "6%",
               align: "center",
-              render: (_, { qtr2Action }) => renderActions(qtr2Action),
+              render: (_, { qtr2Action }) => renderActions(qtr2Action, 2),
             },
             {
               title: "วันแก้ไขล่าสุด",
@@ -242,7 +246,7 @@ const SearchPage = () => {
               key: "qtr3Action",
               width: "6%",
               align: "center",
-              render: (_, { qtr3Action }) => renderActions(qtr3Action),
+              render: (_, { qtr3Action }) => renderActions(qtr3Action, 3),
             },
             {
               title: "วันแก้ไขล่าสุด",
@@ -270,7 +274,7 @@ const SearchPage = () => {
               key: "qtr4Action",
               width: "6%",
               align: "center",
-              render: (_, { qtr4Action }) => renderActions(qtr4Action),
+              render: (_, { qtr4Action }) => renderActions(qtr4Action, 4),
             },
             {
               title: "วันแก้ไขล่าสุด",
@@ -317,7 +321,7 @@ const SearchPage = () => {
         const startDate = moment(res[i].formSubmittedRange[0]);
         const now = moment();
 
-        if (now > startDate) {
+        if (now >= startDate) {
           qtrTag.passOpenDate = true;
         }
 

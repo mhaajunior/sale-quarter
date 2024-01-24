@@ -1,20 +1,27 @@
 import { padZero } from "@/lib/common";
+import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { CompanyReport } from "@/types/dto/report";
 import { createReportSchema } from "@/types/schemas/validationSchema";
 import { rangeCheck } from "@/utils/rangeCheck";
 import { Prisma, Role } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserRole, validateUserRole } from "../middleware";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
+  const accessToken = req.headers.get("authorization");
   const mode = req.headers.get("mode");
-  const role = req.headers.get("role");
+  let role = null;
 
   const validation = createReportSchema.safeParse(body);
   if (!validation.success) {
     return NextResponse.json(validation.error.errors, { status: 400 });
+  }
+
+  if (accessToken) {
+    role = getUserRole(accessToken);
   }
 
   const {
@@ -417,6 +424,143 @@ export const POST = async (req: NextRequest) => {
     }
 
     return NextResponse.json("สร้างแบบฟอร์มสำเร็จ");
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};
+
+// get all data in province for subject
+export const GET = async (req: NextRequest) => {
+  const accessToken = req.headers.get("authorization");
+  const quarter = Number(req.nextUrl.searchParams.get("quarter"));
+  const province = Number(req.nextUrl.searchParams.get("province"));
+  const year = Number(req.nextUrl.searchParams.get("year"));
+
+  if (!accessToken || !verifyJwt(accessToken)) {
+    return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+  }
+
+  if (!validateUserRole(accessToken, [Role.SUBJECT])) {
+    return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
+  }
+
+  if (!province || !quarter || !year) {
+    return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
+  }
+
+  try {
+    const report = await prisma.report.findMany({
+      where: { CWT: province, YR: year, QTR: quarter },
+      orderBy: [{ ID: "asc" }],
+      select: {
+        ID: true,
+        REG: true,
+        CWT: true,
+        AMP: true,
+        TAM: true,
+        MUN: true,
+        EA: true,
+        VIL: true,
+        TSIC_R: true,
+        TSIC_L: true,
+        SIZE_R: true,
+        SIZE_L: true,
+        NO: true,
+        QTR: true,
+        YR: true,
+        ENU: true,
+        TITLE: true,
+        RANK: true,
+        FIRSTNAME: true,
+        LASTNAME: true,
+        EST_TITLE: true,
+        EST_NAME: true,
+        ADD_NO: true,
+        BUILDING: true,
+        ROOM: true,
+        STREET: true,
+        BLK: true,
+        SOI: true,
+        SUB_DIST: true,
+        DISTRICT: true,
+        PROVINCE: true,
+        POST_CODE: true,
+        TEL_NO: true,
+        E_MAIL: true,
+        WEBSITE: true,
+        SOCIAL: true,
+        ANSWER: true,
+        TSIC_CHG: true,
+        LG: true,
+        LG1: true,
+        LG2: true,
+        LG3: true,
+        LG4: true,
+        DES_TYPE: true,
+        TYPE: true,
+        M1: true,
+        M2: true,
+        M3: true,
+        R1: true,
+        R2: true,
+        R3: true,
+        TR: true,
+        SI: true,
+        ITR: true,
+        SI1: true,
+        SI2: true,
+        SI3: true,
+        SI4: true,
+        SI5: true,
+        SI6: true,
+        SI7: true,
+        SI8: true,
+        SI11: true,
+        SI22: true,
+        SI33: true,
+        SI44: true,
+        SI55: true,
+        SI66: true,
+        SI77: true,
+        F1: true,
+        F2: true,
+        F3: true,
+        F4: true,
+        F5: true,
+        CHG: true,
+        CIN: true,
+        CDE: true,
+        FAC: true,
+        FAC_1: true,
+        PRVS: true,
+        PIN: true,
+        PDE: true,
+        EMP: true,
+        STO: true,
+        DAY: true,
+        OP1: true,
+        OP2: true,
+        OP3: true,
+        OP4: true,
+        OP5: true,
+        OP6: true,
+        OP7: true,
+        OP8: true,
+        OP9: true,
+        OP10: true,
+        OP11: true,
+        OP12: true,
+        P1: true,
+        P2: true,
+        P3: true,
+        P4: true,
+      },
+    });
+
+    return NextResponse.json(report);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);
