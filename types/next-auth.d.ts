@@ -12,6 +12,6 @@ interface IUser {
   id: number;
   role: Role;
   fullname: string;
-  province: string;
+  province: number;
   accessToken: string;
 }

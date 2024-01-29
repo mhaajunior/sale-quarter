@@ -34,26 +34,32 @@ const Navbar = () => {
     });
   };
 
-  let navItems = [
+  interface NavItem {
+    title: string;
+    link: string;
+    role: Role[];
+  }
+
+  let navItems: NavItem[] = [
     {
       title: "ค้นหาสถานประกอบการ",
       link: "/search",
-      role: Role.INTERVIEWER,
+      role: [Role.INTERVIEWER],
     },
     {
       title: "อนุมัติสถานประกอบการ",
       link: "/approve",
-      role: Role.SUPERVISOR,
+      role: [Role.SUPERVISOR],
     },
     {
       title: "ตรวจสอบรายจังหวัด",
       link: "/list",
-      role: Role.SUBJECT,
+      role: [Role.SUBJECT],
     },
     {
       title: "กำหนดสิทธิแก้ไขฟอร์ม",
       link: "/accessControl",
-      role: Role.SUBJECT,
+      role: [Role.SUBJECT],
     },
   ];
 
@@ -70,11 +76,11 @@ const Navbar = () => {
   ];
 
   if (!session || session?.user.role === Role.INTERVIEWER) {
-    navItems = navItems.filter((item) => item.role === Role.INTERVIEWER);
+    navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
   } else if (session?.user.role === Role.SUPERVISOR) {
-    navItems = navItems.filter((item) => item.role === Role.SUPERVISOR);
+    navItems = navItems.filter((item) => item.role.includes(Role.SUPERVISOR));
   } else if (session?.user.role === Role.SUBJECT) {
-    navItems = navItems.filter((item) => item.role === Role.SUBJECT);
+    navItems = navItems.filter((item) => item.role.includes(Role.SUBJECT));
   }
 
   return (
@@ -85,7 +91,7 @@ const Navbar = () => {
             currentPath !== "/" ? "nav-bottom" : ""
           } bg-white bg-opacity-40 absolute w-full z-40`}
         >
-          <nav className="flex justify-between items-center text-gray-500 font-semibold w-3/4 mx-auto">
+          <nav className="flex justify-between items-center text-gray-500 font-semibold md:w-4/5 w-full mx-auto">
             <ul className="flex items-center gap-8">
               <li>
                 <Link href="/">
@@ -93,7 +99,7 @@ const Navbar = () => {
                 </Link>
               </li>
               {navItems.map((item) => (
-                <li key={item.title} className="hover:text-black">
+                <li key={item.title} className="hover:text-black text-center">
                   <Link
                     href={item.link}
                     className={item.link === currentPath ? "text-gray-900" : ""}
@@ -105,7 +111,7 @@ const Navbar = () => {
             </ul>
             {session ? (
               <ul className="flex items-center justify-end">
-                <li className="hover:text-black">
+                <li className="hover:text-black text-center">
                   <Dropdown
                     menu={{
                       items: manageItems,

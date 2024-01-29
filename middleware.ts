@@ -2,20 +2,38 @@ import { Role } from "@prisma/client";
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+interface AccessRole {
+  path: string;
+  role: Role[];
+}
+
+const accessRole: AccessRole[] = [
+  {
+    path: "/approve",
+    role: [Role.SUPERVISOR, Role.SUBJECT],
+  },
+  {
+    path: "/list",
+    role: [Role.SUBJECT],
+  },
+  {
+    path: "/accessControl",
+    role: [Role.SUBJECT],
+  },
+  {
+    path: "/specification",
+    role: [Role.SUPERVISOR, Role.SUBJECT],
+  },
+];
+
 export default withAuth(
   function middleware(req) {
-    if (
-      req.nextUrl.pathname === "/approve" &&
-      req.nextauth.token?.role === Role.INTERVIEWER
-    ) {
-      return NextResponse.rewrite(new URL("/denied?code=3", req.url));
-    }
-
-    if (
-      req.nextUrl.pathname === "/list" &&
-      req.nextauth.token?.role !== Role.SUBJECT
-    ) {
-      return NextResponse.rewrite(new URL("/denied?code=3", req.url));
+    for (const item of accessRole) {
+      if (req.nextUrl.pathname === item.path) {
+        if (!item.role.includes(req.nextauth.token?.role as Role)) {
+          return NextResponse.rewrite(new URL("/denied?code=3", req.url));
+        }
+      }
     }
   },
   {
@@ -26,5 +44,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/approve", "/list"],
+  matcher: ["/approve", "/list", "/accessControl", "/specification"],
 };

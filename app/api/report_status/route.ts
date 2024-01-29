@@ -12,14 +12,15 @@ export const POST = async (req: NextRequest) => {
   const { ID } = body.data;
   let hasControl = false;
   let reportStatus = null;
+  let role = null;
 
   if (accessToken) {
     if (!verifyJwt(accessToken)) {
       return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
 
-    const role = getUserRole(accessToken);
-    if (!body.province && role === Role.INTERVIEWER) {
+    role = getUserRole(accessToken);
+    if (role === Role.INTERVIEWER && !body.province) {
       return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
     }
   }
@@ -38,7 +39,7 @@ export const POST = async (req: NextRequest) => {
       hasControl = true;
       let whereObj: any = { ID };
 
-      if (body.province) {
+      if (body.province && role !== Role.SUBJECT) {
         whereObj.province = body.province;
       }
 

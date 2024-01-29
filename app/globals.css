@@ -189,6 +189,32 @@ h5 {
   align-items: center !important;
 }
 
+.ant-table-thead th {
+  text-align: center !important;
+}
+
 .dropdown__menu {
   z-index: 5 !important;
+}
+
+.click-box {
+  border: 2px solid var(--gray);
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.click-box:hover {
+  border-color: var(--primary);
+}
+
+.click-box.box-active {
+  border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .click-box {
+    width: 100%;
+  }
 }

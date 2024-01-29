@@ -411,8 +411,9 @@ const SearchPage = () => {
       }
     } catch (err: any) {
       errorHandler(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   });
 
   return (
@@ -423,7 +424,7 @@ const SearchPage = () => {
       <div className="card">
         <form onSubmit={onSearchId} className="flex flex-col gap-5">
           <label className="w-ful">
-            กรุณากรอกเลขที่สถานประกอบการของท่าน{" "}
+            กรุณากรอกเลขประจำสถานประกอบการของท่าน{" "}
             <span className="text-blue-500">
               (กดปุ่ม Enter หรือ Icon แว่นขยายเพื่อทำการค้นหา)
             </span>
@@ -457,7 +458,7 @@ const SearchPage = () => {
               <hr className="my-5" />
               <div className="flex flex-col gap-3">
                 <h1>ตารางรายงานสถานะการส่งแบบฟอร์ม</h1>
-                <p>เลขที่สถานประกอบการ: {id}</p>
+                <p>เลขประจำสถานประกอบการ: {id}</p>
                 <Table
                   columns={columns}
                   dataSource={data}

@@ -293,7 +293,6 @@ const FormPage = () => {
       } else {
         router.push("/denied?code=1");
       }
-      setLoading(false);
     } catch (err: any) {
       if (err.response.status === 404) {
         router.push("/notfound");
@@ -302,6 +301,7 @@ const FormPage = () => {
       } else {
         errorHandler(err);
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -419,7 +419,6 @@ const FormPage = () => {
       } else {
         router.push("/denied?code=1");
       }
-      setLoading(false);
     } catch (err: any) {
       if (err.response.status === 404) {
         router.push("/notfound");
@@ -428,6 +427,7 @@ const FormPage = () => {
       } else {
         errorHandler(err);
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -657,7 +657,6 @@ const FormPage = () => {
       } else {
         router.push("/denied?code=1");
       }
-      setLoading(false);
     } catch (err: any) {
       if (err.response.status === 404) {
         router.push("/notfound");
@@ -666,6 +665,7 @@ const FormPage = () => {
       } else {
         errorHandler(err);
       }
+    } finally {
       setLoading(false);
     }
   };

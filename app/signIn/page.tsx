@@ -55,6 +55,7 @@ const SignInPage = (props: Props) => {
       });
     } catch (err: any) {
       errorHandler(err);
+    } finally {
       setLoading(false);
     }
   });

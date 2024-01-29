@@ -17,7 +17,7 @@ export default function WorkSpaceLayout({
     <div
       className={`${sarabun.className} flex flex-col max-w-[1300px] mx-auto text-gray-500`}
     >
-      <div className="sm:px-16 md:px-24 px-6 py-5">
+      <div className="sm:px-16 md:px-20 px-6 py-5">
         <div className="pt-32">{children}</div>
       </div>
     </div>

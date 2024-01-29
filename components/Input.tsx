@@ -6,7 +6,7 @@ import classNames from "classnames";
 const Input = ({
   placeholder,
   name,
-  textarea = false,
+  isControl = true,
   isNumber = false,
   disabled = false,
   showName = false,
@@ -19,7 +19,7 @@ const Input = ({
 }: {
   placeholder: string;
   name: string;
-  textarea?: boolean;
+  isControl?: boolean;
   isNumber?: boolean;
   disabled?: boolean;
   showName?: boolean;
@@ -27,7 +27,7 @@ const Input = ({
   icon?: ReactNode;
   right?: boolean;
   onIconClick?: () => void;
-  errors: any;
+  errors?: any;
   [rest: string]: any;
 }) => {
   const classes = classNames(rest.className, "flex flex-col", {
@@ -37,8 +37,8 @@ const Input = ({
   return (
     <div className={classes}>
       <div className="relative">
-        {!textarea && (
-          <div className="flex">
+        <div className="flex">
+          {isControl ? (
             <input
               type={rest.type}
               className={`input w-full ${right ? "text-right" : ""} ${
@@ -46,45 +46,47 @@ const Input = ({
               }`}
               placeholder={`${placeholder}`}
               autoComplete="off"
-              align="right"
               disabled={disabled}
               {...rest.register(name, {
                 valueAsNumber: isNumber,
                 shouldUnregister: true,
               })}
             />
-            {showWord && (
-              <div className="flex justify-center items-center px-3 border bg-slate-200 rounded-r-[10px] border-l-0">
-                {showWord}
-              </div>
-            )}
-            {showName && (
-              <div className="absolute text-[9px] text-gray-400  top-[-8px] left-2 bg-white p-[2px]">
-                {placeholder}
-              </div>
-            )}
-            {icon && (
-              <div
-                className={`absolute flex items-center right-3 h-full text-gray-400 ${
-                  disabled
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer hover:text-black"
-                }`}
-                onClick={onIconClick}
-              >
-                {icon}
-              </div>
-            )}
-          </div>
-        )}
-        {textarea && (
-          <textarea
-            className="input w-full"
-            placeholder={`${placeholder}`}
-            rows="4"
-            {...rest.register(name, { valueAsNumber: isNumber })}
-          />
-        )}
+          ) : (
+            <input
+              className={`input w-full ${right ? "text-right" : ""} ${
+                showWord ? "!rounded-r-none" : ""
+              }`}
+              placeholder={`${placeholder}`}
+              autoComplete="off"
+              disabled={disabled}
+              {...rest}
+            />
+          )}
+
+          {showWord && (
+            <div className="flex justify-center items-center px-3 border bg-slate-200 rounded-r-[10px] border-l-0">
+              {showWord}
+            </div>
+          )}
+          {showName && (
+            <div className="absolute text-[9px] text-gray-400  top-[-8px] left-2 bg-white p-[2px]">
+              {placeholder}
+            </div>
+          )}
+          {icon && (
+            <div
+              className={`absolute flex items-center right-3 h-full text-gray-400 ${
+                disabled
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer hover:text-black"
+              }`}
+              onClick={onIconClick}
+            >
+              {icon}
+            </div>
+          )}
+        </div>
       </div>
       <ErrorMessage>{errors?.message}</ErrorMessage>
     </div>

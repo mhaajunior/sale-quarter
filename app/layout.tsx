@@ -5,6 +5,7 @@ import { ConfigProvider } from "antd";
 import { Toaster } from "sonner";
 import AuthProvider from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
+import FilterContext from "@/context/filter";
 
 const sarabun = Sarabun({ subsets: ["thai"], weight: "500" });
 
@@ -32,9 +33,11 @@ export default function RootLayout({
           }}
         >
           <AuthProvider>
+            {/* <FilterContext.Provider value={5}> */}
             <Toaster richColors={true} position="top-right" />
             <Navbar />
             {children}
+            {/* </FilterContext.Provider> */}
           </AuthProvider>
         </ConfigProvider>
       </body>

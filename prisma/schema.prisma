@@ -183,6 +183,9 @@ model ReportStatus {
   report Report[]
 
   @@unique(fields: [ID, year], name: "yearID")
+  @@index([ID])
+  @@index([year])
+  @@index([province])
 }
 
 model User {

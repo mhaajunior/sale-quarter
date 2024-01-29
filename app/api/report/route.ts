@@ -443,7 +443,7 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
   }
 
-  if (!validateUserRole(accessToken, [Role.SUBJECT])) {
+  if (!validateUserRole(accessToken, [Role.SUPERVISOR, Role.SUBJECT])) {
     return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
   }
 

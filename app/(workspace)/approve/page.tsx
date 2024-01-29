@@ -8,8 +8,12 @@ import { ReportStatus } from "@/types/dto/report";
 import { Table } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import axios from "axios";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
@@ -23,6 +27,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@prisma/client";
 import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
 import { CSVLink } from "react-csv";
+import Input from "@/components/Input";
+import FilterContext from "@/context/filter";
 
 interface DataType {
   key: React.Key;
@@ -41,6 +47,7 @@ interface Response {
 }
 
 const ApprovePage = () => {
+  // const filter = useContext(FilterContext);
   const searchParams = useSearchParams();
   const yr = Number(searchParams.get("yr"));
   const qtr = Number(searchParams.get("qtr"));
@@ -51,10 +58,9 @@ const ApprovePage = () => {
     yr || getThaiYear(new Date().getFullYear()).yearSlice
   );
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<Response>({
-    reportStatus: [],
-    notApproveCount: 0,
-  });
+  const [response, setResponse] = useState<DataType[]>([]);
+  const [tableData, setTableData] = useState<DataType[]>([]);
+  const [notApproveCount, setNotApproveCount] = useState(0);
   const [mode, setMode] = useState(1);
   const [csvData, setCsvData] = useState([]);
   const router = useRouter();
@@ -110,55 +116,6 @@ const ApprovePage = () => {
     });
   }
 
-  let data: DataType[] = [];
-
-  response.reportStatus.forEach(function (value, i) {
-    const status: DataType = {
-      key: i,
-      id: value.ID,
-      company: false,
-      p1: false,
-      p2: false,
-      p3: false,
-      p4: false,
-      action: { data: value, canEdit: false },
-    };
-    let isSend = false;
-    switch (quarter) {
-      case 1:
-        isSend = value.isSendQtr1;
-        break;
-      case 2:
-        isSend = value.isSendQtr2;
-        break;
-      case 3:
-        isSend = value.isSendQtr3;
-        break;
-      case 4:
-        isSend = value.isSendQtr4;
-        break;
-      default:
-        break;
-    }
-
-    if (isSend && value.report[0]) {
-      status.company = true;
-      status.p1 = !!value.report[0].P1;
-      status.p2 = !!value.report[0].P2;
-      status.p3 = !!value.report[0].P3;
-      status.p4 = !!value.report[0].P4;
-
-      if (status.company && status.p1 && status.p2 && status.p3) {
-        status.action.canEdit = true;
-      }
-
-      if (session?.user.role === Role.SUBJECT) {
-        status.action.canEdit = true;
-      }
-    }
-    data.push(status);
-  });
-
   const columns: ColumnsType<DataType> = [
     {
       title: "ลำดับ",
@@ -169,7 +126,7 @@ const ApprovePage = () => {
       render: (item, record, index) => <>{index + 1}</>,
     },
     {
-      title: "เลขที่สถานประกอบการ",
+      title: "เลขประจำสถานประกอบการ",
       dataIndex: "id",
       key: "id",
       width: "20%",
@@ -312,18 +269,69 @@ const ApprovePage = () => {
       });
 
       if (res.status === 200) {
-        setResponse(res.data);
+        const result: Response = res.data;
+        setNotApproveCount(result.notApproveCount);
+        let data: DataType[] = [];
+        result.reportStatus.forEach(function (value: any, i: number) {
+          const status: DataType = {
+            key: i,
+            id: value.ID,
+            company: false,
+            p1: false,
+            p2: false,
+            p3: false,
+            p4: false,
+            action: { data: value, canEdit: false },
+          };
+          let isSend = false;
+          switch (quarter) {
+            case 1:
+              isSend = value.isSendQtr1;
+              break;
+            case 2:
+              isSend = value.isSendQtr2;
+              break;
+            case 3:
+              isSend = value.isSendQtr3;
+              break;
+            case 4:
+              isSend = value.isSendQtr4;
+              break;
+            default:
+              break;
+          }
+
+          if (isSend && value.report[0]) {
+            status.company = true;
+            status.p1 = !!value.report[0].P1;
+            status.p2 = !!value.report[0].P2;
+            status.p3 = !!value.report[0].P3;
+            status.p4 = !!value.report[0].P4;
+
+            if (status.company && status.p1 && status.p2 && status.p3) {
+              status.action.canEdit = true;
+            }
+
+            if (session?.user.role === Role.SUBJECT) {
+              status.action.canEdit = true;
+            }
+          }
+          data.push(status);
+        });
+        setResponse(data);
+        setTableData(data);
         if (
           session?.user.role === Role.SUBJECT &&
-          res.data.notApproveCount === 0
+          result.notApproveCount === 0
         ) {
           downloadData();
         }
       }
     } catch (err: any) {
       errorHandler(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const approveOptions = [
@@ -350,6 +358,11 @@ const ApprovePage = () => {
     }
   };
 
+  const onIdChange = (e: any) => {
+    const res = response.filter((item) => item.id.startsWith(e.target.value));
+    setTableData(res);
+  };
+
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
@@ -367,8 +380,8 @@ const ApprovePage = () => {
         </Title>
       </div>
       <div className="card flex flex-col gap-5">
-        <div className="md:flex justify-between items-center w-full">
-          <h1 className="mb-3 md:mb-0">
+        <div className="md:flex justify-between items-center w-full gap-3">
+          <h1 className="mb-5 md:mb-0">
             ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการในขอบเขตจังหวัดที่รับผิดชอบ
           </h1>
           <div className="flex items-center gap-3">
@@ -384,10 +397,15 @@ const ApprovePage = () => {
             />
           </div>
         </div>
-        <div className="md:flex justify-between items-center w-full">
-          <div className="text-red-500 mb-3 md:mb-0">
-            จำนวนแบบฟอร์มที่ผู้ตรวจยังไม่อนุมัติ:{" "}
-            {numberWithCommas(response.notApproveCount) || 0}
+        <div className="md:flex justify-between items-center w-full gap-3">
+          <div className="flex items-center gap-3 mb-5 md:mb-0">
+            <label>ค้นหาสถานประกอบการ</label>
+            <Input
+              name="ID"
+              placeholder="เลขประจำสถานประกอบการ"
+              onChange={onIdChange}
+              isControl={false}
+            />
           </div>
           <div className="flex items-center gap-3">
             <label>สถานะอนุมัติ</label>
@@ -402,21 +420,35 @@ const ApprovePage = () => {
             />
           </div>
         </div>
-        {session?.user.role === Role.SUBJECT &&
-          response.notApproveCount === 0 && (
-            <div className="w-full flex items-center gap-5">
-              ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
-              <CSVLink
-                data={csvData}
-                filename={`retail${yr}-${qtr}-${proviceId}.csv`}
-              >
-                <Button secondary>
-                  <IoCloudDownloadOutline className="mr-1" />
-                  ดาวน์โหลด
-                </Button>
-              </CSVLink>
-            </div>
-          )}
+        <p className="text-red-500 mb-3 md:mb-0">
+          จำนวนแบบฟอร์มที่ผู้ตรวจยังไม่อนุมัติ:{" "}
+          {numberWithCommas(notApproveCount) || 0}
+        </p>
+        {session?.user.role === Role.SUBJECT && notApproveCount === 0 && (
+          <div className="w-full flex items-center gap-5">
+            ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
+            <CSVLink
+              data={csvData}
+              filename={`retail${yr}-${qtr}-${proviceId}.csv`}
+            >
+              <Button secondary>
+                <IoCloudDownloadOutline className="mr-1" />
+                ดาวน์โหลด
+              </Button>
+            </CSVLink>
+          </div>
+        )}
+        {session?.user.role === Role.SUPERVISOR && notApproveCount === 0 && (
+          <div className="w-full flex items-center gap-5">
+            ตาราง Specification
+            <Link href={`/specification?yr=${year}&qtr=${quarter}`}>
+              <Button secondary>
+                <FaExternalLinkAlt className="mr-1" />
+                ดูตาราง
+              </Button>
+            </Link>
+          </div>
+        )}
         <div className="flex flex-wrap">
           {quarterArr.map((item) => (
             <Badge
@@ -436,7 +468,7 @@ const ApprovePage = () => {
               <>
                 <Table
                   columns={columns}
-                  dataSource={data}
+                  dataSource={tableData}
                   onChange={onChange}
                   bordered
                   size="middle"

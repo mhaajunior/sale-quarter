@@ -144,8 +144,9 @@ const ListPage = () => {
       }
     } catch (err: any) {
       errorHandler(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const onChange = (key: string | string[]) => {

@@ -85,8 +85,6 @@ export interface CompanyReport extends ReportControl {
   P2: string | null;
   P3: string | null;
   P4: string | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface ReportStatus {

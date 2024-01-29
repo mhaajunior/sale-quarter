@@ -1,10 +1,11 @@
 import { Role } from "@prisma/client";
+import { JwtPayload } from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 
 export const validateUserRole = (token: string, role: Role[]) => {
   if (!token) return false;
 
-  const decoded: any = jwtDecode(token);
+  const decoded: JwtPayload = jwtDecode(token);
   if (!role.includes(decoded.role)) {
     return false;
   }
@@ -15,6 +16,6 @@ export const validateUserRole = (token: string, role: Role[]) => {
 export const getUserRole = (token: string) => {
   if (!token) return false;
 
-  const decoded: any = jwtDecode(token);
+  const decoded: JwtPayload = jwtDecode(token);
   return decoded.role;
 };
