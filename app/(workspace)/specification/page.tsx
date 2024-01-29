@@ -1,26 +1,18 @@
 "use client";
 
-import Loading from "@/components/Loading";
 import OutputFormat from "@/components/SpecTable/OutputFormat";
 import ResponseRate from "@/components/SpecTable/ResponseRate";
 import Tabulation1 from "@/components/SpecTable/Tabulation1";
 import Tabulation2 from "@/components/SpecTable/Tabulation2";
 import Title from "@/components/Title";
+import { FilterContext } from "@/context";
 import useClientSession from "@/hooks/use-client-session";
-import { between } from "@/lib/common";
-import { getThaiYear, quarterMap } from "@/lib/quarter";
-import axios from "axios";
-import moment from "moment";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 
 const SpecificationPage = () => {
-  const searchParams = useSearchParams();
-  const yr = Number(searchParams.get("yr"));
-  const qtr = Number(searchParams.get("qtr"));
+  const { year, quarter } = useContext(FilterContext);
   const [selectedTable, setSelectedTable] = useState<specTable | null>(null);
   const session = useClientSession();
-  const router = useRouter();
 
   interface specTable {
     id: number;
@@ -29,8 +21,8 @@ const SpecificationPage = () => {
   }
 
   const data = {
-    year: yr,
-    quarter: qtr,
+    year,
+    quarter,
     province: session?.user.province,
   };
 
@@ -56,27 +48,6 @@ const SpecificationPage = () => {
       render: <ResponseRate />,
     },
   ];
-
-  useEffect(() => {
-    if (!qtr || !between(qtr, 1, 4) || !yr) {
-      router.push("/notfound");
-      return;
-    }
-
-    const res = quarterMap(Number("25" + yr) - 543);
-    const startDate = moment(res[qtr - 1].formSubmittedRange[0]);
-    const now = moment();
-
-    if (now < startDate) {
-      router.push("/denied?code=1");
-      return;
-    }
-
-    if (yr > getThaiYear(new Date().getFullYear()).yearSlice) {
-      router.push("/denied?code=1");
-      return;
-    }
-  }, []);
 
   const onTableChosen = (table: specTable) => {
     if (selectedTable?.id !== table.id) {

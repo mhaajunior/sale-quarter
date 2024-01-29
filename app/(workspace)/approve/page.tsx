@@ -6,7 +6,7 @@ import { errorHandler } from "@/lib/errorHandler";
 import useClientSession from "@/hooks/use-client-session";
 import { ReportStatus } from "@/types/dto/report";
 import { Table } from "antd";
-import { ColumnsType, TableProps } from "antd/es/table";
+import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import {
   FaCheckCircle,
@@ -18,9 +18,9 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
 import moment from "moment";
-import { getThaiYear, quarterMap } from "@/lib/quarter";
+import { quarterMap } from "@/lib/quarter";
 import Dropdown from "@/components/Dropdown";
-import { between, numberWithCommas } from "@/lib/common";
+import { numberWithCommas } from "@/lib/common";
 import { yearOptions } from "@/utils/dropdownOption";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +28,7 @@ import { Role } from "@prisma/client";
 import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
 import { CSVLink } from "react-csv";
 import Input from "@/components/Input";
-import FilterContext from "@/context/filter";
+import { FilterContext } from "@/context";
 
 interface DataType {
   key: React.Key;
@@ -47,16 +47,9 @@ interface Response {
 }
 
 const ApprovePage = () => {
-  // const filter = useContext(FilterContext);
+  const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
   const searchParams = useSearchParams();
-  const yr = Number(searchParams.get("yr"));
-  const qtr = Number(searchParams.get("qtr"));
-  const proviceId = searchParams.get("id");
-  const proviceName = searchParams.get("nm");
-  const [quarter, setQuarter] = useState(qtr || 1);
-  const [year, setYear] = useState(
-    yr || getThaiYear(new Date().getFullYear()).yearSlice
-  );
+  const proviceId = searchParams.get("pvid");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<DataType[]>([]);
   const [tableData, setTableData] = useState<DataType[]>([]);
@@ -68,35 +61,13 @@ const ApprovePage = () => {
 
   useEffect(() => {
     if (session) {
-      if (session.user.role === Role.SUBJECT) {
-        if (!qtr || !between(qtr, 1, 4) || !proviceId || !yr || !proviceName) {
-          router.push("/notfound");
-          return;
-        }
-
-        const res = quarterMap(Number("25" + yr) - 543);
-        const startDate = moment(res[qtr - 1].formSubmittedRange[0]);
-        const now = moment();
-
-        if (now < startDate) {
-          router.push("/denied?code=1");
-          return;
-        }
-
-        if (yr > getThaiYear(new Date().getFullYear()).yearSlice) {
-          router.push("/denied?code=1");
-          return;
-        }
-      } else if (session.user.role === Role.SUPERVISOR) {
-        if (qtr || yr || proviceId || proviceName) {
-          router.push("/notfound");
-          return;
-        }
+      if (!proviceId) {
+        router.push("/notfound");
+        return;
       }
-
       fetchCompanyStatus();
     }
-  }, [session, quarter, mode, year]);
+  }, [session, mode]);
 
   const quarterArr: QuarterArr[] = [];
   for (let i = 1; i <= 4; i++) {
@@ -231,9 +202,7 @@ const ApprovePage = () => {
               href={`/search/${action.data.ID}?yr=${
                 action.data.year
               }&qtr=${quarter}&mode=edit${
-                session?.user.role === Role.SUBJECT
-                  ? `&id=${proviceId}&nm=${proviceName}`
-                  : ""
+                session?.user.role === Role.SUBJECT ? `&pvid=${proviceId}` : ""
               }`}
             >
               <Button primary>ตรวจสอบ</Button>
@@ -245,15 +214,6 @@ const ApprovePage = () => {
       ),
     },
   ];
-
-  const onChange: TableProps<DataType>["onChange"] = (
-    pagination,
-    filters,
-    sorter,
-    extra
-  ) => {
-    // console.log("params", pagination, filters, sorter, extra);
-  };
 
   const fetchCompanyStatus = async () => {
     try {
@@ -366,11 +326,7 @@ const ApprovePage = () => {
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title
-          title={`อนุมัติสถานประกอบการ${
-            proviceName ? "จังหวัด" + proviceName : ""
-          }`}
-        >
+        <Title title={`อนุมัติสถานประกอบการรหัสจังหวัดที่ ${proviceId}`}>
           {session?.user.role === Role.SUBJECT && (
             <Button secondary onClick={() => router.push("/list")}>
               <IoChevronBack className="mr-1" />
@@ -424,31 +380,36 @@ const ApprovePage = () => {
           จำนวนแบบฟอร์มที่ผู้ตรวจยังไม่อนุมัติ:{" "}
           {numberWithCommas(notApproveCount) || 0}
         </p>
-        {session?.user.role === Role.SUBJECT && notApproveCount === 0 && (
-          <div className="w-full flex items-center gap-5">
-            ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
-            <CSVLink
-              data={csvData}
-              filename={`retail${yr}-${qtr}-${proviceId}.csv`}
-            >
-              <Button secondary>
-                <IoCloudDownloadOutline className="mr-1" />
-                ดาวน์โหลด
-              </Button>
-            </CSVLink>
-          </div>
+        {!loading && notApproveCount === 0 && (
+          <>
+            {session?.user.role === Role.SUBJECT && (
+              <div className="w-full flex items-center gap-5">
+                ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
+                <CSVLink
+                  data={csvData}
+                  filename={`retail${year}-${quarter}-${proviceId}.csv`}
+                >
+                  <Button secondary>
+                    <IoCloudDownloadOutline className="mr-1" />
+                    ดาวน์โหลด
+                  </Button>
+                </CSVLink>
+              </div>
+            )}
+            {session?.user.role === Role.SUPERVISOR && (
+              <div className="w-full flex items-center gap-5">
+                ตาราง Specification
+                <Link href={`/specification?yr=${year}&qtr=${quarter}`}>
+                  <Button secondary>
+                    <FaExternalLinkAlt className="mr-1" />
+                    ดูตาราง
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </>
         )}
-        {session?.user.role === Role.SUPERVISOR && notApproveCount === 0 && (
-          <div className="w-full flex items-center gap-5">
-            ตาราง Specification
-            <Link href={`/specification?yr=${year}&qtr=${quarter}`}>
-              <Button secondary>
-                <FaExternalLinkAlt className="mr-1" />
-                ดูตาราง
-              </Button>
-            </Link>
-          </div>
-        )}
+
         <div className="flex flex-wrap">
           {quarterArr.map((item) => (
             <Badge
@@ -469,7 +430,6 @@ const ApprovePage = () => {
                 <Table
                   columns={columns}
                   dataSource={tableData}
-                  onChange={onChange}
                   bordered
                   size="middle"
                   scroll={{ x: "calc(500px + 50%)" }}

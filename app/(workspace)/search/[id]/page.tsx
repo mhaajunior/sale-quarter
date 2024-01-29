@@ -52,14 +52,13 @@ const FormPage = () => {
   const [si7, setSi7] = useState<boolean | undefined>();
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
   const params = useParams();
+  const router = useRouter();
+  const session = useClientSession();
   const searchParams = useSearchParams();
   const yr = Number(searchParams.get("yr"));
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
-  const provinceId = Number(searchParams.get("id"));
-  const provinceName = searchParams.get("nm");
-  const router = useRouter();
-  const session = useClientSession();
+  const provinceId = Number(searchParams.get("pvid")) || session?.user.province;
 
   const {
     register,
@@ -691,15 +690,7 @@ const FormPage = () => {
         });
         if (res.status === 200) {
           toast.success("ส่งข้อมูลสำเร็จ");
-          if (session?.user.role === Role.SUPERVISOR) {
-            router.push("/approve");
-          } else if (session?.user.role === Role.SUBJECT) {
-            router.push(
-              `/approve?id=${provinceId}&yr=${yr}&qtr=${qtr}&nm=${provinceName}`
-            );
-          } else {
-            router.push("/search");
-          }
+          navigateToPath();
         }
       } catch (err: any) {
         errorHandler(err);
@@ -734,17 +725,20 @@ const FormPage = () => {
       confirmButtonText: "ใช่",
     }).then((result) => {
       if (result.isConfirmed) {
-        if (session?.user.role === Role.SUPERVISOR) {
-          router.push("/approve");
-        } else if (session?.user.role === Role.SUBJECT) {
-          router.push(
-            `/approve?id=${provinceId}&yr=${yr}&qtr=${qtr}&nm=${provinceName}`
-          );
-        } else {
-          router.push("/search");
-        }
+        navigateToPath();
       }
     });
+  };
+
+  const navigateToPath = () => {
+    if (
+      session?.user.role === Role.SUPERVISOR ||
+      session?.user.role === Role.SUBJECT
+    ) {
+      router.push(`/approve?pvid=${provinceId}`);
+    } else {
+      router.push("/search");
+    }
   };
 
   return (

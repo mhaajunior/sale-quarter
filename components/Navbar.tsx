@@ -48,7 +48,7 @@ const Navbar = () => {
     },
     {
       title: "อนุมัติสถานประกอบการ",
-      link: "/approve",
+      link: `/approve?pvid=${session?.user.province}`,
       role: [Role.SUPERVISOR],
     },
     {
