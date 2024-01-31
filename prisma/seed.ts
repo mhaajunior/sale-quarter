@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import prisma from "./db";
 import bcrypt from "bcrypt";
 const controls_10 = require("./data/control/ctrl_66_cwt10.json");
@@ -100,6 +99,10 @@ async function main() {
           isSendQtr2: false,
           isSendQtr3: false,
           isSendQtr4: false,
+          isApproveQtr1: false,
+          isApproveQtr2: false,
+          isApproveQtr3: false,
+          isApproveQtr4: false,
         },
       });
       await prisma.control.upsert({
@@ -149,7 +152,7 @@ async function main() {
         password: hashPassword,
         fullname: item.staff_name,
         province: item.staff_prov,
-        role: Role.INTERVIEWER,
+        role: "INTERVIEWER",
       },
     });
   }
@@ -164,7 +167,7 @@ async function main() {
         password: hashPassword,
         fullname: item.staff_name,
         province: item.staff_prov,
-        role: Role.SUPERVISOR,
+        role: "SUPERVISOR",
       },
     });
   }
@@ -179,7 +182,7 @@ async function main() {
         password: hashPassword,
         fullname: item.fullname,
         province: 10,
-        role: Role.SUBJECT,
+        role: "SUBJECT",
       },
     });
   }
@@ -194,7 +197,7 @@ async function main() {
         password: hashPassword,
         fullname: item.fullname,
         province: 10,
-        role: Role.ADMIN,
+        role: "ADMIN",
       },
     });
   }

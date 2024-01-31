@@ -4,7 +4,8 @@ import prisma from "@/prisma/db";
 import { CompanyReport } from "@/types/dto/report";
 import { createReportSchema } from "@/types/schemas/validationSchema";
 import { rangeCheck } from "@/utils/rangeCheck";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserRole, validateUserRole } from "../middleware";
 
@@ -410,6 +411,31 @@ export const POST = async (req: NextRequest) => {
           break;
         case 4:
           updateObj = { isSendQtr4: true };
+          break;
+        default:
+          return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });
+      }
+
+      await prisma.reportStatus.update({
+        where: {
+          yearID: { ID, year: YR },
+        },
+        data: updateObj,
+      });
+    } else {
+      let updateObj = {};
+      switch (QTR) {
+        case 1:
+          updateObj = { isApproveQtr1: p4 ? true : false };
+          break;
+        case 2:
+          updateObj = { isApproveQtr1: p4 ? true : false };
+          break;
+        case 3:
+          updateObj = { isApproveQtr1: p4 ? true : false };
+          break;
+        case 4:
+          updateObj = { isApproveQtr1: p4 ? true : false };
           break;
         default:
           return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });

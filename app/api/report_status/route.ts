@@ -1,7 +1,8 @@
 import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { searchIdSchema } from "@/types/schemas/searchSchema";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserRole, validateUserRole } from "../middleware";
 
@@ -69,7 +70,10 @@ export const GET = async (req: NextRequest) => {
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
   const year = Number(req.nextUrl.searchParams.get("year"));
   const province = Number(req.nextUrl.searchParams.get("province"));
-  const mode = Number(req.nextUrl.searchParams.get("mode"));
+  const perPage = Number(req.nextUrl.searchParams.get("perPage"));
+  const page = Number(req.nextUrl.searchParams.get("page"));
+  const option = Number(req.nextUrl.searchParams.get("option"));
+  const searchId = req.nextUrl.searchParams.get("searchId");
 
   if (!accessToken || !verifyJwt(accessToken)) {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
@@ -84,8 +88,50 @@ export const GET = async (req: NextRequest) => {
   }
 
   try {
+    let whereObj: any = { province, year };
+    let whereObj2: any = { province, year };
+    if (searchId) {
+      whereObj.ID = { startsWith: searchId };
+      whereObj2.ID = { startsWith: searchId };
+    }
+
+    const totalCount = await prisma.reportStatus.aggregate({
+      _count: {
+        no: true,
+      },
+      where: whereObj,
+    });
+
+    switch (quarter) {
+      case 1:
+        whereObj.isApproveQtr1 = false;
+        break;
+      case 2:
+        whereObj.isApproveQtr2 = false;
+        break;
+      case 3:
+        whereObj.isApproveQtr3 = false;
+        break;
+      case 4:
+        whereObj.isApproveQtr4 = false;
+        break;
+      default:
+        break;
+    }
+
+    const notApproveCount = await prisma.reportStatus.aggregate({
+      _count: {
+        no: true,
+      },
+      where: whereObj,
+    });
+
+    if (option === 2) {
+      whereObj2 = whereObj;
+    }
+
     const reportStatus = await prisma.reportStatus.findMany({
-      where: { province, year },
+      where: whereObj2,
       orderBy: [{ ID: "asc" }],
       include: {
         report: {
@@ -93,30 +139,14 @@ export const GET = async (req: NextRequest) => {
           select: { updatedAt: true, P1: true, P2: true, P3: true, P4: true },
         },
       },
+      skip: perPage * (page - 1),
+      take: perPage,
     });
 
-    let count = 0;
-    const company: string[] = [];
-    for (const item of reportStatus) {
-      if (item.report.length === 0) {
-        count++;
-        company.push(item.ID);
-      } else {
-        if (!item.report[0].P4) {
-          count++;
-          company.push(item.ID);
-        }
-      }
-    }
-
-    let result = reportStatus;
-    if (mode === 2) {
-      result = reportStatus.filter((item) => company.includes(item.ID));
-    }
-
     return NextResponse.json({
-      reportStatus: result,
-      notApproveCount: count,
+      reportStatus: reportStatus,
+      notApproveCount: notApproveCount._count.no,
+      totalCount: totalCount._count.no,
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {

@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { JwtPayload } from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 

@@ -203,6 +203,7 @@ h5 {
   padding: 10px;
   text-align: center;
   cursor: pointer;
+  min-width: 200px;
 }
 
 .click-box:hover {
@@ -211,6 +212,7 @@ h5 {
 
 .click-box.box-active {
   border-color: var(--primary);
+  color: var(--primary);
 }
 
 @media (max-width: 768px) {

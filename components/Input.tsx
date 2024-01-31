@@ -15,6 +15,7 @@ const Input = ({
   icon,
   onIconClick,
   errors,
+  className,
   ...rest
 }: {
   placeholder: string;
@@ -28,9 +29,10 @@ const Input = ({
   right?: boolean;
   onIconClick?: () => void;
   errors?: any;
+  className?: any;
   [rest: string]: any;
 }) => {
-  const classes = classNames(rest.className, "flex flex-col", {
+  const classes = classNames(className, "flex flex-col", {
     error: errors,
   });
 

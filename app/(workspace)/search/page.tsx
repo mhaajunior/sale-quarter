@@ -19,7 +19,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 import useClientSession from "@/hooks/use-client-session";
 import { quarterMap } from "@/lib/quarter";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 
 interface Response {
   hasControl: boolean;
@@ -293,7 +293,7 @@ const SearchPage = () => {
   if (response.hasControl && response.reportStatus.length > 0) {
     for (const item of response.reportStatus) {
       const {
-        id,
+        no,
         year,
         canCreateQtr1,
         canCreateQtr2,
@@ -365,7 +365,7 @@ const SearchPage = () => {
       }
 
       data.push({
-        key: id,
+        key: no,
         year,
         qtr1Status: quarterStatus[0],
         qtr2Status: quarterStatus[1],

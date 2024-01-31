@@ -88,7 +88,7 @@ export interface CompanyReport extends ReportControl {
 }
 
 export interface ReportStatus {
-  id: number;
+  no: number;
   ID: string;
   canCreateQtr1: boolean;
   canCreateQtr2: boolean;
@@ -98,8 +98,13 @@ export interface ReportStatus {
   isSendQtr2: boolean;
   isSendQtr3: boolean;
   isSendQtr4: boolean;
+  isApproveQtr1: boolean;
+  isApproveQtr2: boolean;
+  isApproveQtr3: boolean;
+  isApproveQtr4: boolean;
   year: number;
   province: number;
+  province_name: string;
   report: {
     updatedAt: string;
     P1: string;
@@ -114,4 +119,11 @@ export interface ProvinceGroup {
   name: string;
   totalCompany: number;
   notApprove: number;
+}
+
+export interface TableProps {
+  year: number;
+  quarter: number;
+  province: number | undefined;
+  item: CompanyReport[];
 }
