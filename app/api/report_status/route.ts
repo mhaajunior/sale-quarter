@@ -95,10 +95,7 @@ export const GET = async (req: NextRequest) => {
       whereObj2.ID = { startsWith: searchId };
     }
 
-    const totalCount = await prisma.reportStatus.aggregate({
-      _count: {
-        no: true,
-      },
+    const totalCount = await prisma.reportStatus.count({
       where: whereObj,
     });
 
@@ -119,10 +116,7 @@ export const GET = async (req: NextRequest) => {
         break;
     }
 
-    const notApproveCount = await prisma.reportStatus.aggregate({
-      _count: {
-        no: true,
-      },
+    const notApproveCount = await prisma.reportStatus.count({
       where: whereObj,
     });
 
@@ -145,8 +139,8 @@ export const GET = async (req: NextRequest) => {
 
     return NextResponse.json({
       reportStatus: reportStatus,
-      notApproveCount: notApproveCount._count.no,
-      totalCount: totalCount._count.no,
+      notApproveCount,
+      totalCount,
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -156,7 +150,7 @@ export const GET = async (req: NextRequest) => {
   }
 };
 
-// change access status in form for specific id for subject
+// change form access status for specific id for subject
 export const PATCH = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const body = await req.json();

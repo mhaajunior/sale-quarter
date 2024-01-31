@@ -52,10 +52,10 @@ const OutputFormat = ({ data }: { data: Data }) => {
       if (res.status === 200) {
         const report: CompanyReport[] = res.data;
         const report_res = [];
-        const data = [];
+        const excel = [];
         for (const item of report) {
           report_res.push({ ...item, key: item.ID });
-          data.push([
+          excel.push([
             item.NO,
             item.ID,
             item.TSIC_R,
@@ -83,7 +83,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
           ]);
         }
         setResponse(report_res);
-        setExcelData(data);
+        setExcelData(excel);
       }
     } catch (err: any) {
       errorHandler(err);
