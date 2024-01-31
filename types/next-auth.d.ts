@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import NextAuth, { Account, DefaultSession, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 

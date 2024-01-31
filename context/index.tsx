@@ -1,6 +1,7 @@
 "use client";
 
-import { getThaiYear } from "@/lib/quarter";
+import { calcQuarter, getThaiYear, quarterMap } from "@/lib/quarter";
+import moment from "moment";
 import {
   Dispatch,
   SetStateAction,
@@ -24,10 +25,18 @@ export const FilterContext = createContext<FilterContent>({
 });
 
 export default function FilterProvider({ children }: PropsWithChildren) {
-  const [year, setYear] = useState(
-    getThaiYear(new Date().getFullYear()).yearSlice
-  );
-  const [quarter, setQuarter] = useState(1);
+  const currentYear = getThaiYear(new Date().getFullYear()).yearSlice;
+  const res = quarterMap(new Date().getFullYear());
+  const startDate = moment(res[calcQuarter() - 1].startDate);
+  const now = moment();
+
+  let qtr = 1;
+  if (now >= startDate) {
+    qtr = calcQuarter();
+  }
+
+  const [year, setYear] = useState(currentYear);
+  const [quarter, setQuarter] = useState(qtr);
 
   return (
     <FilterContext.Provider value={{ year, quarter, setYear, setQuarter }}>

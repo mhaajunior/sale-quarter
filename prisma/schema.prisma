@@ -6,37 +6,37 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
 model Control {
-  no        String
+  no        String  @db.NVarChar(4)
   es_id     BigInt  @unique
   tsic_code Int
-  size12    String
-  initial   String?
-  firstname String?
-  lastname  String?
-  comp_name String?
+  size12    String  @db.NVarChar(2)
+  initial   String? @db.NVarChar(10)
+  firstname String? @db.NVarChar(60)
+  lastname  String? @db.NVarChar(60)
+  comp_name String? @db.NVarChar(100)
   district  Int
-  ea        String
-  vil       String
-  house_no  String
-  street    String?
-  soi       String?
-  building  String?
-  tam       String
-  tam_name  String
-  amp       String
-  amp_name  String
-  tel_no    String?
-  e_mail    String?
+  ea        String  @db.NVarChar(4)
+  vil       String  @db.NVarChar(2)
+  house_no  String  @db.NVarChar(30)
+  street    String? @db.NVarChar(50)
+  soi       String? @db.NVarChar(30)
+  building  String? @db.NVarChar(60)
+  tam       String  @db.NVarChar(2)
+  tam_name  String  @db.NVarChar(30)
+  amp       String  @db.NVarChar(2)
+  amp_name  String  @db.NVarChar(30)
+  tel_no    String? @db.NVarChar(20)
+  e_mail    String? @db.NVarChar(30)
   econ_fm   Int
   regis_cid String?
   regis_no  String?
   cwt       Int
-  cwt_name  String
+  cwt_name  String  @db.NVarChar(30)
   reg       Int
   yr        Int
 
@@ -45,65 +45,65 @@ model Control {
 }
 
 model Report {
-  id String @id @default(uuid())
+  uuid String @id @default(uuid())
 
-  ID     String
+  ID     String  @db.NVarChar(15)
   REG    Int     @db.SmallInt
   CWT    Int     @db.SmallInt
-  AMP    String  @db.VarChar(2)
-  TAM    String  @db.VarChar(2)
+  AMP    String  @db.NVarChar(2)
+  TAM    String  @db.NVarChar(2)
   MUN    Int     @db.SmallInt
-  EA     String  @db.VarChar(4)
-  VIL    String  @db.VarChar(2)
+  EA     String  @db.NVarChar(4)
+  VIL    String  @db.NVarChar(2)
   TSIC_R Int?
   TSIC_L Int
-  SIZE_R String? @db.VarChar(2)
-  SIZE_L String  @db.VarChar(2)
-  NO     String  @db.VarChar(4)
+  SIZE_R String? @db.NVarChar(2)
+  SIZE_L String  @db.NVarChar(2)
+  NO     String  @db.NVarChar(4)
   QTR    Int     @db.SmallInt
   YR     Int     @db.SmallInt
-  ENU    String  @db.VarChar(2)
+  ENU    String  @db.NVarChar(2)
 
-  TITLE     String @db.VarChar(10)
-  RANK      String @db.VarChar(20)
-  FIRSTNAME String @db.VarChar(60)
-  LASTNAME  String @db.VarChar(60)
-  EST_TITLE String @db.VarChar(10)
-  EST_NAME  String @db.VarChar(100)
-  ADD_NO    String @db.VarChar(10)
-  BUILDING  String @db.VarChar(60)
-  ROOM      String @db.VarChar(30)
-  STREET    String @db.VarChar(50)
-  BLK       String @db.VarChar(30)
-  SOI       String @db.VarChar(30)
-  SUB_DIST  String @db.VarChar(30)
-  DISTRICT  String @db.VarChar(30)
-  PROVINCE  String @db.VarChar(30)
-  POST_CODE String @db.VarChar(5)
-  TEL_NO    String @db.VarChar(20)
-  E_MAIL    String @db.VarChar(30)
-  WEBSITE   String @db.VarChar(30)
-  SOCIAL    String @db.VarChar(30)
+  TITLE     String @db.NVarChar(10)
+  RANK      String @db.NVarChar(20)
+  FIRSTNAME String @db.NVarChar(60)
+  LASTNAME  String @db.NVarChar(60)
+  EST_TITLE String @db.NVarChar(10)
+  EST_NAME  String @db.NVarChar(100)
+  ADD_NO    String @db.NVarChar(30)
+  BUILDING  String @db.NVarChar(60)
+  ROOM      String @db.NVarChar(30)
+  STREET    String @db.NVarChar(50)
+  BLK       String @db.NVarChar(30)
+  SOI       String @db.NVarChar(30)
+  SUB_DIST  String @db.NVarChar(30)
+  DISTRICT  String @db.NVarChar(30)
+  PROVINCE  String @db.NVarChar(30)
+  POST_CODE String @db.NVarChar(5)
+  TEL_NO    String @db.NVarChar(20)
+  E_MAIL    String @db.NVarChar(30)
+  WEBSITE   String @db.NVarChar(30)
+  SOCIAL    String @db.NVarChar(30)
   ANSWER    Int    @db.SmallInt
 
   TSIC_CHG Int?
-  LG       String? @db.VarChar(2)
-  LG1      String? @db.VarChar(13)
-  LG1_temp String  @db.VarChar(1)
-  LG2      String? @db.VarChar(13)
-  LG3      String? @db.VarChar(13)
-  LG4      String? @db.VarChar(13)
-  DES_TYPE String? @db.VarChar(60)
+  LG       String? @db.NVarChar(2)
+  LG1      String? @db.NVarChar(13)
+  LG1_temp String  @db.NVarChar(1)
+  LG2      String? @db.NVarChar(13)
+  LG3      String? @db.NVarChar(13)
+  LG4      String? @db.NVarChar(13)
+  DES_TYPE String? @db.NVarChar(60)
   TYPE     Int?
-  M1       String? @db.VarChar(2)
-  M2       String? @db.VarChar(2)
-  M3       String? @db.VarChar(2)
+  M1       String? @db.NVarChar(2)
+  M2       String? @db.NVarChar(2)
+  M3       String? @db.NVarChar(2)
   R1       Int?
   R2       Int?
   R3       Int?
   TR       Int?
   SI       Int?
-  ITR      String? @db.VarChar(3)
+  ITR      String? @db.NVarChar(3)
   SI1      Int?    @db.SmallInt
   SI2      Int?    @db.SmallInt
   SI3      Int?    @db.SmallInt
@@ -111,27 +111,27 @@ model Report {
   SI5      Int?    @db.SmallInt
   SI6      Int?    @db.SmallInt
   SI7      Int?    @db.SmallInt
-  SI8      String? @db.VarChar(60)
-  SI11     String? @db.VarChar(3)
-  SI22     String? @db.VarChar(3)
-  SI33     String? @db.VarChar(3)
-  SI44     String? @db.VarChar(3)
-  SI55     String? @db.VarChar(3)
-  SI66     String? @db.VarChar(3)
-  SI77     String? @db.VarChar(3)
-  F1       String? @db.VarChar(3)
-  F2       String? @db.VarChar(3)
-  F3       String? @db.VarChar(3)
-  F4       String? @db.VarChar(3)
-  F5       String? @db.VarChar(3)
+  SI8      String? @db.NVarChar(60)
+  SI11     String? @db.NVarChar(3)
+  SI22     String? @db.NVarChar(3)
+  SI33     String? @db.NVarChar(3)
+  SI44     String? @db.NVarChar(3)
+  SI55     String? @db.NVarChar(3)
+  SI66     String? @db.NVarChar(3)
+  SI77     String? @db.NVarChar(3)
+  F1       String? @db.NVarChar(3)
+  F2       String? @db.NVarChar(3)
+  F3       String? @db.NVarChar(3)
+  F4       String? @db.NVarChar(3)
+  F5       String? @db.NVarChar(3)
   CHG      Int?    @db.SmallInt
-  CIN      String? @db.VarChar(3)
-  CDE      String? @db.VarChar(3)
-  FAC      String? @db.VarChar(2)
-  FAC_1    String? @db.VarChar(100)
+  CIN      String? @db.NVarChar(3)
+  CDE      String? @db.NVarChar(3)
+  FAC      String? @db.NVarChar(2)
+  FAC_1    String? @db.NVarChar(100)
   PRVS     Int?    @db.SmallInt
-  PIN      String? @db.VarChar(3)
-  PDE      String? @db.VarChar(3)
+  PIN      String? @db.NVarChar(3)
+  PDE      String? @db.NVarChar(3)
   EMP      Int?
   STO      String?
   DAY      Int?    @db.SmallInt
@@ -147,10 +147,10 @@ model Report {
   OP10     Int?    @db.SmallInt
   OP11     Int?    @db.SmallInt
   OP12     Int?    @db.SmallInt
-  P1       String? @db.VarChar(7)
-  P2       String? @db.VarChar(7)
-  P3       String? @db.VarChar(7)
-  P4       String? @db.VarChar(7)
+  P1       String? @db.NVarChar(7)
+  P2       String? @db.NVarChar(7)
+  P3       String? @db.NVarChar(7)
+  P4       String? @db.NVarChar(7)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,12 +165,12 @@ model Report {
 }
 
 model ReportStatus {
-  id            Int     @id @default(autoincrement())
-  ID            String
-  year          Int
-  province      Int
-  province_name String
-  region        Int
+  no            Int     @id @default(autoincrement())
+  ID            String  @db.NVarChar(15)
+  year          Int     @db.SmallInt
+  province      Int     @db.SmallInt
+  province_name String  @db.NVarChar(30)
+  region        Int     @db.SmallInt
   canCreateQtr1 Boolean
   canCreateQtr2 Boolean
   canCreateQtr3 Boolean
@@ -179,6 +179,10 @@ model ReportStatus {
   isSendQtr2    Boolean
   isSendQtr3    Boolean
   isSendQtr4    Boolean
+  isApproveQtr1    Boolean
+  isApproveQtr2    Boolean
+  isApproveQtr3    Boolean
+  isApproveQtr4    Boolean
 
   report Report[]
 
@@ -190,18 +194,11 @@ model ReportStatus {
 
 model User {
   id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
-  fullname String
-  province Int
-  role     Role
+  username String @unique @db.NVarChar(30)
+  password String @db.NVarChar(60)
+  fullname String @db.NVarChar(120)
+  province Int    @db.SmallInt
+  role     String
 
   @@index([username])
-}
-
-enum Role {
-  INTERVIEWER
-  SUPERVISOR
-  SUBJECT
-  ADMIN
 }

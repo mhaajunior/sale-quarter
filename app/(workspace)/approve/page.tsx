@@ -24,11 +24,13 @@ import { numberWithCommas } from "@/lib/common";
 import { yearOptions } from "@/utils/dropdownOption";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
 import { CSVLink } from "react-csv";
 import Input from "@/components/Input";
 import { FilterContext } from "@/context";
+import PageControl from "@/components/PageControl";
+import useDebounce from "@/hooks/use-debounce";
 
 interface DataType {
   key: React.Key;
@@ -44,20 +46,26 @@ interface DataType {
 interface Response {
   reportStatus: ReportStatus[];
   notApproveCount: number;
+  totalCount: number;
 }
 
 const ApprovePage = () => {
   const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
   const searchParams = useSearchParams();
-  const proviceId = searchParams.get("pvid");
+  const proviceId = Number(searchParams.get("pvid"));
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<DataType[]>([]);
-  const [tableData, setTableData] = useState<DataType[]>([]);
   const [notApproveCount, setNotApproveCount] = useState(0);
-  const [mode, setMode] = useState(1);
   const [csvData, setCsvData] = useState([]);
+  const [option, setOption] = useState(1);
+  const [provinceName, setProvinceName] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedSearchValue = useDebounce(searchValue);
   const router = useRouter();
   const session = useClientSession();
+  const perPage = 100;
 
   useEffect(() => {
     if (session) {
@@ -67,7 +75,7 @@ const ApprovePage = () => {
       }
       fetchCompanyStatus();
     }
-  }, [session, mode]);
+  }, [session, page, debouncedSearchValue, option]);
 
   const quarterArr: QuarterArr[] = [];
   for (let i = 1; i <= 4; i++) {
@@ -94,7 +102,6 @@ const ApprovePage = () => {
       key: "key",
       width: "10%",
       align: "center",
-      render: (item, record, index) => <>{index + 1}</>,
     },
     {
       title: "เลขประจำสถานประกอบการ",
@@ -221,9 +228,12 @@ const ApprovePage = () => {
       const res = await axios.get("/api/report_status", {
         params: {
           quarter,
-          province: proviceId || session?.user.province,
+          province: proviceId,
           year,
-          mode,
+          page,
+          perPage,
+          option,
+          searchId: debouncedSearchValue,
         },
         headers: { authorization: session?.user.accessToken },
       });
@@ -231,55 +241,66 @@ const ApprovePage = () => {
       if (res.status === 200) {
         const result: Response = res.data;
         setNotApproveCount(result.notApproveCount);
+        setTotalCount(result.totalCount);
         let data: DataType[] = [];
-        result.reportStatus.forEach(function (value: any, i: number) {
-          const status: DataType = {
-            key: i,
-            id: value.ID,
-            company: false,
-            p1: false,
-            p2: false,
-            p3: false,
-            p4: false,
-            action: { data: value, canEdit: false },
-          };
-          let isSend = false;
-          switch (quarter) {
-            case 1:
-              isSend = value.isSendQtr1;
-              break;
-            case 2:
-              isSend = value.isSendQtr2;
-              break;
-            case 3:
-              isSend = value.isSendQtr3;
-              break;
-            case 4:
-              isSend = value.isSendQtr4;
-              break;
-            default:
-              break;
-          }
-
-          if (isSend && value.report[0]) {
-            status.company = true;
-            status.p1 = !!value.report[0].P1;
-            status.p2 = !!value.report[0].P2;
-            status.p3 = !!value.report[0].P3;
-            status.p4 = !!value.report[0].P4;
-
-            if (status.company && status.p1 && status.p2 && status.p3) {
-              status.action.canEdit = true;
+        if (result.reportStatus.length > 0) {
+          setProvinceName(result.reportStatus[0].province_name);
+          result.reportStatus.forEach(function (
+            value: ReportStatus,
+            i: number
+          ) {
+            const status: DataType = {
+              key: (page - 1) * perPage + i + 1,
+              id: value.ID,
+              company: false,
+              p1: false,
+              p2: false,
+              p3: false,
+              p4: false,
+              action: { data: value, canEdit: false },
+            };
+            let isSend = false;
+            let isApprove = false;
+            switch (quarter) {
+              case 1:
+                isSend = value.isSendQtr1;
+                isApprove = value.isApproveQtr1;
+                break;
+              case 2:
+                isSend = value.isSendQtr2;
+                isApprove = value.isApproveQtr2;
+                break;
+              case 3:
+                isSend = value.isSendQtr3;
+                isApprove = value.isApproveQtr3;
+                break;
+              case 4:
+                isSend = value.isSendQtr4;
+                isApprove = value.isApproveQtr4;
+                break;
+              default:
+                break;
             }
 
-            if (session?.user.role === Role.SUBJECT) {
-              status.action.canEdit = true;
+            if (isSend && value.report[0]) {
+              status.company = true;
+              status.p1 = !!value.report[0].P1;
+              status.p2 = !!value.report[0].P2;
+              status.p3 = !!value.report[0].P3;
+              status.p4 = isApprove;
+
+              if (status.company && status.p1 && status.p2 && status.p3) {
+                status.action.canEdit = true;
+              }
+
+              if (session?.user.role === Role.SUBJECT) {
+                status.action.canEdit = true;
+              }
             }
-          }
-          data.push(status);
-        });
+            data.push(status);
+          });
+        }
         setResponse(data);
-        setTableData(data);
         if (
           session?.user.role === Role.SUBJECT &&
           result.notApproveCount === 0
@@ -293,11 +314,6 @@ const ApprovePage = () => {
       setLoading(false);
     }
   };
-
-  const approveOptions = [
-    { label: "ทั้งหมด", value: 1 },
-    { label: "ยังไม่อนุมัติ", value: 2 },
-  ];
 
   const downloadData = async () => {
     try {
@@ -318,15 +334,15 @@ const ApprovePage = () => {
     }
   };
 
-  const onIdChange = (e: any) => {
-    const res = response.filter((item) => item.id.startsWith(e.target.value));
-    setTableData(res);
-  };
+  const approveOptions = [
+    { label: "ทั้งหมด", value: 1 },
+    { label: "ยังไม่อนุมัติ", value: 2 },
+  ];
 
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title={`อนุมัติสถานประกอบการรหัสจังหวัดที่ ${proviceId}`}>
+        <Title title={`อนุมัติสถานประกอบการจังหวัด${provinceName}`}>
           {session?.user.role === Role.SUBJECT && (
             <Button secondary onClick={() => router.push("/list")}>
               <IoChevronBack className="mr-1" />
@@ -359,8 +375,10 @@ const ApprovePage = () => {
             <Input
               name="ID"
               placeholder="เลขประจำสถานประกอบการ"
-              onChange={onIdChange}
+              value={searchValue}
+              onChange={(e: any) => setSearchValue(e.target.value)}
               isControl={false}
+              className="w-60 md:w-72"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -371,15 +389,21 @@ const ApprovePage = () => {
               options={approveOptions}
               className="w-36"
               isControl={false}
-              setterFn={(val: number) => setMode(val)}
-              defaultValue={mode}
+              setterFn={(val: number) => setOption(val)}
+              defaultValue={option}
             />
           </div>
         </div>
-        <p className="text-red-500 mb-3 md:mb-0">
-          จำนวนแบบฟอร์มที่ผู้ตรวจยังไม่อนุมัติ:{" "}
-          {numberWithCommas(notApproveCount) || 0}
-        </p>
+        <div className="flex flex-wrap gap-10">
+          <p className="text-blue-500 mb-3 md:mb-0">
+            จำนวนสถานประกอบการที่พบทั้งหมด: {numberWithCommas(totalCount) || 0}
+          </p>
+          <p className="text-red-500 mb-3 md:mb-0">
+            จำนวนสถานประกอบการที่ผู้ตรวจยังไม่อนุมัติ:{" "}
+            {numberWithCommas(notApproveCount) || 0}
+          </p>
+        </div>
+
         {!loading && notApproveCount === 0 && (
           <>
             {session?.user.role === Role.SUBJECT && (
@@ -429,15 +453,20 @@ const ApprovePage = () => {
               <>
                 <Table
                   columns={columns}
-                  dataSource={tableData}
+                  dataSource={response}
                   bordered
                   size="middle"
                   scroll={{ x: "calc(500px + 50%)" }}
                   showSorterTooltip={false}
-                  pagination={{
-                    defaultPageSize: 100,
-                  }}
+                  pagination={false}
                 />
+                {totalCount > 0 && (
+                  <PageControl
+                    page={page}
+                    totalPages={Math.ceil(totalCount / perPage)}
+                    onChangePage={(page) => setPage(page)}
+                  />
+                )}
               </>
             )}
           </div>

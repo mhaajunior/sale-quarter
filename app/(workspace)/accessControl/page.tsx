@@ -177,7 +177,7 @@ const AccessControlPage = () => {
   if (response.hasControl && response.reportStatus.length > 0) {
     for (const item of response.reportStatus) {
       const {
-        id,
+        no,
         year,
         canCreateQtr1,
         canCreateQtr2,
@@ -186,7 +186,7 @@ const AccessControlPage = () => {
       } = item;
 
       data.push({
-        key: id,
+        key: no,
         year,
         qtr1: { canCreate: canCreateQtr1, year },
         qtr2: { canCreate: canCreateQtr2, year },
