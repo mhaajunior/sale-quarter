@@ -39,7 +39,7 @@ import { IoChevronBack } from "react-icons/io5";
 import Swal from "sweetalert2";
 import { CompanyReport } from "@/types/dto/report";
 import useClientSession from "@/hooks/use-client-session";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);

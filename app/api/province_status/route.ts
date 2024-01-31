@@ -1,7 +1,8 @@
 import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { ProvinceGroup } from "@/types/dto/report";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import { validateUserRole } from "../middleware";
 
@@ -26,7 +27,7 @@ export const GET = async (req: NextRequest) => {
   try {
     const report = await prisma.report.groupBy({
       by: ["CWT"],
-      where: { YR: year, QTR: quarter, P4: { not: null } },
+      where: { YR: year, QTR: quarter, P4: { not: "" } },
       orderBy: [{ CWT: "asc" }],
       _count: { P4: true },
     });

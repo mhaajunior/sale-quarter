@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
 import { FaSignOutAlt, FaAngleDown } from "react-icons/fa";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 import { Dropdown, Space } from "antd";
 import Swal from "sweetalert2";
 import { signOut } from "next-auth/react";

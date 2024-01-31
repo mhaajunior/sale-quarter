@@ -1,7 +1,7 @@
 import { ReportForm } from "@/types/schemas/validationSchema";
 import { between, currencyToNumber } from "./common";
 import { FormErrors } from "@/types/dto/common";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/dto/role";
 
 export const validateFormData = (data: ReportForm) => {
   if (data.R1_temp) data.R1 = currencyToNumber(data.R1_temp);

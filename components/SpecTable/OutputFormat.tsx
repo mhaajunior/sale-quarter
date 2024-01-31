@@ -18,7 +18,7 @@ import base64 from "@/utils/excelTemplate/output_format.xlsx";
 interface Data {
   year: number;
   quarter: number;
-  province: number | undefined;
+  province: number | null;
 }
 
 const OutputFormat = ({ data }: { data: Data }) => {
@@ -266,7 +266,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap justify-between items-center gap-3">
-        <h1>ตาราง Output Format Specification</h1>
+        <h1>ตารางบัญชีรายชื่อสถานประกอบการตัวอย่าง</h1>
         <Button secondary loading={loading} onClick={handleDownload}>
           <IoCloudDownloadOutline className="mr-1" />
           ดาวน์โหลด

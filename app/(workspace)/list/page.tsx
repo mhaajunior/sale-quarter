@@ -68,10 +68,14 @@ const ListPage = () => {
           label: item.name,
           children: (
             <div className="flex flex-col gap-3">
-              <p>จำนวนสถานประกอบการทั้งหมด: {item.totalCompany}</p>
-              <p className="text-red-500">
-                จำนวนสถานประกอบการที่ผู้ตรวจยังไม่อนุมัติ: {item.notApprove}
-              </p>
+              <div className="flex flex-wrap gap-10">
+                <div className="font-bold">จำนวนสถานประกอบการ</div>
+                <Tag color="blue">ทั้งหมด: {item.totalCompany}</Tag>
+                <Tag color="green">
+                  ผู้ตรวจอนุมัติแล้ว: {item.totalCompany - item.notApprove}
+                </Tag>
+                <Tag color="red">ผู้ตรวจยังไม่อนุมัติ: {item.notApprove}</Tag>
+              </div>
             </div>
           ),
           extra: genExtra(item.id, item.notApprove),
