@@ -422,7 +422,7 @@ export const createReportSchema = z
       .positive("ร้อยละที่กรอกต้องเป็นจำนวนบวก")
       .lte(100, "ร้อยละที่กรอกต้องห้ามเกิน 100")
       .optional(),
-    CDE: z.coerce
+    CDE: z
       .number({ invalid_type_error: "กรุณากรอกร้อยละ" })
       .int("ร้อยละที่กรอกต้องเป็นจำนวนเต็ม")
       .positive("ร้อยละที่กรอกต้องเป็นจำนวนบวก")
@@ -582,6 +582,7 @@ export const createReportSchema = z
         SI77,
         CHG,
         FAC,
+        ENU,
       },
       ctx
     ) => {
@@ -595,7 +596,7 @@ export const createReportSchema = z
         }
       }
 
-      if (CHG !== 1 && !FAC) {
+      if (ENU === 1 && CHG !== 1 && !FAC) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "กรุณาเลือกตัวเลือกในข้อ 8",
