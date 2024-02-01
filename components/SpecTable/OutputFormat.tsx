@@ -260,7 +260,10 @@ const OutputFormat = ({ data }: { data: Data }) => {
       { origin: "A2" }
     );
 
-    XLSX.writeFile(workbook, `outformat${year}-${quarter}-${province}.xlsx`);
+    XLSX.writeFile(
+      workbook,
+      `output_format-${year}-${quarter}-${province}.xlsx`
+    );
   };
 
   return (

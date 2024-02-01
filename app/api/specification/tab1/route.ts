@@ -34,7 +34,7 @@ export const GET = async (req: NextRequest) => {
 
   try {
     const report = await prisma.report.findMany({
-      where: { YR: year, CWT: province },
+      where: { YR: year, CWT: province, ENU: { equals: "01" } },
       select: {
         NO: true,
         EST_NAME: true,
@@ -52,6 +52,8 @@ export const GET = async (req: NextRequest) => {
       if (temp[NO]) {
         temp[NO].TR_arr.push(TR);
         temp[NO].STO_arr.push(STO);
+        temp[NO].TSIC_R = TSIC_R;
+        temp[NO].SIZE_R = SIZE_R;
       } else {
         temp[NO] = {
           NO,

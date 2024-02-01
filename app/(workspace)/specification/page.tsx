@@ -72,7 +72,7 @@ const SpecificationPage = () => {
     {
       id: 4,
       title: "อัตราการตอบกลับของข้อมูล",
-      render: <ResponseRate />,
+      render: <ResponseRate data={data} />,
     },
   ];
 

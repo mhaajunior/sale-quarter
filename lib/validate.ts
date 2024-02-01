@@ -34,13 +34,6 @@ export const checkErrorFromRole = (
       });
     }
 
-    if (!TYPE) {
-      errData.push({
-        label: ["TYPE"],
-        message: "กรุณากรอก TYPE",
-      });
-    }
-
     if (role === Role.INTERVIEWER) {
       if (!(P1 || P2 || P3)) {
         errData.push({
@@ -57,11 +50,13 @@ export const checkErrorFromRole = (
       }
     }
   }
-  let res;
-  if (mode === 1) {
-    res = consistencyCheck1(data);
-  } else {
-    res = consistencyCheck2(data);
+  let res: any = [];
+  if (role) {
+    if (mode === 1) {
+      res = consistencyCheck1(data);
+    } else {
+      res = consistencyCheck2(data);
+    }
   }
   errData = [...errData, ...res];
   return errData;
@@ -178,6 +173,11 @@ export const consistencyCheck1 = (data: ReportForm) => {
         });
       }
     }
+  } else {
+    errData.push({
+      label: ["TYPE"],
+      message: "กรุณากรอก TYPE",
+    });
   }
 
   return errData;
