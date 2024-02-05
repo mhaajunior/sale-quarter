@@ -12,7 +12,7 @@ import Button from "../Button";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import * as ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-// import * as XLSX from "xlsx";
+import { createOuterBorder } from "@/lib/excel";
 
 interface Data {
   year: number;
@@ -89,62 +89,64 @@ const ResponseRate = ({ data }: { data: Data }) => {
             QTR: Number(key),
             total_count: v.total,
             total_percent: "100.00",
-            countable_count: v.response[1] ? v.response[1].count : 0,
-            countable_percent: v.response[1] ? v.response[1].percent : "0.00",
-            uncountable_count: v.uncountable,
+            countable_count: v.response[1] ? v.response[1].count : "-",
+            countable_percent: v.response[1] ? v.response[1].percent : "-",
+            uncountable_count: v.uncountable > 0 ? v.uncountable : "-",
             uncountable_percent:
-              v.total > 0
+              v.total > 0 && v.uncountable
                 ? ((v.uncountable / v.total) * 100).toFixed(2)
-                : "0.00",
-            enu2_count: v.response[2] ? v.response[2].count : 0,
-            enu2_percent: v.response[2] ? v.response[2].percent : "0.00",
-            enu3_count: v.response[3] ? v.response[3].count : 0,
-            enu3_percent: v.response[3] ? v.response[3].percent : "0.00",
-            enu4_count: v.response[4] ? v.response[4].count : 0,
-            enu4_percent: v.response[4] ? v.response[4].percent : "0.00",
-            enu5_count: v.response[5] ? v.response[5].count : 0,
-            enu5_percent: v.response[5] ? v.response[5].percent : "0.00",
-            enu6_count: v.response[6] ? v.response[6].count : 0,
-            enu6_percent: v.response[6] ? v.response[6].percent : "0.00",
-            enu7_count: v.response[7] ? v.response[7].count : 0,
-            enu7_percent: v.response[7] ? v.response[7].percent : "0.00",
-            enu8_count: v.response[8] ? v.response[8].count : 0,
-            enu8_percent: v.response[8] ? v.response[8].percent : "0.00",
-            enu9_count: v.response[9] ? v.response[9].count : 0,
-            enu9_percent: v.response[9] ? v.response[9].percent : "0.00",
-            enu10_count: v.response[10] ? v.response[10].count : 0,
-            enu10_percent: v.response[10] ? v.response[10].percent : "0.00",
-            enu11_count: v.response[11] ? v.response[11].count : 0,
-            enu11_percent: v.response[11] ? v.response[11].percent : "0.00",
+                : "-",
+            enu2_count: v.response[2] ? v.response[2].count : "-",
+            enu2_percent: v.response[2] ? v.response[2].percent : "-",
+            enu3_count: v.response[3] ? v.response[3].count : "-",
+            enu3_percent: v.response[3] ? v.response[3].percent : "-",
+            enu4_count: v.response[4] ? v.response[4].count : "-",
+            enu4_percent: v.response[4] ? v.response[4].percent : "-",
+            enu5_count: v.response[5] ? v.response[5].count : "-",
+            enu5_percent: v.response[5] ? v.response[5].percent : "-",
+            enu6_count: v.response[6] ? v.response[6].count : "-",
+            enu6_percent: v.response[6] ? v.response[6].percent : "-",
+            enu7_count: v.response[7] ? v.response[7].count : "-",
+            enu7_percent: v.response[7] ? v.response[7].percent : "-",
+            enu8_count: v.response[8] ? v.response[8].count : "-",
+            enu8_percent: v.response[8] ? v.response[8].percent : "-",
+            enu9_count: v.response[9] ? v.response[9].count : "-",
+            enu9_percent: v.response[9] ? v.response[9].percent : "-",
+            enu10_count: v.response[10] ? v.response[10].count : "-",
+            enu10_percent: v.response[10] ? v.response[10].percent : "-",
+            enu11_count: v.response[11] ? v.response[11].count : "-",
+            enu11_percent: v.response[11] ? v.response[11].percent : "-",
           });
           excel.push([
             Number(key),
             v.total,
             "100.00",
-            v.response[1] ? v.response[1].count : 0,
-            v.response[1] ? v.response[1].percent : "0.00",
-            v.uncountable,
-            v.total > 0 ? ((v.uncountable / v.total) * 100).toFixed(2) : "0.00",
-            v.response[2] ? v.response[2].count : 0,
-            v.response[2] ? v.response[2].percent : "0.00",
-            v.response[3] ? v.response[3].count : 0,
-            v.response[3] ? v.response[3].percent : "0.00",
-            v.response[4] ? v.response[4].count : 0,
-            v.response[4] ? v.response[4].percent : "0.00",
-            v.response[5] ? v.response[5].count : 0,
-            v.response[5] ? v.response[5].percent : "0.00",
-            v.response[6] ? v.response[6].count : 0,
-            v.response[6] ? v.response[6].percent : "0.00",
-            v.response[7] ? v.response[7].count : 0,
-            v.response[7] ? v.response[7].percent : "0.00",
-            v.response[8] ? v.response[8].count : 0,
-            v.response[8] ? v.response[8].percent : "0.00",
-            v.response[9] ? v.response[9].count : 0,
-            v.response[9] ? v.response[9].percent : "0.00",
-            v.response[10] ? v.response[10].count : 0,
-            v.response[10] ? v.response[10].percent : "0.00",
-            v.response[11] ? v.response[11].count : 0,
-            v.response[11] ? v.response[11].percent : "0.00",
+            v.response[1] ? v.response[1].count : "-",
+            v.response[1] ? v.response[1].percent : "-",
+            v.uncountable > 0 ? v.uncountable : "-",
+            v.total > 0 && v.uncountable
+              ? ((v.uncountable / v.total) * 100).toFixed(2)
+              : "-",
+            v.response[2] ? v.response[2].count : "-",
+            v.response[2] ? v.response[2].percent : "-",
+            v.response[3] ? v.response[3].count : "-",
+            v.response[3] ? v.response[3].percent : "-",
+            v.response[4] ? v.response[4].count : "-",
+            v.response[4] ? v.response[4].percent : "-",
+            v.response[5] ? v.response[5].count : "-",
+            v.response[5] ? v.response[5].percent : "-",
+            v.response[6] ? v.response[6].count : "-",
+            v.response[6] ? v.response[6].percent : "-",
+            v.response[7] ? v.response[7].count : "-",
+            v.response[7] ? v.response[7].percent : "-",
+            v.response[8] ? v.response[8].count : "-",
+            v.response[8] ? v.response[8].percent : "-",
+            v.response[9] ? v.response[9].count : "-",
+            v.response[9] ? v.response[9].percent : "-",
+            v.response[10] ? v.response[10].count : "-",
+            v.response[10] ? v.response[10].percent : "-",
+            v.response[11] ? v.response[11].count : "-",
+            v.response[11] ? v.response[11].percent : "-",
           ]);
         }
         setResponse(report_res);
@@ -444,18 +446,354 @@ const ResponseRate = ({ data }: { data: Data }) => {
 
     worksheet.mergeCells("A3:J3");
     worksheet.getCell("A3").value =
-      " ตาราง  จำนวนและร้อยละของสถานประกอบการ จำแนกตามผลการแจงนับ";
+      "ตาราง  จำนวนและร้อยละของสถานประกอบการ จำแนกตามผลการแจงนับ";
     worksheet.getCell("A3").font = {
       bold: true,
       name: "TH SarabunPSK",
       size: 16,
     };
 
-    // worksheet.columns = [
-    //   { header: "Id", key: "id", width: 10 },
-    //   { header: "Name", key: "name", width: 32 },
-    //   { header: "D.O.B.", key: "dob", width: 15 },
-    // ];
+    worksheet.getCell("Z5").value = "จังหวัด";
+    worksheet.getCell("AA5").value = province;
+    worksheet.getRow(5).font = { name: "TH SarabunPSK", size: 16 };
+    worksheet.getRow(6).font = { name: "TH SarabunPSK", size: 16 };
+    worksheet.getRow(7).font = { name: "TH SarabunPSK", size: 16 };
+    worksheet.getRow(8).font = { name: "TH SarabunPSK", size: 16 };
+    worksheet.getRow(9).font = { name: "TH SarabunPSK", size: 16 };
+    worksheet.getRow(9).alignment = { horizontal: "center" };
+
+    worksheet.mergeCells("A6:A9");
+    worksheet.getCell("A6").value = "ไตรมาส";
+    worksheet.getCell("A6").alignment = {
+      vertical: "top",
+      horizontal: "center",
+    };
+    worksheet.getCell("A6").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("B6:C8");
+    worksheet.getCell("B6").value = `ปริมาณงานทั้งสิ้น\r\nปี 25${year}`;
+    worksheet.getCell("B6").alignment = {
+      vertical: "top",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("B6").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("D6:G6");
+    worksheet.getCell("D6").value = "ผลการแจงนับ";
+    worksheet.getCell("D6").alignment = {
+      vertical: "top",
+      horizontal: "center",
+    };
+    worksheet.getCell("D6").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("D7:E8");
+    worksheet.getCell("D7").value = "แจงนับได้\r\n(ENU=1)";
+    worksheet.getCell("D7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("D7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("F7:G8");
+    worksheet.getCell("F7").value = "แจงนับไม่ได้\r\n(ENU=2-11)";
+    worksheet.getCell("F7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("F7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("H6:AA6");
+    worksheet.getCell("H6").value = "สาเหตุที่แจงนับไม่ได้";
+    worksheet.getCell("H6").alignment = {
+      vertical: "top",
+      horizontal: "center",
+    };
+    worksheet.getCell("H6").border = {
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("H7:I8");
+    worksheet.getCell("H7").value = "ย้าย/หาไม่พบ\r\n(ENU=2)";
+    worksheet.getCell("H7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("H7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("J7:K8");
+    worksheet.getCell("J7").value = "เลิกกิจการ\r\n(ENU=3)";
+    worksheet.getCell("J7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("J7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("L7:M8");
+    worksheet.getCell("L7").value = "รื้อถอน/ไฟไหม้\r\n(ENU=4)";
+    worksheet.getCell("L7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("L7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("N7:O8");
+    worksheet.getCell("N7").value = "ไม่ให้ความร่วมมือ\r\n(ENU=5)";
+    worksheet.getCell("N7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("N7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("P7:Q8");
+    worksheet.getCell("P7").value = "หยุดกิจการชั่วคราว\r\n(ENU=6)";
+    worksheet.getCell("P7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("P7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("R7:S8");
+    worksheet.getCell("R7").value = "ซ้ำกับลำดับที่...\r\n(ENU=7)";
+    worksheet.getCell("R7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("R7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("T7:U8");
+    worksheet.getCell("T7").value =
+      "เป็นสถานประกอบการ\r\nแต่ไม่อยู่ในคุ้ม\r\n(ENU=8)";
+    worksheet.getCell("T7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("T7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("V7:W8");
+    worksheet.getCell("V7").value = "ข้อมูลอยู่สำนักงานใหญ่\r\n(ENU=9)";
+    worksheet.getCell("V7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("V7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("X7:Y8");
+    worksheet.getCell("X7").value = "ไม่เป็นสถานประกอบการ\r\n(ENU=10)";
+    worksheet.getCell("X7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("X7").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    worksheet.mergeCells("Z7:AA8");
+    worksheet.getCell("Z7").value = "ผลัดส่ง\r\n(ENU=11)";
+    worksheet.getCell("Z7").alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    worksheet.getCell("Z7").border = {
+      bottom: { style: "thin" },
+    };
+
+    // จำนวน
+    worksheet.getCell("B9").value = "จำนวน";
+    worksheet.getCell("B9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("D9").value = "จำนวน";
+    worksheet.getCell("D9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("F9").value = "จำนวน";
+    worksheet.getCell("F9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("H9").value = "จำนวน";
+    worksheet.getCell("H9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("J9").value = "จำนวน";
+    worksheet.getCell("J9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("L9").value = "จำนวน";
+    worksheet.getCell("L9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("N9").value = "จำนวน";
+    worksheet.getCell("N9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("P9").value = "จำนวน";
+    worksheet.getCell("P9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("R9").value = "จำนวน";
+    worksheet.getCell("R9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("T9").value = "จำนวน";
+    worksheet.getCell("T9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("V9").value = "จำนวน";
+    worksheet.getCell("V9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("X9").value = "จำนวน";
+    worksheet.getCell("X9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("Z9").value = "จำนวน";
+    worksheet.getCell("Z9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+
+    // %
+    worksheet.getCell("C9").value = "%";
+    worksheet.getCell("C9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("E9").value = "%";
+    worksheet.getCell("E9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("G9").value = "%";
+    worksheet.getCell("G9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("I9").value = "%";
+    worksheet.getCell("I9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("K9").value = "%";
+    worksheet.getCell("K9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("M9").value = "%";
+    worksheet.getCell("M9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("O9").value = "%";
+    worksheet.getCell("O9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("Q9").value = "%";
+    worksheet.getCell("Q9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("S9").value = "%";
+    worksheet.getCell("S9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("U9").value = "%";
+    worksheet.getCell("U9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("W9").value = "%";
+    worksheet.getCell("W9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("Y9").value = "%";
+    worksheet.getCell("Y9").border = {
+      right: { style: "thin" },
+      bottom: { style: "thin" },
+    };
+    worksheet.getCell("AA9").value = "%";
+    worksheet.getCell("AA9").border = {
+      bottom: { style: "thin" },
+    };
+
+    for (let i = 0; i < excelData.length; i++) {
+      let lastRow = worksheet.lastRow!.number;
+      let insertRow = ++lastRow;
+      let getRowInsert = worksheet.getRow(insertRow);
+      getRowInsert.values = excelData[i];
+      getRowInsert.font = { name: "TH SarabunPSK", size: 16 };
+      getRowInsert.alignment = { horizontal: "right" };
+    }
+
+    let lastRow = worksheet.lastRow!.number;
+    createOuterBorder(worksheet, [1, 6], [27, lastRow]);
 
     const buffer = await workbook.xlsx.writeBuffer();
     const fileType =
@@ -465,15 +803,6 @@ const ResponseRate = ({ data }: { data: Data }) => {
     const blob = new Blob([buffer], { type: fileType });
 
     saveAs(blob, `response_rate-${year}-${province}` + fileExtension);
-
-    // const workbook = XLSX.read(base64, { type: "base64" });
-    // const firstSheetName = workbook.SheetNames[0];
-    // const sheet = workbook.Sheets[firstSheetName];
-    // const cellRef = XLSX.utils.encode_cell({ c: 0, r: 12 });
-    // // add new cell
-    // XLSX.utils.sheet_add_aoa(sheet, excelData, { origin: cellRef });
-    // XLSX.utils.sheet_add_aoa(sheet, [[province]], { origin: "Y5" });
-    // XLSX.writeFile(workbook, `response_rate-${year}-${province}.xlsx`);
   };
 
   return (

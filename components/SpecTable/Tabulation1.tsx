@@ -11,8 +11,9 @@ import React, { useEffect, useState } from "react";
 import Loading from "../Loading";
 import Button from "../Button";
 import { IoCloudDownloadOutline } from "react-icons/io5";
-import * as XLSX from "xlsx";
-import base64 from "@/utils/excelTemplate/tab1.xlsx";
+import * as ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import { createOuterBorder } from "@/lib/excel";
 
 interface Data {
   year: number;
@@ -192,18 +193,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
     },
   ];
 
-  const handleDownload = () => {
-    const workbook = XLSX.read(base64, { type: "base64" });
-    const firstSheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[firstSheetName];
-    const cellRef = XLSX.utils.encode_cell({ c: 0, r: 5 });
-    // add new cell
-    XLSX.utils.sheet_add_aoa(sheet, excelData, { origin: cellRef });
-    XLSX.utils.sheet_add_aoa(sheet, [[province]], { origin: "B2" });
-    XLSX.utils.sheet_add_aoa(sheet, [[`ปี 25${year}`]], { origin: "L2" });
-
-    XLSX.writeFile(workbook, `tab1-${year}-${province}.xlsx`);
-  };
+  const handleDownload = () => {};
 
   return (
     <div className="flex flex-col gap-3">
