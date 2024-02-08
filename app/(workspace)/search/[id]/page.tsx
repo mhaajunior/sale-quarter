@@ -240,7 +240,7 @@ const FormPage = () => {
               tsic_code,
               vil,
             } = res.data as InitialControl;
-            setValue("AMP", Number(amp));
+            setValue("AMP", amp);
             setValue("DISTRICT", amp_name);
             setValue("BUILDING", building ? building : "-");
             setValue("EST_NAME", comp_name ? comp_name : "-");
@@ -248,22 +248,22 @@ const FormPage = () => {
             setValue("PROVINCE", cwt_name);
             setValue("MUN", district);
             setValue("E_MAIL", e_mail ? e_mail : "-");
-            setValue("EA", Number(ea));
+            setValue("EA", ea);
             setValue("LG", econ_fm);
             setValue("FIRSTNAME", firstname ? firstname : "-");
             setValue("ADD_NO", house_no);
             setValue("TITLE", initial ? initial : "-");
             setValue("LASTNAME", lastname ? lastname : "-");
-            setValue("NO", Number(no));
+            setValue("NO", no);
             setValue("REG", reg);
-            setValue("SIZE_L", Number(size12));
+            setValue("SIZE_L", size12);
             setValue("SOI", soi ? soi : "-");
             setValue("STREET", street ? street : "-");
-            setValue("TAM", Number(tam));
+            setValue("TAM", tam);
             setValue("SUB_DIST", tam_name);
             setValue("TEL_NO", tel_no ? tel_no.replace("-", "") : "-");
             setValue("TSIC_L", tsic_code);
-            setValue("VIL", Number(vil));
+            setValue("VIL", vil);
             if (regis_cid) {
               if (econ_fm === 1) {
                 setValue("LG1_temp", "1");
@@ -359,17 +359,17 @@ const FormPage = () => {
             } = res.data as ReportControl;
             setValue("REG", REG);
             setValue("CWT", CWT);
-            setValue("AMP", Number(AMP));
-            setValue("TAM", Number(TAM));
+            setValue("AMP", AMP);
+            setValue("TAM", TAM);
             setValue("MUN", MUN);
-            setValue("EA", Number(EA));
-            setValue("VIL", Number(VIL));
+            setValue("EA", EA);
+            setValue("VIL", VIL);
             setValue("TSIC_R", TSIC_R);
             setValue("TSIC_L", TSIC_L);
-            setValue("SIZE_R", Number(SIZE_R));
-            setValue("SIZE_L", Number(SIZE_L));
-            setValue("NO", Number(NO));
-            setValue("ENU", Number(ENU));
+            setValue("SIZE_R", SIZE_R);
+            setValue("SIZE_L", SIZE_L);
+            setValue("NO", NO);
+            setValue("ENU", ENU);
             setValue("TITLE", TITLE);
             setValue("RANK", RANK);
             setValue("FIRSTNAME", FIRSTNAME);
@@ -392,8 +392,8 @@ const FormPage = () => {
             setValue("SOCIAL", SOCIAL);
             setValue("TSIC_CHG", TSIC_CHG);
             if (LG) {
-              setValue("LG", Number(LG));
-              switch (Number(LG)) {
+              setValue("LG", LG);
+              switch (LG) {
                 case 1:
                   setValue("LG1_temp", LG1_temp);
                   setValue("LG1", LG1);
@@ -541,17 +541,17 @@ const FormPage = () => {
             } = res.data as CompanyReport;
             setValue("REG", REG);
             setValue("CWT", CWT);
-            setValue("AMP", Number(AMP));
-            setValue("TAM", Number(TAM));
+            setValue("AMP", AMP);
+            setValue("TAM", TAM);
             setValue("MUN", MUN);
-            setValue("EA", Number(EA));
-            setValue("VIL", Number(VIL));
+            setValue("EA", EA);
+            setValue("VIL", VIL);
             setValue("TSIC_R", TSIC_R);
             setValue("TSIC_L", TSIC_L);
-            setValue("SIZE_R", Number(SIZE_R) || undefined);
-            setValue("SIZE_L", Number(SIZE_L));
-            setValue("NO", Number(NO));
-            setValue("ENU", Number(ENU));
+            setValue("SIZE_R", SIZE_R);
+            setValue("SIZE_L", SIZE_L);
+            setValue("NO", NO);
+            setValue("ENU", ENU);
             setValue("TITLE", TITLE);
             setValue("RANK", RANK);
             setValue("FIRSTNAME", FIRSTNAME);
@@ -581,7 +581,7 @@ const FormPage = () => {
             setValue("R3_temp", R3?.toString());
             setValue("TR_temp", TR?.toString());
             setValue("SI", SI);
-            setValue("ITR", Number(ITR) || undefined);
+            setValue("ITR", ITR);
             setValue("SI1", SI1 === 1 ? true : false);
             setValue("SI2", SI2 === 1 ? true : false);
             setValue("SI3", SI3 === 1 ? true : false);
@@ -590,26 +590,26 @@ const FormPage = () => {
             setValue("SI6", SI6 === 1 ? true : false);
             setValue("SI7", SI7 === 1 ? true : false);
             setValue("SI8", SI8);
-            setValue("SI11", Number(SI11) || undefined);
-            setValue("SI22", Number(SI22) || undefined);
-            setValue("SI33", Number(SI33) || undefined);
-            setValue("SI44", Number(SI44) || undefined);
-            setValue("SI55", Number(SI55) || undefined);
-            setValue("SI66", Number(SI66) || undefined);
-            setValue("SI77", Number(SI77) || undefined);
-            setValue("F1", Number(F1) || undefined);
-            setValue("F2", Number(F2) || undefined);
-            setValue("F3", Number(F3) || undefined);
-            setValue("F4", Number(F4) || undefined);
-            setValue("F5", Number(F5) || undefined);
+            setValue("SI11", SI11);
+            setValue("SI22", SI22);
+            setValue("SI33", SI33);
+            setValue("SI44", SI44);
+            setValue("SI55", SI55);
+            setValue("SI66", SI66);
+            setValue("SI77", SI77);
+            setValue("F1", F1);
+            setValue("F2", F2);
+            setValue("F3", F3);
+            setValue("F4", F4);
+            setValue("F5", F5);
             setValue("CHG", CHG);
-            setValue("CIN", Number(CIN) || undefined);
-            setValue("CDE", Number(CDE) || undefined);
-            setValue("FAC", Number(FAC) || undefined);
+            setValue("CIN", CIN);
+            setValue("CDE", CDE);
+            setValue("FAC", FAC);
             setValue("FAC_1", FAC_1);
             setValue("PRVS", PRVS);
-            setValue("PIN", Number(PIN) || undefined);
-            setValue("PDE", Number(PDE) || undefined);
+            setValue("PIN", PIN);
+            setValue("PDE", PDE);
             setValue("EMP", EMP);
             setValue("STO_temp", STO || "");
             setValue("DAY", DAY);
@@ -630,8 +630,8 @@ const FormPage = () => {
             setValue("P3", P3 || "");
             setValue("P4", P4 || "");
             if (LG) {
-              setValue("LG", Number(LG));
-              switch (Number(LG)) {
+              setValue("LG", LG);
+              switch (LG) {
                 case 1:
                   setValue("LG1_temp", LG1_temp);
                   setValue("LG1", LG1);

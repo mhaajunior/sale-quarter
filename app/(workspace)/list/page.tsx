@@ -18,6 +18,9 @@ import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FilterContext } from "@/context";
+import Link from "next/link";
+import { Role } from "@/types/dto/role";
+import Button from "@/components/Button";
 
 const ListPage = () => {
   const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
@@ -68,7 +71,7 @@ const ListPage = () => {
           label: item.name,
           children: (
             <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap gap-10">
+              <div className="flex flex-wrap items-center gap-10">
                 <div className="font-bold">จำนวนสถานประกอบการ</div>
                 <Tag color="blue">ทั้งหมด: {item.totalCompany}</Tag>
                 <Tag color="green">

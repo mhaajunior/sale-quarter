@@ -1,17 +1,17 @@
 export interface Identification {
   REG: number;
   CWT: number;
-  AMP: string;
-  TAM: string;
+  AMP: number;
+  TAM: number;
   MUN: number;
-  EA: string;
-  VIL: string;
+  EA: number;
+  VIL: number;
   TSIC_R?: number;
   TSIC_L: number;
-  SIZE_R?: string;
-  SIZE_L: string;
-  NO: string;
+  SIZE_R?: number;
+  SIZE_L: number;
+  NO: number;
   QTR: number;
   YR: number;
-  ENU: string;
+  ENU: number;
 }

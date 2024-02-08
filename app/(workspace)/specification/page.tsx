@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/Button";
+import Loading from "@/components/Loading";
 import OutputFormat from "@/components/SpecTable/OutputFormat";
 import ResponseRate from "@/components/SpecTable/ResponseRate";
 import Tabulation1 from "@/components/SpecTable/Tabulation1";
@@ -9,6 +10,7 @@ import Title from "@/components/Title";
 import { FilterContext } from "@/context";
 import useClientSession from "@/hooks/use-client-session";
 import { Role } from "@/types/dto/role";
+import { mapProvinceName } from "@/utils/province";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { IoChevronBack } from "react-icons/io5";
@@ -19,6 +21,7 @@ const SpecificationPage = () => {
   const pvid = Number(searchParams.get("pvid")) || null;
   const [proviceId, setProvinceId] = useState<number | null>(null);
   const [selectedTable, setSelectedTable] = useState<specTable | null>(null);
+  const [loading, setLoading] = useState(true);
   const session = useClientSession();
   const router = useRouter();
 
@@ -30,7 +33,7 @@ const SpecificationPage = () => {
 
   useEffect(() => {
     if (session) {
-      console.log();
+      setLoading(false);
       if (session.user.role === Role.SUPERVISOR) {
         if (pvid) {
           router.push("/denied?code=3");
@@ -62,7 +65,7 @@ const SpecificationPage = () => {
     {
       id: 2,
       title: "ตาราง ข ",
-      render: <Tabulation2 />,
+      render: <Tabulation2 data={data} />,
     },
     {
       id: 3,
@@ -83,17 +86,21 @@ const SpecificationPage = () => {
   };
 
   const onClickBack = () => {
-    if (session?.user.role === Role.SUPERVISOR) {
-      router.push(`/approve?pvid=${proviceId}`);
-    } else if (session?.user.role === Role.SUBJECT) {
-      router.push("/list");
-    }
+    router.push(`/approve?pvid=${proviceId}`);
   };
 
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title="Specification Table">
+        <Title
+          title={`Specification Table ${
+            session?.user.role === Role.SUBJECT
+              ? `จังหวัด${
+                  mapProvinceName[proviceId as keyof typeof mapProvinceName]
+                }`
+              : ""
+          }`}
+        >
           <Button secondary onClick={onClickBack}>
             <IoChevronBack className="mr-1" />
             กลับ
@@ -102,17 +109,21 @@ const SpecificationPage = () => {
       </div>
       <div className="card flex flex-col gap-5">
         <div className="flex flex-wrap gap-5 justify-between">
-          {specTables.map((table) => (
-            <div
-              key={table.id}
-              className={`click-box ${
-                selectedTable?.id === table.id ? "box-active" : ""
-              }`}
-              onClick={() => onTableChosen(table)}
-            >
-              {table.title}
-            </div>
-          ))}
+          {loading ? (
+            <Loading type="partial" />
+          ) : (
+            specTables.map((table) => (
+              <div
+                key={table.id}
+                className={`click-box ${
+                  selectedTable?.id === table.id ? "box-active" : ""
+                }`}
+                onClick={() => onTableChosen(table)}
+              >
+                {table.title}
+              </div>
+            ))
+          )}
         </div>
         {selectedTable?.render}
       </div>
