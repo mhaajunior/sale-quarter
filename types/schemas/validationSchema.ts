@@ -273,9 +273,9 @@ export const createReportSchema = z
       .gte(1, "กรุณาเลือกประเภทกิจการ")
       .lte(7, "ประเภทกิจการไม่ถูกต้อง")
       .optional(),
-    M1: z.string().default(quarter.rangeVal[0]),
-    M2: z.string().default(quarter.rangeVal[1]),
-    M3: z.string().default(quarter.rangeVal[2]),
+    M1: z.number().default(quarter.rangeVal[0]),
+    M2: z.number().default(quarter.rangeVal[1]),
+    M3: z.number().default(quarter.rangeVal[2]),
     R1_temp: z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับในเดือนนี้")

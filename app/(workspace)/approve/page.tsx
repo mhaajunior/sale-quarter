@@ -31,6 +31,7 @@ import Input from "@/components/Input";
 import { FilterContext } from "@/context";
 import PageControl from "@/components/PageControl";
 import useDebounce from "@/hooks/use-debounce";
+import { mapProvinceName } from "@/utils/province";
 
 interface DataType {
   key: React.Key;
@@ -58,7 +59,6 @@ const ApprovePage = () => {
   const [notApproveCount, setNotApproveCount] = useState(0);
   const [csvData, setCsvData] = useState([]);
   const [option, setOption] = useState(1);
-  const [provinceName, setProvinceName] = useState("");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
@@ -244,7 +244,6 @@ const ApprovePage = () => {
         setTotalCount(result.totalCount);
         let data: DataType[] = [];
         if (result.reportStatus.length > 0) {
-          setProvinceName(result.reportStatus[0].province_name);
           result.reportStatus.forEach(function (
             value: ReportStatus,
             i: number
@@ -342,7 +341,11 @@ const ApprovePage = () => {
   return (
     <>
       <div className="mb-10 flex flex-col gap-3">
-        <Title title={`อนุมัติสถานประกอบการจังหวัด${provinceName}`}>
+        <Title
+          title={`อนุมัติสถานประกอบการจังหวัด${
+            mapProvinceName[proviceId as keyof typeof mapProvinceName]
+          }`}
+        >
           {session?.user.role === Role.SUBJECT && (
             <Button secondary onClick={() => router.push("/list")}>
               <IoChevronBack className="mr-1" />
@@ -404,33 +407,50 @@ const ApprovePage = () => {
           </p>
         </div>
 
-        {!loading && notApproveCount === 0 && (
+        {!loading && (
           <>
             {session?.user.role === Role.SUBJECT && (
               <div className="w-full flex items-center gap-5">
-                ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมดในจังหวัด
-                <CSVLink
-                  data={csvData}
-                  filename={`retail${year}-${quarter}-${proviceId}.csv`}
-                >
-                  <Button secondary>
-                    <IoCloudDownloadOutline className="mr-1" />
-                    ดาวน์โหลด
-                  </Button>
-                </CSVLink>
+                <p>ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมด:</p>
+                {notApproveCount === 0 ? (
+                  <CSVLink
+                    data={csvData}
+                    filename={`retail${year}-${quarter}-${proviceId}.csv`}
+                  >
+                    <Button secondary>
+                      <IoCloudDownloadOutline className="mr-1" />
+                      ดาวน์โหลด
+                    </Button>
+                  </CSVLink>
+                ) : (
+                  <p>
+                    ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
+                  </p>
+                )}
               </div>
             )}
-            {session?.user.role === Role.SUPERVISOR && (
-              <div className="w-full flex items-center gap-5">
-                ตาราง Specification
-                <Link href={`/specification?yr=${year}&qtr=${quarter}`}>
-                  <Button secondary>
-                    <FaExternalLinkAlt className="mr-1" />
-                    ดูตาราง
-                  </Button>
-                </Link>
-              </div>
-            )}
+            {session?.user.role === Role.SUPERVISOR ||
+              (session?.user.role === Role.SUBJECT && (
+                <div className="w-full flex items-center gap-5">
+                  <p>ดูตาราง Specification:</p>
+                  {notApproveCount === 0 ? (
+                    <Link
+                      href={`/specification${
+                        Role.SUBJECT ? `?pvid=${proviceId}` : ""
+                      }`}
+                    >
+                      <Button secondary>
+                        <FaExternalLinkAlt className="mr-1" />
+                        ดูตาราง
+                      </Button>
+                    </Link>
+                  ) : (
+                    <p>
+                      ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
+                    </p>
+                  )}
+                </div>
+              ))}
           </>
         )}
 

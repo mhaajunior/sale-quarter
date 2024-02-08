@@ -11,24 +11,24 @@ datasource db {
 }
 
 model Control {
-  no        String  @db.NVarChar(4)
-  es_id     BigInt  @unique
+  no        Int
+  es_id     BigInt @unique
   tsic_code Int
-  size12    String  @db.NVarChar(2)
+  size12    Int     @db.SmallInt
   initial   String? @db.NVarChar(10)
   firstname String? @db.NVarChar(60)
   lastname  String? @db.NVarChar(60)
   comp_name String? @db.NVarChar(100)
   district  Int
-  ea        String  @db.NVarChar(4)
-  vil       String  @db.NVarChar(2)
+  ea        Int     @db.SmallInt
+  vil       Int     @db.SmallInt
   house_no  String  @db.NVarChar(30)
   street    String? @db.NVarChar(50)
   soi       String? @db.NVarChar(30)
   building  String? @db.NVarChar(60)
-  tam       String  @db.NVarChar(2)
+  tam       Int
   tam_name  String  @db.NVarChar(30)
-  amp       String  @db.NVarChar(2)
+  amp       Int     @db.SmallInt
   amp_name  String  @db.NVarChar(30)
   tel_no    String? @db.NVarChar(20)
   e_mail    String? @db.NVarChar(30)
@@ -38,31 +38,29 @@ model Control {
   cwt       Int
   cwt_name  String  @db.NVarChar(30)
   reg       Int
-  yr        Int
 
-  @@unique(fields: [es_id, yr], name: "yearID")
   @@index([es_id])
 }
 
 model Report {
   uuid String @id @default(uuid())
 
-  ID     String  @db.NVarChar(15)
-  REG    Int     @db.SmallInt
-  CWT    Int     @db.SmallInt
-  AMP    String  @db.NVarChar(2)
-  TAM    String  @db.NVarChar(2)
-  MUN    Int     @db.SmallInt
-  EA     String  @db.NVarChar(4)
-  VIL    String  @db.NVarChar(2)
+  ID     String @db.NVarChar(15)
+  REG    Int    @db.SmallInt
+  CWT    Int    @db.SmallInt
+  AMP    Int    @db.SmallInt
+  TAM    Int    @db.SmallInt
+  MUN    Int    @db.SmallInt
+  EA     Int    @db.SmallInt
+  VIL    Int    @db.SmallInt
   TSIC_R Int?
   TSIC_L Int
-  SIZE_R String? @db.NVarChar(2)
-  SIZE_L String  @db.NVarChar(2)
-  NO     String  @db.NVarChar(4)
-  QTR    Int     @db.SmallInt
-  YR     Int     @db.SmallInt
-  ENU    String  @db.NVarChar(2)
+  SIZE_R Int?   @db.SmallInt
+  SIZE_L Int    @db.SmallInt
+  NO     Int    @db.SmallInt
+  QTR    Int    @db.SmallInt
+  YR     Int    @db.SmallInt
+  ENU    Int    @db.SmallInt
 
   TITLE     String @db.NVarChar(10)
   RANK      String @db.NVarChar(20)
@@ -87,7 +85,7 @@ model Report {
   ANSWER    Int    @db.SmallInt
 
   TSIC_CHG Int?
-  LG       String? @db.NVarChar(2)
+  LG       Int?    @db.SmallInt
   LG1      String? @db.NVarChar(13)
   LG1_temp String  @db.NVarChar(1)
   LG2      String? @db.NVarChar(13)
@@ -95,15 +93,15 @@ model Report {
   LG4      String? @db.NVarChar(13)
   DES_TYPE String? @db.NVarChar(60)
   TYPE     Int?
-  M1       String? @db.NVarChar(2)
-  M2       String? @db.NVarChar(2)
-  M3       String? @db.NVarChar(2)
+  M1       Int?    @db.SmallInt
+  M2       Int?    @db.SmallInt
+  M3       Int?    @db.SmallInt
   R1       Int?
   R2       Int?
   R3       Int?
   TR       Int?
   SI       Int?
-  ITR      String? @db.NVarChar(3)
+  ITR      Int?
   SI1      Int?    @db.SmallInt
   SI2      Int?    @db.SmallInt
   SI3      Int?    @db.SmallInt
@@ -112,26 +110,26 @@ model Report {
   SI6      Int?    @db.SmallInt
   SI7      Int?    @db.SmallInt
   SI8      String? @db.NVarChar(60)
-  SI11     String? @db.NVarChar(3)
-  SI22     String? @db.NVarChar(3)
-  SI33     String? @db.NVarChar(3)
-  SI44     String? @db.NVarChar(3)
-  SI55     String? @db.NVarChar(3)
-  SI66     String? @db.NVarChar(3)
-  SI77     String? @db.NVarChar(3)
-  F1       String? @db.NVarChar(3)
-  F2       String? @db.NVarChar(3)
-  F3       String? @db.NVarChar(3)
-  F4       String? @db.NVarChar(3)
-  F5       String? @db.NVarChar(3)
+  SI11     Int?
+  SI22     Int?
+  SI33     Int?
+  SI44     Int?
+  SI55     Int?
+  SI66     Int?
+  SI77     Int?
+  F1       Int?
+  F2       Int?
+  F3       Int?
+  F4       Int?
+  F5       Int?
   CHG      Int?    @db.SmallInt
-  CIN      String? @db.NVarChar(3)
-  CDE      String? @db.NVarChar(3)
-  FAC      String? @db.NVarChar(2)
+  CIN      Int?
+  CDE      Int?
+  FAC      Int?    @db.SmallInt
   FAC_1    String? @db.NVarChar(100)
   PRVS     Int?    @db.SmallInt
-  PIN      String? @db.NVarChar(3)
-  PDE      String? @db.NVarChar(3)
+  PIN      Int?
+  PDE      Int?
   EMP      Int?
   STO      String?
   DAY      Int?    @db.SmallInt
@@ -179,10 +177,10 @@ model ReportStatus {
   isSendQtr2    Boolean
   isSendQtr3    Boolean
   isSendQtr4    Boolean
-  isApproveQtr1    Boolean
-  isApproveQtr2    Boolean
-  isApproveQtr3    Boolean
-  isApproveQtr4    Boolean
+  isApproveQtr1 Boolean
+  isApproveQtr2 Boolean
+  isApproveQtr3 Boolean
+  isApproveQtr4 Boolean
 
   report Report[]
 
@@ -201,4 +199,10 @@ model User {
   role     String
 
   @@index([username])
+}
+
+model TempTabulation {
+  ID  String @unique @db.NVarChar(15)
+  STO String
+  TR  Int
 }

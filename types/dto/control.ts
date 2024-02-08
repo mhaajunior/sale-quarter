@@ -2,24 +2,24 @@ import { Identification } from "./identification";
 import { CompanyData } from "./report";
 
 export interface InitialControl {
-  no: string;
+  no: number;
   es_id: string;
   tsic_code: number;
-  size12: string;
+  size12: number;
   initial: string | null;
   firstname: string | null;
   lastname: string | null;
   comp_name: string | null;
   district: number;
-  ea: string;
-  vil: string;
+  ea: number;
+  vil: number;
   house_no: string;
   street: string | null;
   soi: string | null;
   building: string | null;
-  tam: string;
+  tam: number;
   tam_name: string;
-  amp: string;
+  amp: number;
   amp_name: string;
   tel_no: string | null;
   e_mail: string | null;
@@ -32,7 +32,7 @@ export interface InitialControl {
 }
 
 export interface ReportControl extends Identification, CompanyData {
-  LG?: string;
+  LG?: number;
   LG1?: string;
   LG1_temp: string;
   LG2?: string;

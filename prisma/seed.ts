@@ -25,6 +25,7 @@ const interviewers = require("./data/interviewer.json");
 const supervisors = require("./data/supervisor.json");
 const subjects = require("./data/subject.json");
 const admins = require("./data/admin.json");
+const reports = require("./data/report4_66.json");
 
 const controlArr = [
   controls_10,
@@ -106,27 +107,27 @@ async function main() {
         },
       });
       await prisma.control.upsert({
-        where: { yearID: { es_id, yr: 67 } },
+        where: { es_id },
         update: {},
         create: {
-          no: no.toString(),
+          no: Number(no),
           es_id,
           tsic_code,
-          size12: size12.toString(),
+          size12: Number(size12),
           initial,
           firstname,
           lastname,
           comp_name: comp_name.toString(),
           district,
-          ea: ea.toString(),
-          vil: vil.toString(),
+          ea: Number(ea),
+          vil: Number(vil),
           house_no: house_no.toString(),
           street: street.toString(),
           soi: soi.toString(),
           building: building.toString(),
-          tam: tam.toString(),
+          tam: Number(tam),
           tam_name: tam_name.toString(),
-          amp: amp.toString(),
+          amp: Number(amp),
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
@@ -136,12 +137,10 @@ async function main() {
           cwt,
           cwt_name: cwt_name.toString(),
           reg,
-          yr: 67,
         },
       });
     }
   }
-
   for (let item of interviewers) {
     const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
     await prisma.user.upsert({
@@ -156,7 +155,6 @@ async function main() {
       },
     });
   }
-
   for (let item of supervisors) {
     const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
     await prisma.user.upsert({
@@ -171,7 +169,6 @@ async function main() {
       },
     });
   }
-
   for (let item of subjects) {
     const hashPassword = await bcrypt.hash(item.password.toString(), 10);
     await prisma.user.upsert({
@@ -186,7 +183,6 @@ async function main() {
       },
     });
   }
-
   for (let item of admins) {
     const hashPassword = await bcrypt.hash(item.password.toString(), 10);
     await prisma.user.upsert({
@@ -198,6 +194,19 @@ async function main() {
         fullname: item.fullname,
         province: 10,
         role: "ADMIN",
+      },
+    });
+  }
+  for (let item of reports) {
+    const id = Number(item.id1);
+    const sto = Number(item.sto) || 0;
+    await prisma.tempTabulation.upsert({
+      where: { ID: id.toString() },
+      update: {},
+      create: {
+        ID: item.id1.toString(),
+        TR: item.tr ? Number(item.tr) : 0,
+        STO: sto.toString(),
       },
     });
   }

@@ -36,6 +36,7 @@ const Navbar = () => {
 
   interface NavItem {
     title: string;
+    path: string;
     link: string;
     role: Role[];
   }
@@ -43,21 +44,25 @@ const Navbar = () => {
   let navItems: NavItem[] = [
     {
       title: "ค้นหาสถานประกอบการ",
+      path: "/search",
       link: "/search",
       role: [Role.INTERVIEWER],
     },
     {
       title: "อนุมัติสถานประกอบการ",
+      path: "/approve",
       link: `/approve?pvid=${session?.user.province}`,
       role: [Role.SUPERVISOR],
     },
     {
       title: "ตรวจสอบรายจังหวัด",
+      path: "/list",
       link: "/list",
       role: [Role.SUBJECT],
     },
     {
       title: "กำหนดสิทธิแก้ไขฟอร์ม",
+      path: "/accessControl",
       link: "/accessControl",
       role: [Role.SUBJECT],
     },
@@ -92,7 +97,7 @@ const Navbar = () => {
           } bg-white bg-opacity-40 absolute w-full z-40`}
         >
           <nav className="flex justify-between items-center text-gray-500 font-semibold md:w-4/5 w-full mx-auto">
-            <ul className="flex items-center gap-8">
+            <ul className="flex items-center md:gap-10 gap-8">
               <li>
                 <Link href="/">
                   <Image src={logo} alt="logo" width={100} height={30} />
@@ -102,7 +107,7 @@ const Navbar = () => {
                 <li key={item.title} className="hover:text-black text-center">
                   <Link
                     href={item.link}
-                    className={item.link === currentPath ? "text-gray-900" : ""}
+                    className={item.path === currentPath ? "text-gray-900" : ""}
                   >
                     {item.title}
                   </Link>

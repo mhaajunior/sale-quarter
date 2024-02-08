@@ -1,3 +1,5 @@
+import { SPECIAL_TSIC_R } from "@/utils/tsicR";
+
 export const removeNonNumeric = (x: string) => x.replace(/[^0-9]/g, "");
 
 export const numberWithCommas = (x: string | number) =>
@@ -60,4 +62,17 @@ export const removeLeadZero = (num: string) => {
 export const padZero = (num: string, length: number) => {
   const trail = String(num).padStart(length, "0");
   return trail;
+};
+
+export const shouldAddStar = (num: number, tsic_code: number) => {
+  if (SPECIAL_TSIC_R.includes(tsic_code)) {
+    if (Math.abs(num) > 40) {
+      return "*";
+    }
+  } else {
+    if (Math.abs(num) > 20) {
+      return "*";
+    }
+  }
+  return "";
 };

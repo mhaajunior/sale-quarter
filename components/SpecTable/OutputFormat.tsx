@@ -107,13 +107,13 @@ const OutputFormat = ({ data }: { data: Data }) => {
       align: "center",
     },
     {
-      title: "รหัสกิจกรรมทางเศรษฐกิจ",
+      title: "รหัสตามมาตรฐานอุตสาหกรรมฯ",
       dataIndex: "TSIC_R",
       key: "TSIC_R",
       align: "center",
     },
     {
-      title: "กลุ่มที่",
+      title: "ขนาด",
       dataIndex: "SIZE_R",
       key: "SIZE_R",
       align: "center",
@@ -286,10 +286,10 @@ const OutputFormat = ({ data }: { data: Data }) => {
     worksheet.getColumn(9).width = 30;
     worksheet.getColumn(11).width = 25;
     worksheet.getColumn(13).width = 20;
+    worksheet.getColumn(15).width = 20;
     worksheet.getColumn(16).width = 20;
     worksheet.getColumn(17).width = 20;
     worksheet.getColumn(21).width = 20;
-    worksheet.getColumn(23).width = 20;
 
     worksheet.mergeCells("A5:A6");
     worksheet.getCell("A5").value = "ลำดับที่";
@@ -315,7 +315,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("C5:C6");
-    worksheet.getCell("C5").value = "รหัสกิจกรรมทางเศรษฐกิจ";
+    worksheet.getCell("C5").value = "รหัสตามมาตรฐานอุตสาหกรรมฯ";
     worksheet.getCell("C5").alignment = {
       vertical: "top",
       horizontal: "center",
@@ -327,7 +327,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("D5:D6");
-    worksheet.getCell("D5").value = "กลุ่มที่";
+    worksheet.getCell("D5").value = "ขนาด";
     worksheet.getCell("D5").alignment = {
       vertical: "top",
       horizontal: "center",
@@ -518,10 +518,11 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("W5:W6");
-    worksheet.getCell("W5").value = "วิธีการตอบแบบสอบถาม";
+    worksheet.getCell("W5").value = "วิธีการตอบ\r\nแบบสอบถาม";
     worksheet.getCell("W5").alignment = {
       vertical: "top",
       horizontal: "center",
+      wrapText: true,
     };
     worksheet.getCell("W5").border = {
       right: { style: "thin" },
@@ -577,7 +578,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap justify-between items-center gap-3">
-        <h1>ตารางบัญชีรายชื่อสถานประกอบการตัวอย่าง</h1>
+        <h1>ตารางบัญชีรายชื่อสถานประกอบการตัวอย่างประจำไตรมาสที่ {quarter}</h1>
         <Button secondary loading={loading} onClick={handleDownload}>
           <IoCloudDownloadOutline className="mr-1" />
           ดาวน์โหลด
