@@ -10,8 +10,6 @@ import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
 import validator from "validator";
 
-const quarter = quarterMap(new Date().getFullYear())[calcQuarter() - 1];
-
 export const createReportSchema = z
   .object({
     ID: z
@@ -273,9 +271,9 @@ export const createReportSchema = z
       .gte(1, "กรุณาเลือกประเภทกิจการ")
       .lte(7, "ประเภทกิจการไม่ถูกต้อง")
       .optional(),
-    M1: z.number().default(quarter.rangeVal[0]),
-    M2: z.number().default(quarter.rangeVal[1]),
-    M3: z.number().default(quarter.rangeVal[2]),
+    M1: z.number(),
+    M2: z.number(),
+    M3: z.number(),
     R1_temp: z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับในเดือนนี้")

@@ -66,6 +66,12 @@ const Navbar = () => {
       link: "/accessControl",
       role: [Role.SUBJECT],
     },
+    {
+      title: "อัพโหลด Control",
+      path: "/uploadControl",
+      link: "/uploadControl",
+      role: [Role.ADMIN],
+    },
   ];
 
   let manageItems = [
@@ -86,6 +92,8 @@ const Navbar = () => {
     navItems = navItems.filter((item) => item.role.includes(Role.SUPERVISOR));
   } else if (session?.user.role === Role.SUBJECT) {
     navItems = navItems.filter((item) => item.role.includes(Role.SUBJECT));
+  } else if (session?.user.role === Role.ADMIN) {
+    navItems = navItems.filter((item) => item.role.includes(Role.ADMIN));
   }
 
   return (

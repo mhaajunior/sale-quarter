@@ -24,6 +24,10 @@ const accessRole: AccessRole[] = [
     path: "/specification",
     role: [Role.SUPERVISOR, Role.SUBJECT],
   },
+  {
+    path: "/uploadControl",
+    role: [Role.ADMIN],
+  },
 ];
 
 export default withAuth(
@@ -44,5 +48,11 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/approve", "/list", "/accessControl", "/specification"],
+  matcher: [
+    "/approve",
+    "/list",
+    "/accessControl",
+    "/specification",
+    "/uploadControl",
+  ],
 };

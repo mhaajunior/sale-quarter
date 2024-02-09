@@ -60,6 +60,7 @@ const Dropdown = ({
                 value={getValue(value)}
                 classNamePrefix="dropdown"
                 placeholder={placeholder}
+                isSearchable={false}
               />
             )}
           />
@@ -80,6 +81,7 @@ const Dropdown = ({
           name={name}
           classNamePrefix="dropdown"
           placeholder={placeholder}
+          isSearchable={false}
         />
       )}
       <ErrorMessage>{errors?.message}</ErrorMessage>

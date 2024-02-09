@@ -3,32 +3,40 @@ import moment from "moment";
 export const quarterMap = (year: number) => {
   return [
     {
+      quarter: 1,
       startDate: `${year}-01-01`,
       endDate: `${year}-03-31`,
       monthRange: ["ม.ค.", "ก.พ.", "มี.ค."],
       rangeVal: [1, 2, 3],
       formSubmittedRange: [`${year}-01-01`, `${year}-04-20`], //pending edit
+      cronRange: [`${year}-04-01`, `${year}-04-20`],
     },
     {
+      quarter: 2,
       startDate: `${year}-04-01`,
       endDate: `${year}-06-30`,
       monthRange: ["เม.ย.", "พ.ค.", "มิ.ย."],
       rangeVal: [4, 5, 6],
       formSubmittedRange: [`${year}-07-01`, `${year}-07-20`],
+      cronRange: [`${year}-07-01`, `${year}-07-20`],
     },
     {
+      quarter: 3,
       startDate: `${year}-07-01`,
       endDate: `${year}-09-30`,
       monthRange: ["ก.ค.", "ส.ค.", "ก.ย."],
       rangeVal: [7, 8, 9],
       formSubmittedRange: [`${year}-10-01`, `${year}-10-20`],
+      cronRange: [`${year}-10-01`, `${year}-10-20`],
     },
     {
+      quarter: 4,
       startDate: `${year}-10-01`,
       endDate: `${year}-12-31`,
       monthRange: ["ต.ค.", "พ.ย.", "ธ.ค."],
       rangeVal: [10, 11, 12],
       formSubmittedRange: [`${year + 1}-01-01`, `${year + 1}-01-20`],
+      cronRange: [`${year}-01-01`, `${year}-01-20`],
     },
   ];
 };

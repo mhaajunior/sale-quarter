@@ -59,6 +59,7 @@ const FormPage = () => {
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
   const provinceId = Number(searchParams.get("pvid")) || session?.user.province;
+  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[qtr - 1];
 
   const {
     register,
@@ -80,9 +81,11 @@ const FormPage = () => {
       QTR: qtr,
       YR: yr,
       ENU: 1,
+      M1: quarterData.rangeVal[0],
+      M2: quarterData.rangeVal[1],
+      M3: quarterData.rangeVal[2],
     },
   });
-  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[qtr - 1];
 
   const r1 = watch("R1_temp");
   const r2 = watch("R2_temp");
@@ -758,6 +761,10 @@ const FormPage = () => {
       </div>
       <div className="card">
         <h1 className="mb-3">เลขประจำสถานประกอบการ: {params.id}</h1>
+        <p className="mb-3 text-blue-500">
+          *** ถ้าช่องใดให้กรอกข้อมูลเป็นร้อยละ (%) หรือจำนวนเงิน ให้กรอกเป็น
+          <b>จำนวนเต็มเ</b>ท่านั้น
+        </p>
         <form
           className="flex flex-wrap gap-10 justify-center"
           onSubmit={onSubmit}
