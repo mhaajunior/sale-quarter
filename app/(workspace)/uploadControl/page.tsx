@@ -30,7 +30,7 @@ const UploadControl = () => {
     accept: ".csv",
     name: "file",
     multiple: true,
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
+    action: `${process.env.NEXT_PUBLIC_CALLBACK_URL}/api/admin`,
     onChange(info) {
       const { status, originFileObj } = info.file;
       if (status !== "uploading" && status !== "removed") {
@@ -39,6 +39,7 @@ const UploadControl = () => {
           const csvFile = e.target.result;
 
           Papa.parse(csvFile, {
+            skipEmptyLines: true,
             header: true,
             complete: (results) => onUploadControl(results.data),
           });
