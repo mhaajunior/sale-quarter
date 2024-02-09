@@ -25,8 +25,9 @@ export const FilterContext = createContext<FilterContent>({
 });
 
 export default function FilterProvider({ children }: PropsWithChildren) {
-  const currentYear = getThaiYear(new Date().getFullYear()).yearSlice;
-  const res = quarterMap(new Date().getFullYear());
+  const fullYear = new Date().getFullYear();
+  const currentYear = getThaiYear(fullYear).yearSlice;
+  const res = quarterMap(fullYear);
   const startDate = moment(res[calcQuarter() - 1].startDate);
   const now = moment();
 

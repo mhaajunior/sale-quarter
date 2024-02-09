@@ -4,6 +4,7 @@ import { validateUserRole } from "../../middleware";
 import { Role } from "@/types/dto/role";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
+import moment from "moment";
 
 interface Data {
   NO: string;
@@ -75,23 +76,29 @@ export const GET = async (req: NextRequest) => {
       const TR_chg: number[] = [];
       const STO_chg: number[] = [];
 
+      // calculate change rate for tabulation 2
       const { TR_arr, STO_arr } = val;
       if (TR_arr.length > 0 && STO_arr.length > 0) {
         for (let i = 0; i < TR_arr.length; i++) {
           let prevReport: any = {};
           if (i === 0) {
             // QTR = 1
-            prevReport = await prisma.tempTabulation.findUnique({
-              where: { ID: key },
-            });
-            // pending change when year equal 68
-            // prevReport = await prisma.report.findUnique({
-            //   where: {
-            //     uniqueReport: { ID: key, YR: year - 1, QTR: 4 },
-            //     CWT: province,
-            //   },
-            //   select: { ID: true, TR: true, STO: true },
-            // });
+            const startDate = moment("2025-04-01");
+            const now = moment();
+
+            if (now >= startDate) {
+              prevReport = await prisma.report.findUnique({
+                where: {
+                  uniqueReport: { ID: key, YR: year - 1, QTR: 4 },
+                  CWT: province,
+                },
+                select: { ID: true, TR: true, STO: true },
+              });
+            } else {
+              prevReport = await prisma.tempTabulation.findUnique({
+                where: { ID: key },
+              });
+            }
           } else {
             // QTR = 2-4
             prevReport = await prisma.report.findUnique({
