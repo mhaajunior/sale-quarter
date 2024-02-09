@@ -71,7 +71,7 @@ const ListPage = () => {
           label: item.name,
           children: (
             <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-10">
+              <div className="flex flex-wrap items-center gap-5 md:gap-10">
                 <div className="font-bold">จำนวนสถานประกอบการ</div>
                 <Tag color="blue">ทั้งหมด: {item.totalCompany}</Tag>
                 <Tag color="green">

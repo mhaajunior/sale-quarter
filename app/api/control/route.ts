@@ -4,6 +4,8 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { validateUserRole } from "../middleware";
 import { Role } from "@/types/dto/role";
+import { controlAttr } from "@/utils/control";
+import { getThaiYear } from "@/lib/quarter";
 
 // upload control for admin
 export const POST = async (req: NextRequest) => {
@@ -24,6 +26,16 @@ export const POST = async (req: NextRequest) => {
 
   try {
     for (const item of body) {
+      let count = 0;
+      for (const [key, value] of Object.entries(item)) {
+        if (controlAttr.includes(key)) {
+          count++;
+        }
+      }
+      if (count !== 27) {
+        return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
+      }
+
       const {
         es_id,
         no,
@@ -58,13 +70,13 @@ export const POST = async (req: NextRequest) => {
         where: { es_id },
         update: {
           no: Number(no),
-          tsic_code,
+          tsic_code: Number(tsic_code),
           size12: Number(size12),
           initial,
           firstname,
           lastname,
           comp_name: comp_name.toString(),
-          district,
+          district: Number(district),
           ea: Number(ea),
           vil: Number(vil),
           house_no: house_no.toString(),
@@ -77,23 +89,23 @@ export const POST = async (req: NextRequest) => {
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
-          econ_fm,
+          econ_fm: Number(econ_fm),
           regis_cid: regis_cid.toString(),
           regis_no: regis_no.toString(),
-          cwt,
+          cwt: Number(cwt),
           cwt_name: cwt_name.toString(),
-          reg,
+          reg: Number(reg),
         },
         create: {
           no: Number(no),
           es_id,
-          tsic_code,
+          tsic_code: Number(tsic_code),
           size12: Number(size12),
           initial,
           firstname,
           lastname,
           comp_name: comp_name.toString(),
-          district,
+          district: Number(district),
           ea: Number(ea),
           vil: Number(vil),
           house_no: house_no.toString(),
@@ -106,12 +118,55 @@ export const POST = async (req: NextRequest) => {
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
-          econ_fm,
+          econ_fm: Number(econ_fm),
           regis_cid: regis_cid.toString(),
           regis_no: regis_no.toString(),
-          cwt,
+          cwt: Number(cwt),
           cwt_name: cwt_name.toString(),
-          reg,
+          reg: Number(reg),
+        },
+      });
+
+      const fullYear = new Date().getFullYear();
+      const currentYear = getThaiYear(fullYear).yearSlice;
+
+      await prisma.reportStatus.upsert({
+        where: { yearID: { ID: es_id.toString(), year: currentYear } },
+        update: {
+          region: Number(reg),
+          province: Number(cwt),
+          province_name: cwt_name,
+          canCreateQtr1: false,
+          canCreateQtr2: false,
+          canCreateQtr3: false,
+          canCreateQtr4: false,
+          isSendQtr1: false,
+          isSendQtr2: false,
+          isSendQtr3: false,
+          isSendQtr4: false,
+          isApproveQtr1: false,
+          isApproveQtr2: false,
+          isApproveQtr3: false,
+          isApproveQtr4: false,
+        },
+        create: {
+          ID: es_id.toString(),
+          year: currentYear,
+          region: Number(reg),
+          province: Number(cwt),
+          province_name: cwt_name,
+          canCreateQtr1: false,
+          canCreateQtr2: false,
+          canCreateQtr3: false,
+          canCreateQtr4: false,
+          isSendQtr1: false,
+          isSendQtr2: false,
+          isSendQtr3: false,
+          isSendQtr4: false,
+          isApproveQtr1: false,
+          isApproveQtr2: false,
+          isApproveQtr3: false,
+          isApproveQtr4: false,
         },
       });
     }
