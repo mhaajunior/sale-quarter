@@ -3,7 +3,7 @@ import { between, currencyToNumber } from "./common";
 import { FormErrors } from "@/types/dto/common";
 import { Role } from "@/types/dto/role";
 
-export const validateFormData = (data: ReportForm) => {
+export const cleansingFormData = (data: ReportForm) => {
   if (data.R1_temp) data.R1 = currencyToNumber(data.R1_temp);
   if (data.R2_temp) data.R2 = currencyToNumber(data.R2_temp);
   if (data.R3_temp) data.R3 = currencyToNumber(data.R3_temp);

@@ -6,6 +6,8 @@ import { validateUserRole } from "../middleware";
 import { Role } from "@/types/dto/role";
 import { controlAttr } from "@/utils/control";
 import { getThaiYear } from "@/lib/quarter";
+import { mapProvinceName } from "@/utils/province";
+import { ControlTable } from "@/types/dto/control";
 
 // upload control for admin
 export const POST = async (req: NextRequest) => {
@@ -172,6 +174,45 @@ export const POST = async (req: NextRequest) => {
     }
 
     return NextResponse.json("อัพโหลดสำเร็จ");
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};
+
+//get total control by province for admin
+export const GET = async (req: NextRequest) => {
+  const accessToken = req.headers.get("authorization");
+
+  if (!accessToken || !verifyJwt(accessToken)) {
+    return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+  }
+
+  if (!validateUserRole(accessToken, [Role.ADMIN])) {
+    return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
+  }
+
+  try {
+    const controls = await prisma.control.groupBy({
+      by: "cwt",
+      _count: { es_id: true },
+      orderBy: { cwt: "asc" },
+    });
+
+    let temp: any = {};
+    const res: ControlTable[] = [];
+
+    for (const control of controls) {
+      temp[control.cwt] = control._count.es_id;
+    }
+
+    for (const [key, value] of Object.entries(mapProvinceName)) {
+      res.push({ id: key, name: value, count: temp[key] || 0 });
+    }
+
+    return NextResponse.json(res);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

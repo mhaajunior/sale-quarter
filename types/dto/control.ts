@@ -39,3 +39,9 @@ export interface ReportControl extends Identification, CompanyData {
   LG3?: string;
   LG4?: string;
 }
+
+export interface ControlTable {
+  id: string;
+  name: string;
+  count: number;
+}
