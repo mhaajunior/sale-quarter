@@ -22,7 +22,7 @@ export const GET = async (
     }
 
     for (const [key, value] of Object.entries(report)) {
-      if (!value) {
+      if (value !== 0 && !value) {
         delete report[key as keyof typeof report];
       }
     }

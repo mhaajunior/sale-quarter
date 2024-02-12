@@ -55,7 +55,7 @@ const HomePage = () => {
                 <h1 className="lg:text-xl">อำนาจหน้าที่</h1>
               </Button>
             </div>
-            <div className="absolute top-[33rem] md:top-[36rem] lg:top-[25.9rem] lg:left-[1rem]">
+            <div className="absolute top-[33rem] md:top-[36rem] lg:top-[25.6rem] lg:left-[1rem]">
               <Button primary onClick={() => executeScroll(securityRef)}>
                 <h1 className="lg:text-xl">การรักษาความลับ</h1>
               </Button>

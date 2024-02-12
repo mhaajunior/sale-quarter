@@ -12,7 +12,7 @@ import {
   removeNonNumeric,
 } from "@/lib/common";
 import { quarterMap } from "@/lib/quarter";
-import { checkErrorFromRole, validateFormData } from "@/lib/validate";
+import { checkErrorFromRole, cleansingFormData } from "@/lib/validate";
 import {
   ReportForm,
   createReportSchema,
@@ -24,7 +24,7 @@ import {
   estTitleOption,
 } from "@/utils/dropdownOption";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Checkbox, Col, Radio, Row, Space } from "antd";
+import { Checkbox, Col, Modal, Radio, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,6 +43,8 @@ import { Role } from "@/types/dto/role";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formData, setFormdata] = useState<any>(null);
   const [si1, setSi1] = useState<boolean | undefined>();
   const [si2, setSi2] = useState<boolean | undefined>();
   const [si3, setSi3] = useState<boolean | undefined>();
@@ -548,6 +550,7 @@ const FormPage = () => {
             setValue("TAM", TAM);
             setValue("MUN", MUN);
             setValue("EA", EA);
+            console.log(VIL);
             setValue("VIL", VIL);
             setValue("TSIC_R", TSIC_R);
             setValue("TSIC_L", TSIC_L);
@@ -672,7 +675,7 @@ const FormPage = () => {
     }
   };
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit((data) => {
     let err: FormErrors[] = [];
     if (data.ENU === 1) {
       err = checkErrorFromRole(data, session?.user.role, 1);
@@ -685,22 +688,29 @@ const FormPage = () => {
       window.scrollTo(0, 0);
       return;
     } else {
-      const result = validateFormData(data);
-      try {
-        setLoading(true);
-        const res = await axios.post("/api/report", result, {
-          headers: { mode, authorization: session?.user.accessToken },
-        });
-        if (res.status === 200) {
-          toast.success("ส่งข้อมูลสำเร็จ");
-          navigateToPath();
-        }
-      } catch (err: any) {
-        errorHandler(err);
-      }
-      setLoading(false);
+      setFormdata(data);
+      setModalOpen(true);
     }
   });
+
+  const submitFormData = async () => {
+    try {
+      setModalOpen(false);
+      setLoading(true);
+      const result = cleansingFormData(formData);
+      const res = await axios.post("/api/report", result, {
+        headers: { mode, authorization: session?.user.accessToken },
+      });
+      if (res.status === 200) {
+        toast.success("ส่งข้อมูลสำเร็จ");
+        navigateToPath();
+      }
+    } catch (err: any) {
+      errorHandler(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderErrors = () => {
     return formErrors.map((err, index) => (
@@ -2821,6 +2831,82 @@ const FormPage = () => {
           </div>
         </form>
       </div>
+      <Modal
+        title={<p className="text-center text-xl">ยืนยันข้อมูล</p>}
+        open={modalOpen}
+        onOk={submitFormData}
+        onCancel={() => setModalOpen(false)}
+        okText="ยืนยัน"
+        cancelText="ยกเลิก"
+        closable={false}
+      >
+        <div className="flex flex-col gap-2 overflow-y-scroll max-h-[500px]">
+          <p className="text-blue-500 mb-2">
+            * กรุณาตรวจสอบข้อมูลสถานประกอบการของท่านว่าถูกต้องหรือไม่
+            ถ้าถูกต้องแล้วให้กดยืนยันเพื่อทำการส่งข้อมูลในแบบฟอร์มที่ท่านกรอก
+          </p>
+          <p className="flex justify-between border-b">
+            คำนำหน้านาม:<span>{getValues("TITLE")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ยศ:<span>{getValues("RANK")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ชื่อเจ้าของ/หัวหน้าครัวเรือน:<span>{getValues("FIRSTNAME")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            นามสกุล:<span>{getValues("LASTNAME")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            คำนำหน้าชื่อสถานประกอบการ:<span>{getValues("EST_TITLE")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ชื่อสถานประกอบการ:<span>{getValues("EST_NAME")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            เลขที่:<span>{getValues("ADD_NO")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ชื่ออาคาร/หมู่บ้าน:<span>{getValues("BUILDING")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ห้องเลขที่/ชั้นที่:<span>{getValues("ROOM")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ถนน:<span>{getValues("STREET")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ตรอก:<span>{getValues("BLK")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ซอย:<span>{getValues("SOI")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            ตำบล/แขวง:<span>{getValues("SUB_DIST")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            อำเภอ/เขต:<span>{getValues("DISTRICT")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            จังหวัด:<span>{getValues("PROVINCE")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            รหัสไปรษณีย์:<span>{getValues("POST_CODE")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            โทรศัพท์:<span>{getValues("TEL_NO")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            อีเมล:<span>{getValues("E_MAIL")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            Website:<span>{getValues("WEBSITE")}</span>
+          </p>
+          <p className="flex justify-between border-b">
+            Social Media:<span>{getValues("SOCIAL")}</span>
+          </p>
+        </div>
+      </Modal>
     </>
   );
 };
