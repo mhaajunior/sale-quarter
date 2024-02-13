@@ -129,7 +129,7 @@ const HomePage = () => {
                   และใช้ประกอบการพิจารณาร่วมกับข้อมูลจากหน่วยงานต่างๆที่เกี่ยวข้อง
                 </h3>
                 <h3>2. ใช้ติดตามและประเมินภาวะของธุรกิจค้าปลีกและบริการ</h3>
-                <h3>3. ใช้จัดทำรายงานสถาณการณ์ SME</h3>
+                <h3>3. ใช้จัดทำรายงานสถานการณ์ SME</h3>
               </div>
               <div className="md:mt-0 mt-5 md:w-1/2 flex items-center justify-center">
                 <Image src={benefits} alt="benefits" width={250} />
