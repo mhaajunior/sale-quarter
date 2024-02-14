@@ -1,0 +1,32 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_HOST: "tcp://172.20.3.24:2375" #DOCKER_HOST: "tcp://172.20.3.24:5000"
+  DOCKER_DRIVER: overlay2
+  # CI_DEBUG_TRACE: "true"
+  # DOCKER_TLS_CERTDIR: "/certs"
+
+build_image:
+  stage: build
+  script:
+    - echo "Building and deploying Docker image"
+    - echo "IMAGE NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+deploy to server:
+  stage: deploy
+  script:
+    - echo "Deploy stages"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+    # Stop and remove the existing container (if it exists)
+    - docker stop sale_quarter || true
+    - docker rm sale_quarter || true
+
+    # Run the new container
+    - docker run -p 8002:8000 -d --restart always --name sale_quarter $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
