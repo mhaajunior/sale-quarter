@@ -16,4 +16,6 @@ COPY . .
 
 # COPY .next ./.next
 
+EXPOSE 8000
+
 CMD ["npm", "run", "dev"]
