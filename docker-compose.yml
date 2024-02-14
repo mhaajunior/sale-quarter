@@ -1,21 +1,21 @@
 version: "3.8"
 services:
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: sale-quarter
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - .:/app
-  #     - /app/node_modules
-  db:
-    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: retail
     ports:
-      - 1433:1433
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=abcABC123
+      - "80:3000"
     volumes:
-      - /var/opt/mssql
+      - .:/app
+      - /app/node_modules
+  # db:
+  #   image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+  #   ports:
+  #     - 1433:1433
+  #   environment:
+  #     - ACCEPT_EULA=Y
+  #     - SA_PASSWORD=abcABC123
+  #   volumes:
+  #     - /var/opt/mssql
