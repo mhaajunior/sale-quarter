@@ -29,5 +29,5 @@ deploy to server:
     - docker rm sale_quarter || true
 
     # Run the new container
-    - docker run -p 8002:8000 -d --restart always --name sale_quarter $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker run -p 8002:3000 -d --restart always --name sale_quarter $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 #test
