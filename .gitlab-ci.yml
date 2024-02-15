@@ -52,6 +52,7 @@ before_script:
   - echo "NEXTAUTH_URL=$NEXTAUTH_URL" > .env
   - echo "JWT_SECRET=$JWT_SECRET" > .env
   # เพิ่มตัวแปร environment อื่น ๆ ตามต้องการ
+  ##
 
 build_image:
   stage: build
