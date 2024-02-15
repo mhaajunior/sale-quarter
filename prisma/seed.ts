@@ -129,7 +129,7 @@ async function main() {
           tam_name: tam_name.toString(),
           amp: Number(amp),
           amp_name: amp_name.toString(),
-          tel_no: tel_no.toString(),
+          tel_no: tel_no.toString().replace("-", ""),
           e_mail: e_mail.toString(),
           econ_fm,
           regis_cid: regis_cid.toString(),

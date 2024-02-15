@@ -138,41 +138,13 @@ export const POST = async (req: NextRequest) => {
   let p4 = P4;
 
   if (SI === 2) {
-    if (SI1) {
-      si1 = 1;
-    } else {
-      si1 = 0;
-    }
-    if (SI2) {
-      si2 = 1;
-    } else {
-      si2 = 0;
-    }
-    if (SI3) {
-      si3 = 1;
-    } else {
-      si3 = 0;
-    }
-    if (SI4) {
-      si4 = 1;
-    } else {
-      si4 = 0;
-    }
-    if (SI5) {
-      si5 = 1;
-    } else {
-      si5 = 0;
-    }
-    if (SI6) {
-      si6 = 1;
-    } else {
-      si6 = 0;
-    }
-    if (SI7) {
-      si7 = 1;
-    } else {
-      si7 = 0;
-    }
+    si1 = SI1 ? 1 : 0;
+    si2 = SI2 ? 1 : 0;
+    si3 = SI3 ? 1 : 0;
+    si4 = SI4 ? 1 : 0;
+    si5 = SI5 ? 1 : 0;
+    si6 = SI6 ? 1 : 0;
+    si7 = SI7 ? 1 : 0;
   }
 
   try {
