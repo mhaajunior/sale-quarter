@@ -75,3 +75,4 @@ deploy_to_server:
 
     # Run the new container
     - docker run -p 8002:3000 -d --restart always --name sale_quarter $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+#t
