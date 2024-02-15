@@ -44,6 +44,9 @@ variables:
   DOCKER_HOST: "tcp://172.20.3.24:2375"
   DOCKER_DRIVER: overlay2
 
+before_script:
+  - cp $PRODUCTION_ENV_FILE .env.production
+
 build_image:
   stage: build
   script:
