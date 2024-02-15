@@ -45,7 +45,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - cp -f $PRODUCTION_ENV_FILE .env
+  - cp $PRODUCTION_ENV_FILE .env.production
 
 build_image:
   stage: build
