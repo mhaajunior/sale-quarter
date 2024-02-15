@@ -45,11 +45,13 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - cp $PRODUCTION_ENV_FILE .env.production
+  - cp $PRODUCTION_ENV_FILE .env
 
 build_image:
   stage: build
   script:
+    - npm ci
+    - npm run build
     - echo "Building and deploying Docker image"
     - echo "IMAGE NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
