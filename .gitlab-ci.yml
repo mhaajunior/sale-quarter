@@ -44,15 +44,15 @@ variables:
   DOCKER_HOST: "tcp://172.20.3.24:2375"
   DOCKER_DRIVER: overlay2
 
-before_script:
-  # - cp .env .env
-  # - echo "Creating .env file"
-  # - echo "DATABASE_URL=$DATABASE_URL" > .env
-  # - echo "NEXT_PUBLIC_CALLBACK_URL=$NEXT_PUBLIC_CALLBACK_URL" > .env
-  # - echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" > .env
-  # - echo "NEXTAUTH_URL=$NEXTAUTH_URL" > .env
-  # - echo "JWT_SECRET=$JWT_SECRET" > .env
-  # เพิ่มตัวแปร environment อื่น ๆ ตามต้องการ
+# before_script:
+# - cp .env .env
+# - echo "Creating .env file"
+# - echo "DATABASE_URL=$DATABASE_URL" > .env
+# - echo "NEXT_PUBLIC_CALLBACK_URL=$NEXT_PUBLIC_CALLBACK_URL" > .env
+# - echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" > .env
+# - echo "NEXTAUTH_URL=$NEXTAUTH_URL" > .env
+# - echo "JWT_SECRET=$JWT_SECRET" > .env
+# เพิ่มตัวแปร environment อื่น ๆ ตามต้องการ
 
 build_image:
   stage: build
