@@ -45,7 +45,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - cp .env.test .env
+  # - cp .env.test .env
 # - echo "Creating .env file"
 # - echo "DATABASE_URL=$DATABASE_URL" > .env
 # - echo "NEXT_PUBLIC_CALLBACK_URL=$NEXT_PUBLIC_CALLBACK_URL" > .env
