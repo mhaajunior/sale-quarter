@@ -92,7 +92,7 @@ async function main() {
           region: reg,
           province: cwt,
           province_name: cwt_name,
-          canCreateQtr1: false,
+          canCreateQtr1: true,
           canCreateQtr2: false,
           canCreateQtr3: false,
           canCreateQtr4: false,
