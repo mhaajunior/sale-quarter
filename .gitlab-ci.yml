@@ -41,7 +41,7 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: "tcp://172.20.3.24:2375"
+  DOCKER_HOST: "tcp://192.168.0.81:2375"
   DOCKER_DRIVER: overlay2
 
 before_script:
