@@ -196,7 +196,7 @@ export const createReportSchema = z
       z
         .string()
         .min(1, "กรุณากรอกหมายเลขโทรศัพท์")
-        .refine(validator.isMobilePhone, "หมายเลขโทรศัพท์ไม่ถูกต้อง"),
+        .max(20, "หมายเลขโทรศัพท์ห้ามยาวเกินกว่า 20 ตัวอักษร"),
       z.literal("-"),
     ]),
     E_MAIL: z.union([

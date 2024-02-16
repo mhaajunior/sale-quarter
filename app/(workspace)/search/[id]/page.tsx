@@ -1174,10 +1174,7 @@ const FormPage = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <label className="w-32">
-                โทรศัพท์
-                <p className="text-blue-500 text-xs">*กรอกเฉพาะตัวเลข</p>
-              </label>
+              <label className="w-32">โทรศัพท์</label>
               <Input
                 name="TEL_NO"
                 placeholder={session ? "TEL_NO" : "เช่น 0xxxxxxxxx"}
