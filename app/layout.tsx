@@ -7,7 +7,12 @@ import AuthProvider from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
 import FilterProvider from "@/context";
 
-const sarabun = Sarabun({ subsets: ["thai"], weight: "500" });
+const sarabun = Sarabun({
+  subsets: ["thai"],
+  weight: "500",
+  display: "swap",
+  adjustFontFallback: false,
+});
 
 export const metadata: Metadata = {
   title: "สำรวจยอดขายรายไตรมาส",
