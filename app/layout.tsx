@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sarabun } from "next/font/google";
+// import { Sarabun } from "next/font/google";
 import "./globals.css";
 import { ConfigProvider } from "antd";
 import { Toaster } from "sonner";
@@ -7,12 +7,12 @@ import AuthProvider from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
 import FilterProvider from "@/context";
 
-const sarabun = Sarabun({
-  subsets: ["thai"],
-  weight: "500",
-  display: "swap",
-  adjustFontFallback: false,
-});
+// const sarabun = Sarabun({
+//   subsets: ["thai"],
+//   weight: "500",
+//   display: "swap",
+//   adjustFontFallback: false,
+// });
 
 export const metadata: Metadata = {
   title: "สำรวจยอดขายรายไตรมาส",
@@ -27,24 +27,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sarabun.className} min-h-screen h-full mx-auto text-gray-500`}
+        // className={`${sarabun.className} min-h-screen h-full mx-auto text-gray-500`}
+        className={`min-h-screen h-full mx-auto text-gray-500`}
       >
-        <ConfigProvider
+        {/* <ConfigProvider
           theme={{
             token: {
               fontFamily: sarabun.style.fontFamily,
               colorText: "text-gray-500",
             },
           }}
-        >
-          <AuthProvider>
-            <FilterProvider>
-              <Toaster richColors={true} position="top-right" />
-              <Navbar />
-              {children}
-            </FilterProvider>
-          </AuthProvider>
-        </ConfigProvider>
+        > */}
+        <AuthProvider>
+          <FilterProvider>
+            <Toaster richColors={true} position="top-right" />
+            <Navbar />
+            {children}
+          </FilterProvider>
+        </AuthProvider>
+        {/* </ConfigProvider> */}
       </body>
     </html>
   );
