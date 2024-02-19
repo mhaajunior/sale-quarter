@@ -12,9 +12,9 @@ RUN npm install
 
 COPY . .
 
-# RUN npm run build
+RUN npm run build
 
-# COPY .next ./.next
+COPY .next ./.next
 
 EXPOSE 3000
 
