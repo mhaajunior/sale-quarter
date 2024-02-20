@@ -9,7 +9,7 @@ import { Role } from "@/types/dto/role";
 import { Dropdown, Space } from "antd";
 import Swal from "sweetalert2";
 import { signOut } from "next-auth/react";
-import logo from "@/public/nso-logo.png";
+import logo from "@/public/images/nso-logo.png";
 import Button from "./Button";
 
 const Navbar = () => {

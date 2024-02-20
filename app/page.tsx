@@ -3,12 +3,12 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import Button from "@/components/Button";
-import idea from "@/public/idea.svg";
-import target from "@/public/target.png";
-import map from "@/public/map.png";
-import benefits from "@/public/benefits.png";
-import taskList from "@/public/task-list.png";
-import shield from "@/public/shield.png";
+import idea from "@/public/images/idea.svg";
+import target from "@/public/images/target.png";
+import map from "@/public/images/map.png";
+import benefits from "@/public/images/benefits.png";
+import taskList from "@/public/images/task-list.png";
+import shield from "@/public/images/shield.png";
 import { FaStar } from "react-icons/fa6";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";

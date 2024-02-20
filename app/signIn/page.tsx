@@ -14,9 +14,9 @@ import { errorHandler } from "@/lib/errorHandler";
 import { signInSchema } from "@/types/schemas/authenSchema";
 import useClientSession from "@/hooks/use-client-session";
 import Image from "next/image";
-import city from "@/public/city.svg";
-import wave from "@/public/wave.png";
-import logo from "@/public/nso-logo.png";
+import city from "@/public/images/city.svg";
+import wave from "@/public/images/wave.png";
+import logo from "@/public/images/nso-logo.png";
 import useWindowSize from "@/hooks/use-window-size";
 
 type SignInForm = z.infer<typeof signInSchema>;

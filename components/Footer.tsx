@@ -1,6 +1,6 @@
 import React from "react";
 import { FaStar } from "react-icons/fa6";
-import logo from "@/public/nso-logo.png";
+import logo from "@/public/images/nso-logo.png";
 import Image from "next/image";
 
 const Footer = () => {
