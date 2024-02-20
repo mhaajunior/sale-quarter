@@ -8,7 +8,7 @@ import FilterProvider from "@/context";
 
 export const metadata: Metadata = {
   title: "สำรวจยอดขายรายไตรมาส",
-  description: "ครงการสำรวจยอดขายรายไตรมาส สำนักงานสถิติแห่งชาติ",
+  description: "โครงการสำรวจยอดขายรายไตรมาส สำนักงานสถิติแห่งชาติ",
 };
 
 export default function RootLayout({
