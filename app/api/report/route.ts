@@ -19,7 +19,14 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(validation.error.errors, { status: 400 });
   }
 
+  if (!mode || !["create", "edit"].includes(mode)) {
+    return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
+  }
+
   if (accessToken) {
+    if (!verifyJwt(accessToken)) {
+      return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
+    }
     role = getUserRole(accessToken);
   }
 

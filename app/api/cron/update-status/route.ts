@@ -1,10 +1,13 @@
 import { checkDateBetween, getThaiYear, quarterMap } from "@/lib/quarter";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { validateApiKey } from "../../middleware";
 
 // cronjob for update form submitted status
-export const PATCH = async () => {
+export const PATCH = async (req: NextRequest) => {
+  const apiKey = req.headers.get("api-key");
+
   const fullYear = new Date().getFullYear();
   const item = quarterMap(fullYear);
   const now = new Date().toJSON().slice(0, 10);
@@ -12,6 +15,10 @@ export const PATCH = async () => {
   let currentYear = getThaiYear(fullYear).yearSlice;
   if (month === 0) {
     currentYear--;
+  }
+
+  if (!apiKey || !validateApiKey(apiKey)) {
+    return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
   }
 
   let updateObj: any = {};
