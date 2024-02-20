@@ -1,7 +1,7 @@
 import { Role } from "@/types/dto/role";
 import { JwtPayload } from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
-import sha256 from "crypto-js/sha256";
+import CryptoES from "crypto-es";
 
 export const validateUserRole = (token: string, role: Role[]) => {
   if (!token) return false;
@@ -22,6 +22,6 @@ export const getUserRole = (token: string) => {
 };
 
 export const validateApiKey = (key: string) => {
-  const hash = sha256(key).toString();
+  const hash = CryptoES.SHA256(key).toString();
   return hash === process.env.NEXT_PUBLIC_API_KEY_HASH;
 };
