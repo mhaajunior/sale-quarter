@@ -27,13 +27,13 @@ export default function RootLayout({
             },
           }}
         >
-          <AuthProvider>
-            <FilterProvider>
-              <Toaster richColors={true} position="top-right" />
-              <Navbar />
-              {children}
-            </FilterProvider>
-          </AuthProvider>
+          {/* <AuthProvider> */}
+          <FilterProvider>
+            <Toaster richColors={true} position="top-right" />
+            {/* <Navbar /> */}
+            {children}
+          </FilterProvider>
+          {/* </AuthProvider> */}
         </ConfigProvider>
       </body>
     </html>
