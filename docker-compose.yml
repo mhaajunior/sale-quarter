@@ -1,12 +1,13 @@
 version: "3.8"
 services:
   app:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
     container_name: retail
     ports:
-      - "80:3000"
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
