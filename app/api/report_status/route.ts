@@ -57,9 +57,9 @@ export const POST = async (req: NextRequest) => {
     }
     return NextResponse.json({ hasControl, reportStatus });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };
@@ -143,9 +143,9 @@ export const GET = async (req: NextRequest) => {
       totalCount,
     });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };
@@ -200,9 +200,9 @@ export const PATCH = async (req: NextRequest) => {
 
     return NextResponse.json("เปลี่ยนสำเร็จ");
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };

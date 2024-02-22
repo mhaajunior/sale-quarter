@@ -45,13 +45,6 @@ const FormPage = () => {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormdata] = useState<any>(null);
-  const [si1, setSi1] = useState<boolean | undefined>();
-  const [si2, setSi2] = useState<boolean | undefined>();
-  const [si3, setSi3] = useState<boolean | undefined>();
-  const [si4, setSi4] = useState<boolean | undefined>();
-  const [si5, setSi5] = useState<boolean | undefined>();
-  const [si6, setSi6] = useState<boolean | undefined>();
-  const [si7, setSi7] = useState<boolean | undefined>();
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
   const params = useParams();
   const router = useRouter();
@@ -129,34 +122,6 @@ const FormPage = () => {
       getQuarterReport();
     }
   }, []);
-
-  useEffect(() => {
-    setValue("SI1", si1);
-  }, [si1]);
-
-  useEffect(() => {
-    setValue("SI2", si2);
-  }, [si2]);
-
-  useEffect(() => {
-    setValue("SI3", si3);
-  }, [si3]);
-
-  useEffect(() => {
-    setValue("SI4", si4);
-  }, [si4]);
-
-  useEffect(() => {
-    setValue("SI5", si5);
-  }, [si5]);
-
-  useEffect(() => {
-    setValue("SI6", si6);
-  }, [si6]);
-
-  useEffect(() => {
-    setValue("SI7", si7);
-  }, [si7]);
 
   useEffect(() => {
     if (chg === 1) {
@@ -550,7 +515,6 @@ const FormPage = () => {
             setValue("TAM", TAM);
             setValue("MUN", MUN);
             setValue("EA", EA);
-            console.log(VIL);
             setValue("VIL", VIL);
             setValue("TSIC_R", TSIC_R);
             setValue("TSIC_L", TSIC_L);
@@ -1583,12 +1547,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi1(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI1").ref}
                               checked={value}
+                              value={value}
                             >
                               1. Social media เช่น Facebook, Instagram, Twitter,
                               Line
@@ -1624,12 +1588,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi2(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI2").ref}
                               checked={value}
+                              value={value}
                             >
                               2. Website หรือ Application ของตนเอง
                               {session && (
@@ -1664,12 +1628,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi3(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI3").ref}
                               checked={value}
+                              value={value}
                             >
                               3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
                               Shopee
@@ -1722,12 +1686,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi4(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI4").ref}
                               checked={value}
+                              value={value}
                             >
                               4. Cross-border platform (ตลาดต่างประเทศ) เช่น
                               Tmall Toaboa, Alibaba, Amazon
@@ -1780,12 +1744,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi5(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI5").ref}
                               checked={value}
+                              value={value}
                             >
                               5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
                               บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
@@ -1839,12 +1803,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi6(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI6").ref}
                               checked={value}
+                              value={value}
                             >
                               6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
                               Agoda, Booking, Airbnb, Traveloka
@@ -1897,12 +1861,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
-                            {setSi7(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI7").ref}
                               checked={value}
+                              value={value}
                             >
                               7. อื่นๆ (ระบุ)
                               {session && (

@@ -140,7 +140,7 @@ const UploadControl = () => {
           ))}
         </div>
       )}
-      <div className="flex flex-col gap-3 w-2/4">
+      <div className="flex flex-col gap-3 md:w-3/4">
         <div>ตารางแสดงจำนวนสถานประกอบการทั้งหมดในแต่ละจังหวัดตาม control</div>
         {loading ? (
           <Loading type="partial" />

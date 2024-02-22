@@ -355,11 +355,11 @@ const ApprovePage = () => {
         </Title>
       </div>
       <div className="card flex flex-col gap-5">
-        <div className="md:flex justify-between items-center w-full gap-3">
-          <h1 className="mb-5 md:mb-0">
+        <div className="lg:flex justify-between items-center w-full gap-3">
+          <h1 className="mb-5 lg:mb-0">
             ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการในขอบเขตจังหวัดที่รับผิดชอบ
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-between lg:justify-normal">
             <label>ปีที่ค้นหา</label>
             <Dropdown
               name="year"
@@ -372,8 +372,8 @@ const ApprovePage = () => {
             />
           </div>
         </div>
-        <div className="md:flex justify-between items-center w-full gap-3">
-          <div className="flex items-center gap-3 mb-5 md:mb-0">
+        <div className="lg:flex justify-between items-center w-full gap-3">
+          <div className="flex items-center gap-3 mb-5 lg:mb-0 justify-between lg:justify-normal">
             <label>ค้นหาสถานประกอบการ</label>
             <Input
               name="ID"
@@ -384,7 +384,7 @@ const ApprovePage = () => {
               className="w-60 md:w-72"
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-between lg:justify-normal">
             <label>สถานะอนุมัติ</label>
             <Dropdown
               name="approve"
@@ -397,7 +397,7 @@ const ApprovePage = () => {
             />
           </div>
         </div>
-        <div className="flex flex-wrap gap-10">
+        <div className="flex flex-wrap gap-3 md:gap-10">
           <p className="text-blue-500 mb-3 md:mb-0">
             จำนวนสถานประกอบการที่พบทั้งหมด: {numberWithCommas(totalCount) || 0}
           </p>

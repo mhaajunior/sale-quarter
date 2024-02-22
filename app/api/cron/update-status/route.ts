@@ -67,9 +67,9 @@ export const PATCH = async (req: NextRequest) => {
     });
     return NextResponse.json("เปลี่ยนสถานะเรียบร้อย");
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };

@@ -23,7 +23,7 @@ export const verifyJwt = (token: string) => {
     const decoded = jwt.verify(token, secretKey!);
     return decoded as JwtPayload;
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return null;
   }
 };

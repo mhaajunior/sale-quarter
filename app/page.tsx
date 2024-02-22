@@ -28,34 +28,34 @@ const HomePage = () => {
 
   return (
     <>
-      <div className="main-bg lg:h-svh">
+      <div className="main-bg h-svh">
         <div className="mx-auto mt-40 lg:px-[30px] xl:w-4/5 2xl:w-3/4 xl:px-0 max-w-[1800px]">
           <div className="flex lg:flex-row flex-col-reverse justify-between items-center gap-16 lg:gap-10 relative">
             <Image className="mb-10 lg:mb-0" src={idea} alt="idea" priority />
-            <h1 className="font-black xl:text-[75px] text-[55px] text-center lg:text-left md:w-2/4 text-black">
+            <h1 className="font-black xl:text-[75px] md:text-[55px] text-[40px] text-center lg:text-left md:w-3/4 text-black">
               โครงการสำรวจยอดขายรายไตรมาส
             </h1>
-            <div className="absolute top-[12rem] md:top-[16rem] lg:top-[1.2rem] lg:left-[4rem]">
+            <div className="absolute top-[9rem] md:top-[16rem] lg:top-[1.2rem] lg:left-[4rem]">
               <Button primary onClick={() => executeScroll(objectiveRef)}>
                 <h1 className="lg:text-xl">วัตถุประสงค์</h1>
               </Button>
             </div>
-            <div className="absolute top-[17rem] md:top-[21rem] lg:-top-2 lg:left-[32rem]">
+            <div className="absolute top-[13rem] md:top-[21rem] lg:-top-2 lg:left-[32rem]">
               <Button primary onClick={() => executeScroll(areaRef)}>
                 <h1 className="lg:text-xl">พื้นที่เก็บข้อมูล</h1>
               </Button>
             </div>
-            <div className="absolute top-[22rem] md:top-[26rem] lg:top-[4.6rem] lg:left-[31rem]">
+            <div className="absolute top-[17rem] md:top-[26rem] lg:top-[4.6rem] lg:left-[31rem]">
               <Button primary onClick={() => executeScroll(benefitRef)}>
                 <h1 className="lg:text-xl">ประโยชน์ที่ได้รับ</h1>
               </Button>
             </div>
-            <div className="absolute top-[27rem] md:top-[31rem] lg:top-[10.2rem] lg:left-[4rem]">
+            <div className="absolute top-[21rem] md:top-[31rem] lg:top-[10.2rem] lg:left-[4rem]">
               <Button primary onClick={() => executeScroll(taskRef)}>
                 <h1 className="lg:text-xl">อำนาจหน้าที่</h1>
               </Button>
             </div>
-            <div className="absolute top-[33rem] md:top-[36rem] lg:top-[25.6rem] lg:left-[1rem]">
+            <div className="absolute top-[25rem] md:top-[36rem] lg:top-[25.6rem] lg:left-[1rem]">
               <Button primary onClick={() => executeScroll(securityRef)}>
                 <h1 className="lg:text-xl">การรักษาความลับ</h1>
               </Button>
@@ -68,12 +68,12 @@ const HomePage = () => {
           <div className="wave"></div>
         </div>
       </div>
-      <div className="pt-10 md:w-3/4 mx-auto max-w-[1500px]">
+      <div className="pt-10 md:w-4/5 mx-auto max-w-[1500px]">
         <div className="flex flex-col">
           <Reveal>
             <div
               ref={objectiveRef}
-              className="md:flex gap-10 items-center justify-center m-10 gradient-border p-10"
+              className="flex flex-wrap md:flex-nowrap gap-10 items-center justify-center m-5 md:border border-b md:rounded-xl border-gray-300 p-5 md:p-10"
             >
               <div className="md:w-1/2 flex flex-col gap-5">
                 <h1 className="text-2xl text-center md:text-left">
@@ -98,7 +98,7 @@ const HomePage = () => {
           <Reveal width="100%">
             <div
               ref={areaRef}
-              className="md:flex gap-10 items-center justify-center m-10 gradient-border p-10"
+              className="flex flex-wrap-reverse md:flex-nowrap gap-10 items-center justify-center m-5 md:border border-b md:rounded-xl border-gray-300 p-5 md:p-10"
             >
               <div className="md:mb-0 mb-5 md:w-1/2 flex items-center justify-center">
                 <Image src={map} alt="area" width={250} />
@@ -114,7 +114,7 @@ const HomePage = () => {
           <Reveal>
             <div
               ref={benefitRef}
-              className="md:flex gap-10 items-center justify-center m-10 gradient-border p-10"
+              className="flex flex-wrap md:flex-nowrap gap-10 items-center justify-center m-5 md:border border-b md:rounded-xl border-gray-300 p-5 md:p-10"
             >
               <div className="md:w-1/2 flex flex-col gap-5">
                 <h1 className="text-2xl text-center md:text-left">
@@ -139,7 +139,7 @@ const HomePage = () => {
           <Reveal>
             <div
               ref={taskRef}
-              className="md:flex gap-10 items-center justify-center m-10 gradient-border p-10"
+              className="flex flex-wrap-reverse md:flex-nowrap gap-10 items-center justify-center m-5 md:border border-b md:rounded-xl border-gray-300 p-5 md:p-10"
             >
               <div className="md:mb-0 mb-5 md:w-1/2 flex items-center justify-center">
                 <Image src={taskList} alt="task lists" width={250} />
@@ -169,7 +169,7 @@ const HomePage = () => {
           <Reveal>
             <div
               ref={securityRef}
-              className="m-10 flex flex-col gap-5 gradient-border p-10"
+              className="m-5 flex flex-col gap-5 md:border rounded-xl border-gray-300 p-5 md:p-10"
             >
               <div className="text-center w-full text-2xl">
                 การรักษาความลับของผู้ให้ข้อมูล/ตอบแบบสอบถาม

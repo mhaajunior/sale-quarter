@@ -4,18 +4,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
-import { FaSignOutAlt, FaAngleDown } from "react-icons/fa";
+import { FaSignOutAlt, FaAngleDown, FaUser, FaSignInAlt } from "react-icons/fa";
+import { BsList } from "react-icons/bs";
 import { Role } from "@/types/dto/role";
 import { Dropdown, Space } from "antd";
 import Swal from "sweetalert2";
 import { signOut } from "next-auth/react";
 import logo from "@/public/images/nso-logo.png";
 import Button from "./Button";
+import useWindowSize from "@/hooks/use-window-size";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Navbar = () => {
   const currentPath = usePathname();
   const session = useClientSession();
   const router = useRouter();
+  const size = useWindowSize();
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    setShowMenu(false);
+  }, [currentPath]);
 
   const doSignOut = async () => {
     Swal.fire({
@@ -102,53 +112,127 @@ const Navbar = () => {
         <div
           className={`p-5 ${
             currentPath !== "/" ? "nav-bottom" : ""
-          } bg-white bg-opacity-40 absolute w-full z-40`}
+          } bg-white md:bg-opacity-40 absolute w-full z-40`}
         >
-          <nav className="flex justify-between items-center text-gray-500 font-semibold md:w-4/5 w-full mx-auto">
-            <ul className="flex items-center md:gap-10 gap-8">
+          <nav className="flex justify-between items-center text-gray-500 font-semibold lg:w-4/5 w-full mx-auto">
+            <ul className="flex items-center md:gap-10 gap-8 w-3/5">
               <li>
                 <Link href="/">
-                  <Image src={logo} alt="logo" width={100} height={30} />
+                  <Image
+                    src={logo}
+                    priority
+                    className="w-auto"
+                    alt="logo"
+                    width={90}
+                  />
                 </Link>
               </li>
-              {navItems.map((item) => (
-                <li key={item.title} className="hover:text-black text-center">
-                  <Link
-                    href={item.link}
-                    className={item.path === currentPath ? "text-gray-900" : ""}
+              {size.width &&
+                size.width > 768 &&
+                navItems.map((item) => (
+                  <li
+                    key={item.title}
+                    className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden"
                   >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
+                    <Link
+                      href={item.link}
+                      className={
+                        item.path === currentPath ? "text-gray-900" : ""
+                      }
+                    >
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
             </ul>
-            {session ? (
-              <ul className="flex items-center justify-end">
-                <li className="hover:text-black text-center">
-                  <Dropdown
-                    menu={{
-                      items: manageItems,
-                    }}
-                  >
-                    <a onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        {session.user.fullname}
-                        <FaAngleDown />
-                      </Space>
-                    </a>
-                  </Dropdown>
-                </li>
-              </ul>
+            {size.width ? (
+              size.width <= 768 ? (
+                <BsList
+                  className="text-3xl cursor-pointer hover:text-black"
+                  onClick={() => setShowMenu((prevState) => !prevState)}
+                />
+              ) : (
+                <>
+                  {session ? (
+                    <ul className="flex items-center justify-end">
+                      <li className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden">
+                        <Dropdown
+                          menu={{
+                            items: manageItems,
+                          }}
+                        >
+                          <a onClick={(e) => e.preventDefault()}>
+                            <Space>
+                              {session.user.fullname}
+                              <FaAngleDown />
+                            </Space>
+                          </a>
+                        </Dropdown>
+                      </li>
+                    </ul>
+                  ) : (
+                    <Button
+                      primary
+                      className="!shadow-none"
+                      onClick={() => router.push("/api/auth/signin")}
+                    >
+                      เข้าสู่ระบบ
+                    </Button>
+                  )}
+                </>
+              )
             ) : (
-              <Button
-                primary
-                className="!shadow-none"
-                onClick={() => router.push("/api/auth/signin")}
-              >
-                เข้าสู่ระบบ
-              </Button>
+              ""
             )}
           </nav>
+          <AnimatePresence>
+            {size.width && size.width <= 768 && showMenu && (
+              <motion.ul
+                key="box"
+                initial={{ y: "-50%", opacity: 0, scale: 0.5 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: "-50%", opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="flex flex-col"
+              >
+                {navItems.map((item) => (
+                  <li
+                    key={item.title}
+                    className={`hover:text-black p-5 border-b cursor-pointer ${
+                      item.path === currentPath ? "text-gray-900" : ""
+                    }`}
+                    onClick={() => router.push(item.link)}
+                  >
+                    {item.title}
+                  </li>
+                ))}
+                {session ? (
+                  <>
+                    <li className="p-5 flex items-center gap-3">
+                      <FaUser />
+                      {session.user.fullname}
+                    </li>
+                    {manageItems.map((item) => (
+                      <li
+                        key={item.key}
+                        className="hover:text-black p-5 cursor-pointer"
+                      >
+                        {item.label}
+                      </li>
+                    ))}
+                  </>
+                ) : (
+                  <li
+                    className="p-5 hover:text-black cursor-pointer flex items-center gap-3"
+                    onClick={() => router.push("/api/auth/signin")}
+                  >
+                    <FaSignInAlt />
+                    เข้าสู่ระบบ
+                  </li>
+                )}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </>

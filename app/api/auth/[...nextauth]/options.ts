@@ -39,7 +39,7 @@ export const options = {
               return result;
             }
           } catch (error) {
-            console.log(error);
+            throw error;
           }
         }
         return null;

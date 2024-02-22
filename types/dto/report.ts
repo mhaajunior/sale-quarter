@@ -1,3 +1,4 @@
+import { boolean } from "zod";
 import { ReportControl } from "./control";
 
 export interface CompanyData {

@@ -28,9 +28,9 @@ export const GET = async (
     }
     return NextResponse.json(report);
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };

@@ -41,6 +41,7 @@ export interface ReportControl extends Identification, CompanyData {
 }
 
 export interface ControlTable {
+  key: string;
   id: string;
   name: string;
   count: number;

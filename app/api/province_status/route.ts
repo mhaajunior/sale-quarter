@@ -67,9 +67,9 @@ export const GET = async (req: NextRequest) => {
 
     return NextResponse.json(provinceStatus);
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };

@@ -22,7 +22,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
   }
 
-  if (!body) {
+  if (!body || body.length === 0) {
     return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
   }
 
@@ -175,9 +175,9 @@ export const POST = async (req: NextRequest) => {
 
     return NextResponse.json("อัพโหลดสำเร็จ");
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };
@@ -209,14 +209,14 @@ export const GET = async (req: NextRequest) => {
     }
 
     for (const [key, value] of Object.entries(mapProvinceName)) {
-      res.push({ id: key, name: value, count: temp[key] || 0 });
+      res.push({ key, id: key, name: value, count: temp[key] || 0 });
     }
 
     return NextResponse.json(res);
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(e);
-    }
+    // if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    //   console.log(e);
+    // }
     throw e;
   }
 };
