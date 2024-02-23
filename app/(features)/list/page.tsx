@@ -21,6 +21,7 @@ import { FilterContext } from "@/context";
 import Link from "next/link";
 import { Role } from "@/types/dto/role";
 import Button from "@/components/Button";
+import Portal from "@/components/Portal";
 
 const ListPage = () => {
   const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
@@ -159,7 +160,7 @@ const ListPage = () => {
   };
 
   return (
-    <>
+    <Portal session={session}>
       <div className="mb-10 flex flex-col gap-3">
         <Title title="ตรวจสอบรายจังหวัด"></Title>
       </div>
@@ -200,7 +201,7 @@ const ListPage = () => {
           </div>
         </div>
       </div>
-    </>
+    </Portal>
   );
 };
 

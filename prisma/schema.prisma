@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -12,33 +12,33 @@ datasource db {
 }
 
 model Control {
-  no        Int
-  es_id     BigInt @unique
+  no        String
+  es_id     BigInt  @unique
   tsic_code Int
-  size12    Int     @db.SmallInt
+  size12    String  @db.NVarChar(2)
   initial   String? @db.NVarChar(10)
   firstname String? @db.NVarChar(60)
   lastname  String? @db.NVarChar(60)
   comp_name String? @db.NVarChar(100)
-  district  Int
-  ea        Int     @db.SmallInt
-  vil       Int     @db.SmallInt
+  district  Int     @db.SmallInt
+  ea        String  @db.NVarChar(4)
+  vil       String  @db.NVarChar(2)
   house_no  String  @db.NVarChar(30)
   street    String? @db.NVarChar(50)
   soi       String? @db.NVarChar(30)
   building  String? @db.NVarChar(60)
-  tam       Int
+  tam       String  @db.NVarChar(2)
   tam_name  String  @db.NVarChar(30)
-  amp       Int     @db.SmallInt
+  amp       String  @db.NVarChar(2)
   amp_name  String  @db.NVarChar(30)
   tel_no    String? @db.NVarChar(20)
   e_mail    String? @db.NVarChar(30)
-  econ_fm   Int
+  econ_fm   Int     @db.SmallInt
   regis_cid String?
   regis_no  String?
-  cwt       Int
+  cwt       Int     @db.SmallInt
   cwt_name  String  @db.NVarChar(30)
-  reg       Int
+  reg       Int     @db.SmallInt
 
   @@index([es_id])
 }
@@ -46,22 +46,22 @@ model Control {
 model Report {
   uuid String @id @default(uuid())
 
-  ID     String @db.NVarChar(15)
-  REG    Int    @db.SmallInt
-  CWT    Int    @db.SmallInt
-  AMP    Int    @db.SmallInt
-  TAM    Int    @db.SmallInt
-  MUN    Int    @db.SmallInt
-  EA     Int    @db.SmallInt
-  VIL    Int    @db.SmallInt
+  ID     String  @db.NVarChar(15)
+  REG    Int     @db.SmallInt
+  CWT    Int     @db.SmallInt
+  AMP    String  @db.NVarChar(2)
+  TAM    String  @db.NVarChar(2)
+  MUN    Int     @db.SmallInt
+  EA     String  @db.NVarChar(4)
+  VIL    String  @db.NVarChar(2)
   TSIC_R Int?
   TSIC_L Int
-  SIZE_R Int?   @db.SmallInt
-  SIZE_L Int    @db.SmallInt
-  NO     Int    @db.SmallInt
-  QTR    Int    @db.SmallInt
-  YR     Int    @db.SmallInt
-  ENU    Int    @db.SmallInt
+  SIZE_R String? @db.NVarChar(2)
+  SIZE_L String  @db.NVarChar(2)
+  NO     String  @db.NVarChar(4)
+  QTR    Int     @db.SmallInt
+  YR     Int     @db.SmallInt
+  ENU    String  @db.NVarChar(2)
 
   TITLE     String @db.NVarChar(10)
   RANK      String @db.NVarChar(20)

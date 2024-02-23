@@ -5,7 +5,7 @@ import Title from "@/components/Title";
 import { errorHandler } from "@/lib/errorHandler";
 import useClientSession from "@/hooks/use-client-session";
 import { ReportStatus } from "@/types/dto/report";
-import { Table } from "antd";
+import { FloatButton, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import {
@@ -32,6 +32,7 @@ import { FilterContext } from "@/context";
 import PageControl from "@/components/PageControl";
 import useDebounce from "@/hooks/use-debounce";
 import { mapProvinceName } from "@/utils/province";
+import Portal from "@/components/Portal";
 
 interface DataType {
   key: React.Key;
@@ -57,6 +58,7 @@ const ApprovePage = () => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<DataType[]>([]);
   const [notApproveCount, setNotApproveCount] = useState(0);
+  const [notFound, setNotFound] = useState(false);
   const [csvData, setCsvData] = useState([]);
   const [option, setOption] = useState(1);
   const [page, setPage] = useState(1);
@@ -70,7 +72,7 @@ const ApprovePage = () => {
   useEffect(() => {
     if (session) {
       if (!proviceId) {
-        router.push("/notfound");
+        setNotFound(true);
         return;
       }
       fetchCompanyStatus();
@@ -339,7 +341,7 @@ const ApprovePage = () => {
   ];
 
   return (
-    <>
+    <Portal session={session} notFound={notFound}>
       <div className="mb-10 flex flex-col gap-3">
         <Title
           title={`อนุมัติสถานประกอบการจังหวัด${
@@ -357,7 +359,7 @@ const ApprovePage = () => {
       <div className="card flex flex-col gap-5">
         <div className="lg:flex justify-between items-center w-full gap-3">
           <h1 className="mb-5 lg:mb-0">
-            ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการในขอบเขตจังหวัดที่รับผิดชอบ
+            ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการ
           </h1>
           <div className="flex items-center gap-3 justify-between lg:justify-normal">
             <label>ปีที่ค้นหา</label>
@@ -429,28 +431,28 @@ const ApprovePage = () => {
                 )}
               </div>
             )}
-            {session?.user.role === Role.SUPERVISOR ||
-              (session?.user.role === Role.SUBJECT && (
-                <div className="w-full flex items-center gap-5">
-                  <p>ดูตาราง Specification:</p>
-                  {notApproveCount === 0 ? (
-                    <Link
-                      href={`/specification${
-                        Role.SUBJECT ? `?pvid=${proviceId}` : ""
-                      }`}
-                    >
-                      <Button secondary>
-                        <FaExternalLinkAlt className="mr-1" />
-                        ดูตาราง
-                      </Button>
-                    </Link>
-                  ) : (
-                    <p>
-                      ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
-                    </p>
-                  )}
-                </div>
-              ))}
+            {(session?.user.role === Role.SUPERVISOR ||
+              session?.user.role === Role.SUBJECT) && (
+              <div className="w-full flex items-center gap-5">
+                <p>ดูตาราง Specification:</p>
+                {notApproveCount === 0 ? (
+                  <Link
+                    href={`/specification${
+                      Role.SUBJECT ? `?pvid=${proviceId}` : ""
+                    }`}
+                  >
+                    <Button secondary>
+                      <FaExternalLinkAlt className="mr-1" />
+                      ดูตาราง
+                    </Button>
+                  </Link>
+                ) : (
+                  <p>
+                    ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
+                  </p>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -492,7 +494,8 @@ const ApprovePage = () => {
           </div>
         </div>
       </div>
-    </>
+      <FloatButton.BackTop tooltip={<div>ไปบนสุด</div>} visibilityHeight={0} />
+    </Portal>
   );
 };
 

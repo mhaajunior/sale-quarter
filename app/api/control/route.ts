@@ -8,6 +8,7 @@ import { controlAttr } from "@/utils/control";
 import { getThaiYear } from "@/lib/quarter";
 import { mapProvinceName } from "@/utils/province";
 import { ControlTable } from "@/types/dto/control";
+import { padZero } from "@/lib/common";
 
 // upload control for admin
 export const POST = async (req: NextRequest) => {
@@ -71,23 +72,23 @@ export const POST = async (req: NextRequest) => {
       await prisma.control.upsert({
         where: { es_id },
         update: {
-          no: Number(no),
+          no: padZero(no, 4),
           tsic_code: Number(tsic_code),
-          size12: Number(size12),
+          size12: padZero(size12, 2),
           initial,
           firstname,
           lastname,
           comp_name: comp_name.toString(),
           district: Number(district),
-          ea: Number(ea),
-          vil: Number(vil),
+          ea: padZero(ea, 4),
+          vil: padZero(vil, 2),
           house_no: house_no.toString(),
           street: street.toString(),
           soi: soi.toString(),
           building: building.toString(),
-          tam: Number(tam),
+          tam: padZero(tam, 2),
           tam_name: tam_name.toString(),
-          amp: Number(amp),
+          amp: padZero(amp, 2),
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
@@ -99,24 +100,24 @@ export const POST = async (req: NextRequest) => {
           reg: Number(reg),
         },
         create: {
-          no: Number(no),
+          no: padZero(no, 4),
           es_id,
           tsic_code: Number(tsic_code),
-          size12: Number(size12),
+          size12: padZero(size12, 2),
           initial,
           firstname,
           lastname,
           comp_name: comp_name.toString(),
           district: Number(district),
-          ea: Number(ea),
-          vil: Number(vil),
+          ea: padZero(ea, 4),
+          vil: padZero(vil, 2),
           house_no: house_no.toString(),
           street: street.toString(),
           soi: soi.toString(),
           building: building.toString(),
-          tam: Number(tam),
+          tam: padZero(tam, 2),
           tam_name: tam_name.toString(),
-          amp: Number(amp),
+          amp: padZero(tam, 2),
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),

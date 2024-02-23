@@ -49,7 +49,7 @@ export const GET = async (req: NextRequest) => {
 
     const uncountable_total = await prisma.report.groupBy({
       by: ["QTR"],
-      where: { YR: year, CWT: province, ENU: { not: 1 } },
+      where: { YR: year, CWT: province, ENU: { not: "01" } },
       _count: { _all: true },
     });
 

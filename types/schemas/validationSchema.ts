@@ -4,11 +4,10 @@ import {
   currencyToNumber,
   hasNumber,
   isNumNull,
+  onlyNumber,
 } from "@/lib/common";
-import { calcQuarter, quarterMap } from "@/lib/quarter";
 import { TSIC_R_ARR } from "@/utils/tsicR";
 import { z } from "zod";
-import validator from "validator";
 
 export const createReportSchema = z
   .object({
@@ -32,19 +31,21 @@ export const createReportSchema = z
       .gte(10, "จังหวัดที่กรอกไม่ถูกต้อง")
       .lte(96, "จังหวัดที่กรอกไม่ถูกต้อง"),
     AMP: z
-      .number({
+      .string({
         required_error: "กรุณากรอกอำเภอ",
         invalid_type_error: "อำเภอที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "อำเภอที่กรอกไม่ถูกต้อง")
-      .lte(50, "อำเภอที่กรอกไม่ถูกต้อง"),
+      .length(2, "อำเภอที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "อำเภอที่กรอกไม่ถูกต้อง")
+      .refine((data) => between(Number(data), 1, 50), "อำเภอที่กรอกไม่ถูกต้อง"),
     TAM: z
-      .number({
+      .string({
         required_error: "กรุณากรอกตำบล",
         invalid_type_error: "ตำบลที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "ตำบลที่กรอกไม่ถูกต้อง")
-      .lte(99, "ตำบลที่กรอกไม่ถูกต้อง"),
+      .length(2, "ตำบลที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "ตำบลที่กรอกไม่ถูกต้อง")
+      .refine((data) => between(Number(data), 1, 99), "ตำบลที่กรอกไม่ถูกต้อง"),
     MUN: z
       .number({
         required_error: "กรุณากรอกเขตการปกครอง",
@@ -53,19 +54,27 @@ export const createReportSchema = z
       .gte(1, "เขตการปกครองที่กรอกไม่ถูกต้อง")
       .lte(2, "เขตการปกครองที่กรอกไม่ถูกต้อง"),
     EA: z
-      .number({
+      .string({
         required_error: "กรุณากรอกเขตการแจงนับ",
         invalid_type_error: "เขตการแจงนับที่กรอกไม่ถูกต้อง",
       })
-      .gte(0, "เขตการแจงนับที่กรอกไม่ถูกต้อง")
-      .lte(9999, "เขตการแจงนับที่กรอกไม่ถูกต้อง"),
+      .length(4, "เขตการแจงนับที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "เขตการแจงนับที่กรอกไม่ถูกต้อง")
+      .refine(
+        (data) => between(Number(data), 1, 9999),
+        "เขตการแจงนับที่กรอกไม่ถูกต้อง"
+      ),
     VIL: z
-      .number({
+      .string({
         required_error: "กรุณากรอกหมู่บ้าน",
         invalid_type_error: "หมู่บ้านที่กรอกไม่ถูกต้อง",
       })
-      .gte(0, "หมู่บ้านที่กรอกไม่ถูกต้อง")
-      .lte(99, "หมู่บ้านที่กรอกไม่ถูกต้อง"),
+      .length(2, "หมู่บ้านที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "หมู่บ้านที่กรอกไม่ถูกต้อง")
+      .refine(
+        (data) => between(Number(data), 0, 99),
+        "หมู่บ้านที่กรอกไม่ถูกต้อง"
+      ),
     TSIC_R: z
       .number({
         invalid_type_error: "กรุณากรอก TSIC_R",
@@ -83,26 +92,36 @@ export const createReportSchema = z
       .lte(96309, "TSIC_L ที่กรอกไม่ถูกต้อง")
       .refine((data) => TSIC_R_ARR.includes(data), "TSIC_L ที่กรอกไม่ถูกต้อง"),
     SIZE_R: z
-      .number({
-        invalid_type_error: "กรุณากรอก SIZE_R",
+      .string({
+        required_error: "กรุณากรอก SIZE_R",
+        invalid_type_error: "SIZE_R ที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "SIZE_R ที่กรอกไม่ถูกต้อง")
-      .lte(12, "SIZE_R ที่กรอกไม่ถูกต้อง")
+      .length(2, "SIZE_R ที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "SIZE_R ที่กรอกไม่ถูกต้อง")
+      .refine(
+        (data) => between(Number(data), 1, 12),
+        "SIZE_R ที่กรอกไม่ถูกต้อง"
+      )
       .optional(),
     SIZE_L: z
-      .number({
+      .string({
         required_error: "กรุณากรอก SIZE_L",
         invalid_type_error: "SIZE_L ที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "SIZE_L ที่กรอกไม่ถูกต้อง")
-      .lte(12, "SIZE_L ที่กรอกไม่ถูกต้อง"),
+      .length(2, "SIZE_L ที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "SIZE_L ที่กรอกไม่ถูกต้อง")
+      .refine(
+        (data) => between(Number(data), 1, 12),
+        "SIZE_L ที่กรอกไม่ถูกต้อง"
+      ),
     NO: z
-      .number({
+      .string({
         required_error: "กรุณากรอก NO",
         invalid_type_error: "NO ที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "NO ที่กรอกไม่ถูกต้อง")
-      .lte(5000, "NO ที่กรอกไม่ถูกต้อง"),
+      .length(4, "NO ที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "NO ที่กรอกไม่ถูกต้อง")
+      .refine((data) => between(Number(data), 1, 5000), "NO ที่กรอกไม่ถูกต้อง"),
     QTR: z
       .number({
         required_error: "กรุณากรอก QTR",
@@ -115,12 +134,13 @@ export const createReportSchema = z
       invalid_type_error: "YR ที่กรอกไม่ถูกต้อง",
     }),
     ENU: z
-      .number({
+      .string({
         required_error: "กรุณากรอก ENU",
         invalid_type_error: "ENU ที่กรอกไม่ถูกต้อง",
       })
-      .gte(1, "ENU ที่กรอกไม่ถูกต้อง")
-      .lte(11, "ENU ที่กรอกไม่ถูกต้อง"),
+      .length(2, "ENU ที่กรอกไม่ถูกต้อง")
+      .refine((data) => onlyNumber(data), "ENU ที่กรอกไม่ถูกต้อง")
+      .refine((data) => between(Number(data), 1, 11), "ENU ที่กรอกไม่ถูกต้อง"),
     TITLE: z.string({
       required_error: "กรุณาเลือกคำนำหน้านาม",
       invalid_type_error: "คำนำหน้านามไม่ถูกต้อง",
@@ -594,7 +614,7 @@ export const createReportSchema = z
         }
       }
 
-      if (ENU === 1 && CHG !== 1 && !FAC) {
+      if (Number(ENU) === 1 && CHG !== 1 && !FAC) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "กรุณาเลือกตัวเลือกในข้อ 8",

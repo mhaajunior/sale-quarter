@@ -106,110 +106,110 @@ async function main() {
           isApproveQtr4: false,
         },
       });
-      //   await prisma.control.upsert({
-      //     where: { es_id },
-      //     update: {},
-      //     create: {
-      //       no: Number(no),
-      //       es_id,
-      //       tsic_code: Number(tsic_code),
-      //       size12: Number(size12),
-      //       initial,
-      //       firstname,
-      //       lastname,
-      //       comp_name: comp_name.toString(),
-      //       district: Number(district),
-      //       ea: Number(ea),
-      //       vil: Number(vil),
-      //       house_no: house_no.toString(),
-      //       street: street.toString(),
-      //       soi: soi.toString(),
-      //       building: building.toString(),
-      //       tam: Number(tam),
-      //       tam_name: tam_name.toString(),
-      //       amp: Number(amp),
-      //       amp_name: amp_name.toString(),
-      //       tel_no: tel_no.toString(),
-      //       e_mail: e_mail.toString(),
-      //       econ_fm,
-      //       regis_cid: regis_cid.toString(),
-      //       regis_no: regis_no.toString(),
-      //       cwt: Number(cwt),
-      //       cwt_name: cwt_name.toString(),
-      //       reg: Number(reg),
-      //     },
-      //   });
+      await prisma.control.upsert({
+        where: { es_id },
+        update: {},
+        create: {
+          no: no.toString(),
+          es_id,
+          tsic_code: Number(tsic_code),
+          size12: size12.toString(),
+          initial,
+          firstname,
+          lastname,
+          comp_name: comp_name.toString(),
+          district: Number(district),
+          ea: ea.toString(),
+          vil: String(vil).padStart(2, "0"),
+          house_no: house_no.toString(),
+          street: street.toString(),
+          soi: soi.toString(),
+          building: building.toString(),
+          tam: tam.toString(),
+          tam_name: tam_name.toString(),
+          amp: amp.toString(),
+          amp_name: amp_name.toString(),
+          tel_no: tel_no.toString(),
+          e_mail: e_mail.toString(),
+          econ_fm,
+          regis_cid: regis_cid.toString(),
+          regis_no: regis_no.toString(),
+          cwt: Number(cwt),
+          cwt_name: cwt_name.toString(),
+          reg: Number(reg),
+        },
+      });
     }
   }
-  // for (let item of interviewers) {
-  //   const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
-  //   await prisma.user.upsert({
-  //     where: { username: item.staff_username.toString() },
-  //     update: {},
-  //     create: {
-  //       username: item.staff_username.toString(),
-  //       password: hashPassword,
-  //       fullname: item.staff_name,
-  //       province: item.staff_prov,
-  //       role: "INTERVIEWER",
-  //     },
-  //   });
-  // }
-  // for (let item of supervisors) {
-  //   const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
-  //   await prisma.user.upsert({
-  //     where: { username: item.staff_username.toString() },
-  //     update: {},
-  //     create: {
-  //       username: item.staff_username.toString(),
-  //       password: hashPassword,
-  //       fullname: item.staff_name,
-  //       province: item.staff_prov,
-  //       role: "SUPERVISOR",
-  //     },
-  //   });
-  // }
-  // for (let item of subjects) {
-  //   const hashPassword = await bcrypt.hash(item.password.toString(), 10);
-  //   await prisma.user.upsert({
-  //     where: { username: item.username.toString() },
-  //     update: {},
-  //     create: {
-  //       username: item.username.toString(),
-  //       password: hashPassword,
-  //       fullname: item.fullname,
-  //       province: 10,
-  //       role: "SUBJECT",
-  //     },
-  //   });
-  // }
-  // for (let item of admins) {
-  //   const hashPassword = await bcrypt.hash(item.password.toString(), 10);
-  //   await prisma.user.upsert({
-  //     where: { username: item.username.toString() },
-  //     update: {},
-  //     create: {
-  //       username: item.username.toString(),
-  //       password: hashPassword,
-  //       fullname: item.fullname,
-  //       province: 10,
-  //       role: "ADMIN",
-  //     },
-  //   });
-  // }
-  // for (let item of reports) {
-  //   const id = Number(item.id1);
-  //   const sto = Number(item.sto) || 0;
-  //   await prisma.tempTabulation.upsert({
-  //     where: { ID: id.toString() },
-  //     update: {},
-  //     create: {
-  //       ID: item.id1.toString(),
-  //       TR: item.tr ? Number(item.tr) : 0,
-  //       STO: sto.toString(),
-  //     },
-  //   });
-  // }
+  for (let item of interviewers) {
+    const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
+    await prisma.user.upsert({
+      where: { username: item.staff_username.toString() },
+      update: {},
+      create: {
+        username: item.staff_username.toString(),
+        password: hashPassword,
+        fullname: item.staff_name,
+        province: item.staff_prov,
+        role: "INTERVIEWER",
+      },
+    });
+  }
+  for (let item of supervisors) {
+    const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
+    await prisma.user.upsert({
+      where: { username: item.staff_username.toString() },
+      update: {},
+      create: {
+        username: item.staff_username.toString(),
+        password: hashPassword,
+        fullname: item.staff_name,
+        province: item.staff_prov,
+        role: "SUPERVISOR",
+      },
+    });
+  }
+  for (let item of subjects) {
+    const hashPassword = await bcrypt.hash(item.password.toString(), 10);
+    await prisma.user.upsert({
+      where: { username: item.username.toString() },
+      update: {},
+      create: {
+        username: item.username.toString(),
+        password: hashPassword,
+        fullname: item.fullname,
+        province: 10,
+        role: "SUBJECT",
+      },
+    });
+  }
+  for (let item of admins) {
+    const hashPassword = await bcrypt.hash(item.password.toString(), 10);
+    await prisma.user.upsert({
+      where: { username: item.username.toString() },
+      update: {},
+      create: {
+        username: item.username.toString(),
+        password: hashPassword,
+        fullname: item.fullname,
+        province: 10,
+        role: "ADMIN",
+      },
+    });
+  }
+  for (let item of reports) {
+    const id = Number(item.id1);
+    const sto = Number(item.sto) || 0;
+    await prisma.tempTabulation.upsert({
+      where: { ID: id.toString() },
+      update: {},
+      create: {
+        ID: item.id1.toString(),
+        TR: item.tr ? Number(item.tr) : 0,
+        STO: sto.toString(),
+      },
+    });
+  }
 }
 
 main()

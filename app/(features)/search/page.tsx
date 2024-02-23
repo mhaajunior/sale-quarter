@@ -20,6 +20,7 @@ import { CiSearch } from "react-icons/ci";
 import useClientSession from "@/hooks/use-client-session";
 import { quarterMap } from "@/lib/quarter";
 import { Role } from "@/types/dto/role";
+import Portal from "@/components/Portal";
 
 interface Response {
   hasControl: boolean;
@@ -417,7 +418,7 @@ const SearchPage = () => {
   });
 
   return (
-    <>
+    <Portal session={session}>
       <div className="mb-10 flex flex-col gap-3">
         <Title title="ค้นหาสถานประกอบการ"></Title>
       </div>
@@ -477,7 +478,7 @@ const SearchPage = () => {
           ))
         )}
       </div>
-    </>
+    </Portal>
   );
 };
 

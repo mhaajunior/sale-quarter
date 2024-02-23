@@ -2,6 +2,7 @@
 
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
+import Portal from "@/components/Portal";
 import OutputFormat from "@/components/SpecTable/OutputFormat";
 import ResponseRate from "@/components/SpecTable/ResponseRate";
 import Tabulation1 from "@/components/SpecTable/Tabulation1";
@@ -22,6 +23,10 @@ const SpecificationPage = () => {
   const [proviceId, setProvinceId] = useState<number | null>(null);
   const [selectedTable, setSelectedTable] = useState<specTable | null>(null);
   const [loading, setLoading] = useState(true);
+  const [denied, setDenied] = useState<{ isDenied: boolean; code?: number }>({
+    isDenied: false,
+  });
+  const [notFound, setNotFound] = useState(false);
   const session = useClientSession();
   const router = useRouter();
 
@@ -36,13 +41,13 @@ const SpecificationPage = () => {
       setLoading(false);
       if (session.user.role === Role.SUPERVISOR) {
         if (pvid) {
-          router.push("/denied?code=3");
+          setDenied({ isDenied: true, code: 3 });
           return;
         }
         setProvinceId(session.user.province);
       } else if (session.user.role === Role.SUBJECT) {
         if (!pvid) {
-          router.push("/notfound");
+          setNotFound(true);
           return;
         }
         setProvinceId(pvid);
@@ -90,7 +95,7 @@ const SpecificationPage = () => {
   };
 
   return (
-    <>
+    <Portal session={session} denied={denied} notFound={notFound}>
       <div className="mb-10 flex flex-col gap-3">
         <Title
           title={`Specification Table ${
@@ -127,7 +132,7 @@ const SpecificationPage = () => {
         </div>
         {selectedTable?.render}
       </div>
-    </>
+    </Portal>
   );
 };
 

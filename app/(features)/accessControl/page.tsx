@@ -18,6 +18,7 @@ import useClientSession from "@/hooks/use-client-session";
 import { toast } from "sonner";
 import moment from "moment";
 import { quarterMap } from "@/lib/quarter";
+import Portal from "@/components/Portal";
 
 interface Response {
   hasControl: boolean;
@@ -224,7 +225,7 @@ const AccessControlPage = () => {
   });
 
   return (
-    <>
+    <Portal session={session}>
       {switchLoading && <Loading type="full" />}
       <div className="mb-10 flex flex-col gap-3">
         <Title title="กำหนดสิทธิแก้ไขฟอร์ม"></Title>
@@ -287,7 +288,7 @@ const AccessControlPage = () => {
           ))
         )}
       </div>
-    </>
+    </Portal>
   );
 };
 

@@ -51,6 +51,10 @@ export const hasNumber = (str: string) => {
   return /\d/.test(str);
 };
 
+export const onlyNumber = (str: string) => {
+  return /^\d+$/.test(str);
+};
+
 export const removeLeadZero = (num: string) => {
   if (parseInt(num) !== 0) {
     const str = num.replace(/^0+/, "");

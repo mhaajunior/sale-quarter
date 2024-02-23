@@ -95,7 +95,7 @@ const HomePage = () => {
               </div>
             </div>
           </Reveal>
-          <Reveal width="100%">
+          <Reveal>
             <div
               ref={areaRef}
               className="flex flex-wrap-reverse md:flex-nowrap gap-10 items-center justify-center m-5 md:border border-b md:rounded-xl border-gray-300 p-5 md:p-10"

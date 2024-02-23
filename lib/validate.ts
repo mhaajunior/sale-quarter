@@ -68,18 +68,18 @@ export const consistencyCheck1 = (data: ReportForm) => {
 
   if (
     EMP &&
-    ((SIZE_R === 1 && !between(EMP, 1, 5)) ||
-      (SIZE_R === 2 && !between(EMP, 6, 10)) ||
-      (SIZE_R === 3 && !between(EMP, 11, 15)) ||
-      (SIZE_R === 4 && !between(EMP, 16, 20)) ||
-      (SIZE_R === 5 && !between(EMP, 21, 25)) ||
-      (SIZE_R === 6 && !between(EMP, 26, 30)) ||
-      (SIZE_R === 7 && !between(EMP, 31, 50)) ||
-      (SIZE_R === 8 && !between(EMP, 51, 100)) ||
-      (SIZE_R === 9 && !between(EMP, 101, 200)) ||
-      (SIZE_R === 10 && !between(EMP, 201, 500)) ||
-      (SIZE_R === 11 && !between(EMP, 501, 1000)) ||
-      (SIZE_R === 12 && EMP <= 1000))
+    ((Number(SIZE_R) === 1 && !between(EMP, 1, 5)) ||
+      (Number(SIZE_R) === 2 && !between(EMP, 6, 10)) ||
+      (Number(SIZE_R) === 3 && !between(EMP, 11, 15)) ||
+      (Number(SIZE_R) === 4 && !between(EMP, 16, 20)) ||
+      (Number(SIZE_R) === 5 && !between(EMP, 21, 25)) ||
+      (Number(SIZE_R) === 6 && !between(EMP, 26, 30)) ||
+      (Number(SIZE_R) === 7 && !between(EMP, 31, 50)) ||
+      (Number(SIZE_R) === 8 && !between(EMP, 51, 100)) ||
+      (Number(SIZE_R) === 9 && !between(EMP, 101, 200)) ||
+      (Number(SIZE_R) === 10 && !between(EMP, 201, 500)) ||
+      (Number(SIZE_R) === 11 && !between(EMP, 501, 1000)) ||
+      (Number(SIZE_R) === 12 && EMP <= 1000))
   ) {
     errData.push({
       label: ["SIZE_R", "EMP"],

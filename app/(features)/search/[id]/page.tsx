@@ -40,12 +40,24 @@ import Swal from "sweetalert2";
 import { CompanyReport } from "@/types/dto/report";
 import useClientSession from "@/hooks/use-client-session";
 import { Role } from "@/types/dto/role";
+import Portal from "@/components/Portal";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormdata] = useState<any>(null);
   const [formErrors, setFormErrors] = useState<FormErrors[]>([]);
+  const [si1, setSi1] = useState<boolean | undefined>();
+  const [si2, setSi2] = useState<boolean | undefined>();
+  const [si3, setSi3] = useState<boolean | undefined>();
+  const [si4, setSi4] = useState<boolean | undefined>();
+  const [si5, setSi5] = useState<boolean | undefined>();
+  const [si6, setSi6] = useState<boolean | undefined>();
+  const [si7, setSi7] = useState<boolean | undefined>();
+  const [denied, setDenied] = useState<{ isDenied: boolean; code?: number }>({
+    isDenied: false,
+  });
+  const [notFound, setNotFound] = useState(false);
   const params = useParams();
   const router = useRouter();
   const session = useClientSession();
@@ -75,10 +87,10 @@ const FormPage = () => {
       LG1_temp: "1",
       QTR: qtr,
       YR: yr,
-      ENU: 1,
-      M1: quarterData.rangeVal[0],
-      M2: quarterData.rangeVal[1],
-      M3: quarterData.rangeVal[2],
+      ENU: "01",
+      M1: quarterData?.rangeVal[0],
+      M2: quarterData?.rangeVal[1],
+      M3: quarterData?.rangeVal[2],
     },
   });
 
@@ -101,13 +113,13 @@ const FormPage = () => {
       !["create", "edit"].includes(mode) ||
       !yr
     ) {
-      router.push("/notfound");
+      setNotFound(true);
       return;
     }
 
     if (session && session.user.role === Role.SUPERVISOR) {
       if (mode === "create") {
-        router.push("/denied?code=3");
+        setDenied({ isDenied: true, code: 3 });
         return;
       }
     }
@@ -122,6 +134,34 @@ const FormPage = () => {
       getQuarterReport();
     }
   }, []);
+
+  useEffect(() => {
+    setValue("SI1", si1);
+  }, [si1]);
+
+  useEffect(() => {
+    setValue("SI2", si2);
+  }, [si2]);
+
+  useEffect(() => {
+    setValue("SI3", si3);
+  }, [si3]);
+
+  useEffect(() => {
+    setValue("SI4", si4);
+  }, [si4]);
+
+  useEffect(() => {
+    setValue("SI5", si5);
+  }, [si5]);
+
+  useEffect(() => {
+    setValue("SI6", si6);
+  }, [si6]);
+
+  useEffect(() => {
+    setValue("SI7", si7);
+  }, [si7]);
 
   useEffect(() => {
     if (chg === 1) {
@@ -256,17 +296,17 @@ const FormPage = () => {
               }
             }
           } else {
-            router.push("/notfound");
+            setNotFound(true);
           }
         }
       } else {
-        router.push("/denied?code=1");
+        setDenied({ isDenied: true, code: 1 });
       }
     } catch (err: any) {
       if (err.response.status === 404) {
-        router.push("/notfound");
+        setNotFound(true);
       } else if (err.response.status === 400) {
-        router.push("/denied?code=2");
+        setDenied({ isDenied: true, code: 2 });
       } else {
         errorHandler(err);
       }
@@ -382,17 +422,17 @@ const FormPage = () => {
               }
             }
           } else {
-            router.push("/notfound");
+            setNotFound(true);
           }
         }
       } else {
-        router.push("/denied?code=1");
+        setDenied({ isDenied: true, code: 1 });
       }
     } catch (err: any) {
       if (err.response.status === 404) {
-        router.push("/notfound");
+        setNotFound(true);
       } else if (err.response.status === 400) {
-        router.push("/denied?code=2");
+        setDenied({ isDenied: true, code: 2 });
       } else {
         errorHandler(err);
       }
@@ -620,17 +660,17 @@ const FormPage = () => {
               }
             }
           } else {
-            router.push("/notfound");
+            setNotFound(true);
           }
         }
       } else {
-        router.push("/denied?code=1");
+        setDenied({ isDenied: true, code: 1 });
       }
     } catch (err: any) {
       if (err.response.status === 404) {
-        router.push("/notfound");
+        setNotFound(true);
       } else if (err.response.status === 400) {
-        router.push("/denied?code=2");
+        setDenied({ isDenied: true, code: 2 });
       } else {
         errorHandler(err);
       }
@@ -641,7 +681,7 @@ const FormPage = () => {
 
   const onSubmit = handleSubmit((data) => {
     let err: FormErrors[] = [];
-    if (data.ENU === 1) {
+    if (Number(data.ENU) === 1) {
       err = checkErrorFromRole(data, session?.user.role, 1);
     } else {
       err = checkErrorFromRole(data, session?.user.role, 2);
@@ -719,7 +759,7 @@ const FormPage = () => {
   };
 
   return (
-    <>
+    <Portal session={session} notFound={notFound} denied={denied}>
       {loading && <Loading type="full" />}
       <div className="mb-10 flex flex-col gap-2">
         <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. 25${yr}`}>
@@ -729,8 +769,8 @@ const FormPage = () => {
           </Button>
         </Title>
         <div className="text-xl">
-          ไตรมาส {qtr} ({quarterData.monthRange[0]} -{" "}
-          {quarterData.monthRange[2]} {yr})
+          ไตรมาส {qtr} ({quarterData?.monthRange[0]} -{" "}
+          {quarterData?.monthRange[2]} {yr})
         </div>
       </div>
       <div className="card">
@@ -785,12 +825,10 @@ const FormPage = () => {
                   <label className="w-10">AMP</label>
                   <Input
                     name="AMP"
-                    type="number"
                     placeholder="AMP"
                     register={register}
                     className="w-20"
                     errors={errors.AMP}
-                    isNumber
                     right
                   />
                 </div>
@@ -798,12 +836,10 @@ const FormPage = () => {
                   <label className="w-10">TAM</label>
                   <Input
                     name="TAM"
-                    type="number"
                     placeholder="TAM"
                     register={register}
                     className="w-20"
                     errors={errors.TAM}
-                    isNumber
                     right
                   />
                 </div>
@@ -824,12 +860,10 @@ const FormPage = () => {
                   <label className="w-10">EA</label>
                   <Input
                     name="EA"
-                    type="number"
                     placeholder="EA"
                     register={register}
                     className="w-20"
                     errors={errors.EA}
-                    isNumber
                     right
                   />
                 </div>
@@ -837,12 +871,10 @@ const FormPage = () => {
                   <label className="w-10">VIL</label>
                   <Input
                     name="VIL"
-                    type="number"
                     placeholder="VIL"
                     register={register}
                     className="w-20"
                     errors={errors.VIL}
-                    isNumber
                     right
                   />
                 </div>
@@ -877,12 +909,10 @@ const FormPage = () => {
                   <label className="w-10">SIZE_R</label>
                   <Input
                     name="SIZE_R"
-                    type="number"
                     placeholder="SIZE_R"
                     register={register}
                     className="w-20"
                     errors={errors.SIZE_R}
-                    isNumber
                     right
                   />
                 </div>
@@ -890,12 +920,10 @@ const FormPage = () => {
                   <label className="w-10">SIZE_L</label>
                   <Input
                     name="SIZE_L"
-                    type="number"
                     placeholder="SIZE_L"
                     register={register}
                     className="w-20"
                     errors={errors.SIZE_L}
-                    isNumber
                     disabled
                     right
                   />
@@ -904,12 +932,10 @@ const FormPage = () => {
                   <label className="w-10">NO</label>
                   <Input
                     name="NO"
-                    type="number"
                     placeholder="NO"
                     register={register}
                     className="w-20"
                     errors={errors.NO}
-                    isNumber
                     disabled
                     right
                   />
@@ -946,12 +972,10 @@ const FormPage = () => {
                   <label className="w-10">ENU</label>
                   <Input
                     name="ENU"
-                    type="number"
                     placeholder="ENU"
                     register={register}
                     className="w-20"
                     errors={errors.ENU}
-                    isNumber
                     right
                   />
                 </div>
@@ -1193,7 +1217,7 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            {enu === 8 && (
+            {Number(enu) === 8 && (
               <div className="flex items-center gap-5">
                 <label className="w-32">รหัส TSIC นอกข่ายการสำรวจฯ</label>
                 <Input
@@ -1210,7 +1234,7 @@ const FormPage = () => {
             )}
           </div>
 
-          {enu === 1 && (
+          {Number(enu) === 1 && (
             <>
               <div className="card w-500 flex flex-col gap-3">
                 <div>
@@ -1416,13 +1440,13 @@ const FormPage = () => {
                 </p>
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarterData.monthRange[0]}</p>
+                    <p>เดือน {quarterData?.monthRange[0]}</p>
                     <Input
                       name="R1_temp"
                       placeholder={
                         session
                           ? "R1"
-                          : `ยอดขายเดือน ${quarterData.monthRange[0]}`
+                          : `ยอดขายเดือน ${quarterData?.monthRange[0]}`
                       }
                       register={register}
                       className="w-60 md:w-72"
@@ -1433,13 +1457,13 @@ const FormPage = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarterData.monthRange[1]}</p>
+                    <p>เดือน {quarterData?.monthRange[1]}</p>
                     <Input
                       name="R2_temp"
                       placeholder={
                         session
                           ? "R2"
-                          : `ยอดขายเดือน ${quarterData.monthRange[1]}`
+                          : `ยอดขายเดือน ${quarterData?.monthRange[1]}`
                       }
                       register={register}
                       className="w-60 md:w-72"
@@ -1450,13 +1474,13 @@ const FormPage = () => {
                     />
                   </div>
                   <div className="flex justify-between items-center">
-                    <p>เดือน {quarterData.monthRange[2]}</p>
+                    <p>เดือน {quarterData?.monthRange[2]}</p>
                     <Input
                       name="R3_temp"
                       placeholder={
                         session
                           ? "R3"
-                          : `ยอดขายเดือน ${quarterData.monthRange[2]}`
+                          : `ยอดขายเดือน ${quarterData?.monthRange[2]}`
                       }
                       register={register}
                       className="w-60 md:w-72"
@@ -1547,12 +1571,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi1(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI1").ref}
                               checked={value}
-                              value={value}
                             >
                               1. Social media เช่น Facebook, Instagram, Twitter,
                               Line
@@ -1588,12 +1612,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi2(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI2").ref}
                               checked={value}
-                              value={value}
                             >
                               2. Website หรือ Application ของตนเอง
                               {session && (
@@ -1628,12 +1652,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi3(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI3").ref}
                               checked={value}
-                              value={value}
                             >
                               3. E-marketplace (ตลาดในต่างประเทศ) เช่น Lazada,
                               Shopee
@@ -1686,12 +1710,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi4(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI4").ref}
                               checked={value}
-                              value={value}
                             >
                               4. Cross-border platform (ตลาดต่างประเทศ) เช่น
                               Tmall Toaboa, Alibaba, Amazon
@@ -1744,12 +1768,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi5(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI5").ref}
                               checked={value}
-                              value={value}
                             >
                               5. Application ที่ให้บริการสั่งและส่งสินค้า/บริการ
                               บนมือถือและทางเว็บไซต์ เช่น Lineman, Grab, Food
@@ -1803,12 +1827,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi6(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI6").ref}
                               checked={value}
-                              value={value}
                             >
                               6. Platform สำหรับจองที่พักและการท่องเที่ยว เช่น
                               Agoda, Booking, Airbnb, Traveloka
@@ -1861,12 +1885,12 @@ const FormPage = () => {
                         shouldUnregister
                         render={({ field: { onChange, value } }) => (
                           <>
+                            {setSi7(value)}
                             <Checkbox
                               className="start"
                               onChange={onChange}
                               ref={register("SI7").ref}
                               checked={value}
-                              value={value}
                             >
                               7. อื่นๆ (ระบุ)
                               {session && (
@@ -2868,7 +2892,7 @@ const FormPage = () => {
           </p>
         </div>
       </Modal>
-    </>
+    </Portal>
   );
 };
 

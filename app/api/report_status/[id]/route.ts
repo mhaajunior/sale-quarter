@@ -27,9 +27,7 @@ export const GET = async (
     });
 
     if (!reportStatus) {
-      return NextResponse.json("เลขประจำสถานประกอบการไม่ถูกต้อง", {
-        status: 400,
-      });
+      return NextResponse.json(false);
     }
 
     let status = null;

@@ -112,9 +112,9 @@ const Navbar = () => {
         <div
           className={`p-5 ${
             currentPath !== "/" ? "nav-bottom" : ""
-          } bg-white md:bg-opacity-40 absolute w-full z-40`}
+          } bg-white bg-opacity-85 md:bg-opacity-40 absolute w-full z-40`}
         >
-          <nav className="flex justify-between items-center text-gray-500 font-semibold lg:w-4/5 w-full mx-auto">
+          <nav className="flex justify-between items-center text-gray-500 font-semibold lg:w-4/5 w-full mx-auto lg:px-0 px-5">
             <ul className="flex items-center md:gap-10 gap-8 w-3/5">
               <li>
                 <Link href="/">
@@ -127,26 +127,29 @@ const Navbar = () => {
                   />
                 </Link>
               </li>
-              {size.width &&
-                size.width > 768 &&
-                navItems.map((item) => (
-                  <li
-                    key={item.title}
-                    className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden"
-                  >
-                    <Link
-                      href={item.link}
-                      className={
-                        item.path === currentPath ? "text-gray-900" : ""
-                      }
+              {session !== undefined
+                ? size.width &&
+                  size.width > 768 &&
+                  navItems.map((item) => (
+                    <li
+                      key={item.title}
+                      className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden"
                     >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
+                      <Link
+                        href={item.link}
+                        className={
+                          item.path === currentPath ? "text-gray-900" : ""
+                        }
+                      >
+                        {item.title}
+                      </Link>
+                    </li>
+                  ))
+                : ""}
             </ul>
-            {size.width ? (
-              size.width <= 768 ? (
+            {size.width &&
+              session !== undefined &&
+              (size.width <= 768 ? (
                 <BsList
                   className="text-3xl cursor-pointer hover:text-black"
                   onClick={() => setShowMenu((prevState) => !prevState)}
@@ -180,10 +183,7 @@ const Navbar = () => {
                     </Button>
                   )}
                 </>
-              )
-            ) : (
-              ""
-            )}
+              ))}
           </nav>
           <AnimatePresence>
             {size.width && size.width <= 768 && showMenu && (
