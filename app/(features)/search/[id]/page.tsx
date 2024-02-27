@@ -989,7 +989,7 @@ const FormPage = () => {
               *** กรุณากรอกข้อมูลให้ครบทุกช่อง
               หากช่องไหนไม่มีข้อมูลให้ใช้เครื่องหมายขีด ( - )
             </p>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">คำนำหน้านาม</label>
               <Dropdown
                 name="TITLE"
@@ -1001,7 +1001,7 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ยศ</label>
               <Input
                 name="RANK"
@@ -1012,7 +1012,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ชื่อเจ้าของ/หัวหน้าครัวเรือน</label>
               <Input
                 name="FIRSTNAME"
@@ -1023,7 +1023,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">นามสกุล</label>
               <Input
                 name="LASTNAME"
@@ -1035,7 +1035,7 @@ const FormPage = () => {
               />
             </div>
 
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">คำนำหน้าชื่อสถานประกอบการ</label>
               <Dropdown
                 name="EST_TITLE"
@@ -1047,7 +1047,7 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ชื่อสถานประกอบการ</label>
               <Input
                 name="EST_NAME"
@@ -1058,7 +1058,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">เลขที่</label>
               <Input
                 name="ADD_NO"
@@ -1069,7 +1069,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ชื่ออาคาร/หมู่บ้าน</label>
               <Input
                 name="BUILDING"
@@ -1080,7 +1080,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ห้องเลขที่/ชั้นที่</label>
               <Input
                 name="ROOM"
@@ -1091,7 +1091,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ถนน</label>
               <Input
                 name="STREET"
@@ -1102,7 +1102,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ตรอก</label>
               <Input
                 name="BLK"
@@ -1113,7 +1113,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ซอย</label>
               <Input
                 name="SOI"
@@ -1124,7 +1124,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">ตำบล/แขวง</label>
               <Input
                 name="SUB_DIST"
@@ -1135,7 +1135,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">อำเภอ/เขต</label>
               <Input
                 name="DISTRICT"
@@ -1146,11 +1146,11 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">จังหวัด</label>
               <div className="w-60 md:w-72">{getValues("PROVINCE")}</div>
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">รหัสไปรษณีย์</label>
               <Input
                 name="POST_CODE"
@@ -1161,7 +1161,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">โทรศัพท์</label>
               <Input
                 name="TEL_NO"
@@ -1172,7 +1172,7 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">อีเมล</label>
               <Input
                 name="E_MAIL"
@@ -1183,7 +1183,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">Website</label>
               <Input
                 name="WEBSITE"
@@ -1194,7 +1194,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">Social Media</label>
               <Input
                 name="SOCIAL"
@@ -1205,7 +1205,7 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <label className="w-32">วิธีการตอบแบบสอบถาม</label>
               <Dropdown
                 name="ANSWER"
@@ -1218,7 +1218,7 @@ const FormPage = () => {
               />
             </div>
             {Number(enu) === 8 && (
-              <div className="flex items-center gap-5">
+              <div className="flex flex-wrap items-center gap-5">
                 <label className="w-32">รหัส TSIC นอกข่ายการสำรวจฯ</label>
                 <Input
                   name="TSIC_CHG"
@@ -1668,7 +1668,7 @@ const FormPage = () => {
                               )}
                             </Checkbox>
                             {value && (
-                              <div className="flex gap-5">
+                              <div className="flex flex-wrap gap-5">
                                 <div className="flex gap-3 items-center text-[14px]">
                                   สัดส่วน
                                   <Input
@@ -1726,7 +1726,7 @@ const FormPage = () => {
                               )}
                             </Checkbox>
                             {value && (
-                              <div className="flex gap-5">
+                              <div className="flex flex-wrap gap-5">
                                 <div className="flex gap-3 items-center text-[14px]">
                                   สัดส่วน
                                   <Input
@@ -1785,7 +1785,7 @@ const FormPage = () => {
                               )}
                             </Checkbox>
                             {value && (
-                              <div className="flex gap-5">
+                              <div className="flex flex-wrap gap-5">
                                 <div className="flex gap-3 items-center text-[14px]">
                                   สัดส่วน
                                   <Input
@@ -1843,7 +1843,7 @@ const FormPage = () => {
                               )}
                             </Checkbox>
                             {value && (
-                              <div className="flex gap-5">
+                              <div className="flex flex-wrap gap-5">
                                 <div className="flex gap-3 items-center text-[14px]">
                                   สัดส่วน
                                   <Input
@@ -1911,7 +1911,7 @@ const FormPage = () => {
                                     showName={!!session}
                                   />
                                 </div>
-                                <div className="flex gap-5">
+                                <div className="flex flex-wrap gap-5">
                                   <div className="flex gap-3 items-center text-[14px]">
                                     สัดส่วน
                                     <Input

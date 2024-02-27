@@ -61,7 +61,7 @@ const SignInPage = (props: Props) => {
   });
 
   return (
-    <div className="w-full flex">
+    <div className="w-full flex h-svh">
       <div className="w-2/4 relative min-h-screen">
         <div className="absolute bottom-0 left-0">
           <Image src={wave} alt="bottom wave" width={600} />

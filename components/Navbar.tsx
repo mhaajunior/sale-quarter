@@ -110,7 +110,7 @@ const Navbar = () => {
     <>
       {!currentPath.startsWith("/sign") && (
         <div
-          className={`p-5 ${
+          className={`p-3 md:p-5 ${
             currentPath !== "/" ? "nav-bottom" : ""
           } bg-white bg-opacity-85 md:bg-opacity-40 absolute w-full z-40`}
         >

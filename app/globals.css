@@ -227,4 +227,8 @@ h5 {
   .click-box {
     width: 100%;
   }
+
+  .card {
+    padding: 1em;
+  }
 }
