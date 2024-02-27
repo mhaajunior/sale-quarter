@@ -14,12 +14,16 @@ const Footer = () => {
           <div className="leading-8 md:w-1/2 md:text-left text-center">
             <div>
               <FaStar className="text-yellow-500 inline-block mr-2 mt-[-4px]" />
-              กรุงเทพมหานคร สอบถามได้ที่ กองบริหารจัดเก็บข้อมูลสถิติ โทร.0 2143
-              1312 - 13, 0 2143 1315 และ 0 2143 1318
+              <span>
+                กรุงเทพมหานคร สอบถามได้ที่ กองบริหารจัดเก็บข้อมูลสถิติ โทร.0
+                2143 1312 - 13, 0 2143 1315 และ 0 2143 1318
+              </span>
             </div>
             <div>
               <FaStar className="text-yellow-500 inline-block mr-2 mt-[-4px]" />
-              ต่างจังหวัด สอบถามได้ที่สำนักงานสถิติจังหวัดทั่วประเทศ
+              <span>
+                ต่างจังหวัด สอบถามได้ที่สำนักงานสถิติจังหวัดทั่วประเทศ
+              </span>
             </div>
           </div>
           <div className="flex flex-col items-center justify-center md:mt-0 mt-10">
