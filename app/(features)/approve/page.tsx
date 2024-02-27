@@ -494,7 +494,7 @@ const ApprovePage = () => {
           </div>
         </div>
       </div>
-      <FloatButton.BackTop tooltip={<div>ไปบนสุด</div>} visibilityHeight={0} />
+      <FloatButton.BackTop visibilityHeight={0} />
     </Portal>
   );
 };

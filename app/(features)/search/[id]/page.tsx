@@ -2898,7 +2898,7 @@ const FormPage = () => {
           </p>
         </div>
       </Modal>
-      <FloatButton.BackTop tooltip={<div>ไปบนสุด</div>} visibilityHeight={0} />
+      <FloatButton.BackTop visibilityHeight={0} />
     </Portal>
   );
 };
