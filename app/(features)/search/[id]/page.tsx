@@ -24,7 +24,7 @@ import {
   estTitleOption,
 } from "@/utils/dropdownOption";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Checkbox, Col, Modal, Radio, Row, Space } from "antd";
+import { Checkbox, Col, FloatButton, Modal, Radio, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -989,8 +989,8 @@ const FormPage = () => {
               *** กรุณากรอกข้อมูลให้ครบทุกช่อง
               หากช่องไหนไม่มีข้อมูลให้ใช้เครื่องหมายขีด ( - )
             </p>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">คำนำหน้านาม</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">คำนำหน้านาม</label>
               <Dropdown
                 name="TITLE"
                 placeholder={session ? "TITLE" : "กรุณาเลือก"}
@@ -1001,8 +1001,8 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ยศ</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ยศ</label>
               <Input
                 name="RANK"
                 placeholder={session ? "RANK" : ""}
@@ -1012,8 +1012,10 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ชื่อเจ้าของ/หัวหน้าครัวเรือน</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">
+                ชื่อเจ้าของ/หัวหน้าครัวเรือน
+              </label>
               <Input
                 name="FIRSTNAME"
                 placeholder={session ? "FIRSTNAME" : ""}
@@ -1023,8 +1025,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">นามสกุล</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">นามสกุล</label>
               <Input
                 name="LASTNAME"
                 placeholder={session ? "LASTNAME" : ""}
@@ -1035,8 +1037,10 @@ const FormPage = () => {
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">คำนำหน้าชื่อสถานประกอบการ</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">
+                คำนำหน้าชื่อสถานประกอบการ
+              </label>
               <Dropdown
                 name="EST_TITLE"
                 placeholder={session ? "EST_TITLE" : "กรุณาเลือก"}
@@ -1047,8 +1051,8 @@ const FormPage = () => {
                 showName={!!session}
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ชื่อสถานประกอบการ</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ชื่อสถานประกอบการ</label>
               <Input
                 name="EST_NAME"
                 placeholder={session ? "EST_NAME" : ""}
@@ -1058,8 +1062,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">เลขที่</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">เลขที่</label>
               <Input
                 name="ADD_NO"
                 placeholder={session ? "ADD_NO" : ""}
@@ -1069,8 +1073,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ชื่ออาคาร/หมู่บ้าน</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ชื่ออาคาร/หมู่บ้าน</label>
               <Input
                 name="BUILDING"
                 placeholder={session ? "BUILDING" : ""}
@@ -1080,8 +1084,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ห้องเลขที่/ชั้นที่</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ห้องเลขที่/ชั้นที่</label>
               <Input
                 name="ROOM"
                 placeholder={session ? "ROOM" : ""}
@@ -1091,8 +1095,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ถนน</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ถนน</label>
               <Input
                 name="STREET"
                 placeholder={session ? "STREET" : ""}
@@ -1102,8 +1106,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ตรอก</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ตรอก</label>
               <Input
                 name="BLK"
                 placeholder={session ? "BLK" : ""}
@@ -1113,8 +1117,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ซอย</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ซอย</label>
               <Input
                 name="SOI"
                 placeholder={session ? "SOI" : ""}
@@ -1124,8 +1128,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">ตำบล/แขวง</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">ตำบล/แขวง</label>
               <Input
                 name="SUB_DIST"
                 placeholder={session ? "SUB_DIST" : ""}
@@ -1135,8 +1139,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">อำเภอ/เขต</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">อำเภอ/เขต</label>
               <Input
                 name="DISTRICT"
                 placeholder={session ? "DISTRICT" : ""}
@@ -1146,12 +1150,12 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">จังหวัด</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">จังหวัด</label>
               <div className="w-60 md:w-72">{getValues("PROVINCE")}</div>
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">รหัสไปรษณีย์</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">รหัสไปรษณีย์</label>
               <Input
                 name="POST_CODE"
                 placeholder={session ? "POST_CODE" : ""}
@@ -1161,19 +1165,19 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">โทรศัพท์</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">โทรศัพท์</label>
               <Input
                 name="TEL_NO"
-                placeholder={session ? "TEL_NO" : "เช่น 0xxxxxxxxx"}
+                placeholder={session ? "TEL_NO" : ""}
                 register={register}
                 className="w-60 md:w-72"
                 errors={errors.TEL_NO}
                 showName={!!session}
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">อีเมล</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">อีเมล</label>
               <Input
                 name="E_MAIL"
                 placeholder={session ? "E_MAIL" : ""}
@@ -1183,8 +1187,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">Website</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">Website</label>
               <Input
                 name="WEBSITE"
                 placeholder={session ? "WEBSITE" : ""}
@@ -1194,8 +1198,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">Social Media</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">Social Media</label>
               <Input
                 name="SOCIAL"
                 placeholder={session ? "SOCIAL" : ""}
@@ -1205,8 +1209,8 @@ const FormPage = () => {
                 showName
               />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
-              <label className="w-32">วิธีการตอบแบบสอบถาม</label>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <label className="w-full sm:w-32">วิธีการตอบแบบสอบถาม</label>
               <Dropdown
                 name="ANSWER"
                 placeholder={session ? "ANSWER" : "กรุณาเลือก"}
@@ -1218,8 +1222,10 @@ const FormPage = () => {
               />
             </div>
             {Number(enu) === 8 && (
-              <div className="flex flex-wrap items-center gap-5">
-                <label className="w-32">รหัส TSIC นอกข่ายการสำรวจฯ</label>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                <label className="w-full sm:w-32">
+                  รหัส TSIC นอกข่ายการสำรวจฯ
+                </label>
                 <Input
                   name="TSIC_CHG"
                   type="number"
@@ -2892,6 +2898,7 @@ const FormPage = () => {
           </p>
         </div>
       </Modal>
+      <FloatButton.BackTop tooltip={<div>ไปบนสุด</div>} visibilityHeight={0} />
     </Portal>
   );
 };
