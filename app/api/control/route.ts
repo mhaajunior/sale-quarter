@@ -35,7 +35,7 @@ export const POST = async (req: NextRequest) => {
           count++;
         }
       }
-      if (count !== 27) {
+      if (count !== 28) {
         return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
       }
 
@@ -44,11 +44,12 @@ export const POST = async (req: NextRequest) => {
         no,
         tsic_code,
         size12,
-        initial,
+        name_title,
         firstname,
         lastname,
+        initial,
         comp_name,
-        district,
+        mun,
         ea,
         vil,
         house_no,
@@ -75,11 +76,12 @@ export const POST = async (req: NextRequest) => {
           no: padZero(no, 4),
           tsic_code: Number(tsic_code),
           size12: padZero(size12, 2),
-          initial,
+          name_title,
           firstname,
           lastname,
+          initial,
           comp_name: comp_name.toString(),
-          district: Number(district),
+          mun: Number(mun),
           ea: padZero(ea, 4),
           vil: padZero(vil, 2),
           house_no: house_no.toString(),
@@ -104,11 +106,12 @@ export const POST = async (req: NextRequest) => {
           es_id,
           tsic_code: Number(tsic_code),
           size12: padZero(size12, 2),
-          initial,
+          name_title,
           firstname,
           lastname,
+          initial,
           comp_name: comp_name.toString(),
-          district: Number(district),
+          mun: Number(mun),
           ea: padZero(ea, 4),
           vil: padZero(vil, 2),
           house_no: house_no.toString(),

@@ -16,11 +16,12 @@ model Control {
   es_id     BigInt  @unique
   tsic_code Int
   size12    String  @db.NVarChar(2)
-  initial   String? @db.NVarChar(10)
+  name_title String @db.NVarChar(10)
   firstname String? @db.NVarChar(60)
   lastname  String? @db.NVarChar(60)
+  initial   String? @db.NVarChar(10)
   comp_name String? @db.NVarChar(100)
-  district  Int     @db.SmallInt
+  mun       Int     @db.SmallInt
   ea        String  @db.NVarChar(4)
   vil       String  @db.NVarChar(2)
   house_no  String  @db.NVarChar(30)

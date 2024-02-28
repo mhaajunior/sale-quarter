@@ -14,12 +14,14 @@ import { errorHandler } from "@/lib/errorHandler";
 import { ColumnsType } from "antd/es/table";
 import { ControlTable } from "@/types/dto/control";
 import Loading from "@/components/Loading";
+import Portal from "@/components/Portal";
 
 const { Dragger } = Upload;
 
 const UploadControl = () => {
   const [unsuccessFile, setUnsuccessFile] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fullLoading, setFullLoading] = useState(false);
   const [response, setResponse] = useState<ControlTable[]>([]);
   const session = useClientSession();
 
@@ -50,6 +52,7 @@ const UploadControl = () => {
 
   const onUploadControl = async (data: any, name: string) => {
     try {
+      setFullLoading(true);
       if (session) {
         await axios.post("/api/control", data, {
           headers: { authorization: session.user.accessToken },
@@ -59,6 +62,7 @@ const UploadControl = () => {
       setUnsuccessFile((prevState) => [...prevState, name]);
       toast.error("พบปัญหาการนำเข้าข้อมูล");
     } finally {
+      setFullLoading(false);
       fetchControls();
     }
   };
@@ -89,7 +93,7 @@ const UploadControl = () => {
   const props: UploadProps = {
     accept: ".csv",
     name: "file",
-    multiple: true,
+    multiple: false,
     action: `${process.env.NEXT_PUBLIC_CALLBACK_URL}/api/admin`,
     onChange(info) {
       const { status, originFileObj, name } = info.file;
@@ -115,48 +119,51 @@ const UploadControl = () => {
   };
 
   return (
-    <div className="flex flex-col gap-10">
-      <Title title="อัพโหลด Control" />
-      <Dragger {...props}>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">
-          กดหรือลากไฟล์มาที่บริเวณนี้เพื่อทำการอัพโหลด
-        </p>
-        <p className="ant-upload-hint">
-          สามารถลากหลายไฟล์มาอัพโหลดพร้อมกันได้ในครั้งเดียว
-          โดยไฟล์จะต้องมีนามสกุลเป็น .csv เท่านั้น
-        </p>
-      </Dragger>
-      {unsuccessFile.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <div>ไฟล์ที่อัพโหลดเข้าฐานข้อมูลไม่สำเร็จ</div>
-          {unsuccessFile.map((file) => (
-            <p className="text-red-500 flex gap-2 items-center">
-              <BsFileEarmarkX />
-              {file}
-            </p>
-          ))}
-        </div>
-      )}
-      <div className="flex flex-col gap-3 md:w-3/4">
-        <div>ตารางแสดงจำนวนสถานประกอบการทั้งหมดในแต่ละจังหวัดตาม control</div>
-        {loading ? (
-          <Loading type="partial" />
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={response}
-            bordered
-            size="middle"
-            scroll={{ x: "calc(200px + 50%)" }}
-            showSorterTooltip={false}
-            pagination={false}
-          />
+    <Portal session={session}>
+      {fullLoading && <Loading type="full" />}
+      <div className="flex flex-col gap-10">
+        <Title title="อัพโหลด Control" />
+        <Dragger {...props}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">
+            กดหรือลากไฟล์มาที่บริเวณนี้เพื่อทำการอัพโหลด
+          </p>
+          <p className="ant-upload-hint">
+            สามารถลากไฟล์มาอัพโหลดได้ทีละไฟล์ โดยไฟล์จะต้องมีนามสกุลเป็น .csv
+            เท่านั้น
+          </p>
+        </Dragger>
+        {unsuccessFile.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <div>ไฟล์ที่อัพโหลดเข้าฐานข้อมูลไม่สำเร็จ</div>
+            {unsuccessFile.map((file) => (
+              <p className="text-red-500 flex gap-2 items-center">
+                <BsFileEarmarkX />
+                {file}
+              </p>
+            ))}
+          </div>
         )}
+        <div className="flex flex-col gap-3 md:w-3/4">
+          <div>ตารางแสดงจำนวนสถานประกอบการทั้งหมดในแต่ละจังหวัดตาม control</div>
+          {loading ? (
+            <Loading type="partial" />
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={response}
+              bordered
+              size="middle"
+              scroll={{ x: "calc(200px + 50%)" }}
+              showSorterTooltip={false}
+              pagination={false}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 

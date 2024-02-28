@@ -229,7 +229,7 @@ const FormPage = () => {
               comp_name,
               cwt,
               cwt_name,
-              district,
+              mun,
               e_mail,
               ea,
               econ_fm,
@@ -237,6 +237,7 @@ const FormPage = () => {
               house_no,
               initial,
               lastname,
+              name_title,
               no,
               reg,
               regis_cid,
@@ -256,14 +257,15 @@ const FormPage = () => {
             setValue("EST_NAME", comp_name || "-");
             setValue("CWT", cwt);
             setValue("PROVINCE", cwt_name);
-            setValue("MUN", district);
+            setValue("MUN", mun);
             setValue("E_MAIL", e_mail || "-");
             setValue("EA", ea);
             setValue("LG", econ_fm);
             setValue("FIRSTNAME", firstname || "-");
             setValue("ADD_NO", house_no);
-            setValue("TITLE", initial || "-");
+            setValue("EST_TITLE", initial || "-");
             setValue("LASTNAME", lastname || "-");
+            setValue("TITLE", name_title || "-");
             setValue("NO", no);
             setValue("REG", reg);
             setValue("SIZE_L", size12);

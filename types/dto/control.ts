@@ -6,11 +6,12 @@ export interface InitialControl {
   es_id: string;
   tsic_code: number;
   size12: string;
-  initial: string | null;
+  name_title: string | null;
   firstname: string | null;
   lastname: string | null;
   comp_name: string | null;
-  district: number;
+  initial: string | null;
+  mun: number;
   ea: string;
   vil: string;
   house_no: string;
