@@ -7,7 +7,7 @@ interface Denied {
   code?: number;
 }
 
-const SkeletonWrap = ({
+const Portal = ({
   session,
   children,
   notFound = false,
@@ -35,4 +35,4 @@ const SkeletonWrap = ({
   return <>{renderedPortal()}</>;
 };
 
-export default SkeletonWrap;
+export default Portal;
