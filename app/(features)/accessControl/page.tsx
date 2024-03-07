@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Empty, Switch } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
@@ -19,24 +19,19 @@ import { toast } from "sonner";
 import moment from "moment";
 import { quarterMap } from "@/lib/quarter";
 import Portal from "@/components/Portal";
+import { FilterContext } from "@/context";
 
 interface Response {
   hasControl: boolean;
-  reportStatus: ReportStatus[];
+  reportStatus: ReportStatus | null;
 }
 
 interface DataType {
   key: React.Key;
-  year: number;
-  qtr1: Quarter;
-  qtr2: Quarter;
-  qtr3: Quarter;
-  qtr4: Quarter;
-}
-
-interface Quarter {
-  canCreate: boolean;
-  year: number;
+  canCreateQtr1: boolean;
+  canCreateQtr2: boolean;
+  canCreateQtr3: boolean;
+  canCreateQtr4: boolean;
 }
 
 const AccessControlPage = () => {
@@ -44,7 +39,7 @@ const AccessControlPage = () => {
   const [switchLoading, setSwitchLoading] = useState(false);
   const [response, setResponse] = useState<Response>({
     hasControl: false,
-    reportStatus: [],
+    reportStatus: null,
   });
   const [id, setId] = useState("");
   const {
@@ -54,14 +49,11 @@ const AccessControlPage = () => {
   } = useForm<SearchForm>({
     resolver: zodResolver(searchIdSchema),
   });
+  const { year } = useContext(FilterContext);
 
   const session = useClientSession();
 
-  const onSwitchChange = async (
-    checked: boolean,
-    year: number,
-    quarter: number
-  ) => {
+  const onSwitchChange = async (checked: boolean, quarter: number) => {
     try {
       setSwitchLoading(true);
       const res = await axios.patch(
@@ -82,7 +74,7 @@ const AccessControlPage = () => {
     }
   };
 
-  const isPassOpenDate = (year: number, quarter: number) => {
+  const isPassOpenDate = (quarter: number) => {
     let passOpenDate = false;
     const res = quarterMap(Number("25" + year) - 543);
     const startDate = moment(res[quarter - 1].formSubmittedRange[0]);
@@ -96,14 +88,6 @@ const AccessControlPage = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "ปี",
-      dataIndex: "year",
-      key: "year",
-      width: "10%",
-      fixed: "left",
-      align: "center",
-    },
-    {
       title: "ไตรมาส",
       children: [
         {
@@ -111,13 +95,11 @@ const AccessControlPage = () => {
           dataIndex: "qtr1",
           key: "qtr1",
           align: "center",
-          render: (_, { qtr1 }) => (
+          render: (_, { canCreateQtr1 }) => (
             <Switch
-              defaultChecked={qtr1.canCreate}
-              onChange={(checked: boolean) =>
-                onSwitchChange(checked, qtr1.year, 1)
-              }
-              disabled={!isPassOpenDate(qtr1.year, 1)}
+              defaultChecked={canCreateQtr1}
+              onChange={(checked: boolean) => onSwitchChange(checked, 1)}
+              disabled={!isPassOpenDate(1)}
               className="bg-gray-500"
             />
           ),
@@ -127,13 +109,11 @@ const AccessControlPage = () => {
           dataIndex: "qtr2",
           key: "qtr2",
           align: "center",
-          render: (_, { qtr2 }) => (
+          render: (_, { canCreateQtr2 }) => (
             <Switch
-              defaultChecked={qtr2.canCreate}
-              onChange={(checked: boolean) =>
-                onSwitchChange(checked, qtr2.year, 2)
-              }
-              disabled={!isPassOpenDate(qtr2.year, 2)}
+              defaultChecked={canCreateQtr2}
+              onChange={(checked: boolean) => onSwitchChange(checked, 2)}
+              // disabled={!isPassOpenDate(2)} // pending edit
               className="bg-gray-500"
             />
           ),
@@ -143,13 +123,11 @@ const AccessControlPage = () => {
           dataIndex: "qtr3",
           key: "qtr3",
           align: "center",
-          render: (_, { qtr3 }) => (
+          render: (_, { canCreateQtr3 }) => (
             <Switch
-              defaultChecked={qtr3.canCreate}
-              onChange={(checked: boolean) =>
-                onSwitchChange(checked, qtr3.year, 3)
-              }
-              disabled={!isPassOpenDate(qtr3.year, 3)}
+              defaultChecked={canCreateQtr3}
+              onChange={(checked: boolean) => onSwitchChange(checked, 3)}
+              disabled={!isPassOpenDate(3)}
               className="bg-gray-500"
             />
           ),
@@ -159,13 +137,11 @@ const AccessControlPage = () => {
           dataIndex: "qtr4",
           key: "qtr4",
           align: "center",
-          render: (_, { qtr4 }) => (
+          render: (_, { canCreateQtr4 }) => (
             <Switch
-              defaultChecked={qtr4.canCreate}
-              onChange={(checked: boolean) =>
-                onSwitchChange(checked, qtr4.year, 4)
-              }
-              disabled={!isPassOpenDate(qtr4.year, 4)}
+              defaultChecked={canCreateQtr4}
+              onChange={(checked: boolean) => onSwitchChange(checked, 4)}
+              disabled={!isPassOpenDate(4)}
               className="bg-gray-500"
             />
           ),
@@ -175,26 +151,17 @@ const AccessControlPage = () => {
   ];
 
   const data: DataType[] = [];
-  if (response.hasControl && response.reportStatus.length > 0) {
-    for (const item of response.reportStatus) {
-      const {
-        no,
-        year,
-        canCreateQtr1,
-        canCreateQtr2,
-        canCreateQtr3,
-        canCreateQtr4,
-      } = item;
+  if (response.hasControl && response.reportStatus) {
+    const { no, canCreateQtr1, canCreateQtr2, canCreateQtr3, canCreateQtr4 } =
+      response.reportStatus;
 
-      data.push({
-        key: no,
-        year,
-        qtr1: { canCreate: canCreateQtr1, year },
-        qtr2: { canCreate: canCreateQtr2, year },
-        qtr3: { canCreate: canCreateQtr3, year },
-        qtr4: { canCreate: canCreateQtr4, year },
-      });
-    }
+    data.push({
+      key: no,
+      canCreateQtr1,
+      canCreateQtr2,
+      canCreateQtr3,
+      canCreateQtr4,
+    });
   }
 
   const onSearchId = handleSubmit(async (data) => {
@@ -204,13 +171,13 @@ const AccessControlPage = () => {
       if (session) {
         res = await axios.post(
           "/api/report_status",
-          { data },
+          { data, year },
           {
             headers: { authorization: session.user.accessToken },
           }
         );
       } else {
-        res = await axios.post("/api/report_status", { data });
+        res = await axios.post("/api/report_status", { data, year });
       }
 
       if (res.status === 200) {
@@ -227,12 +194,10 @@ const AccessControlPage = () => {
   return (
     <Portal session={session}>
       {switchLoading && <Loading type="full" />}
-      <div className="mb-10 flex flex-col gap-3">
-        <Title title="กำหนดสิทธิแก้ไขฟอร์ม"></Title>
-      </div>
+      <Title title="กำหนดสิทธิแก้ไขฟอร์ม" />
       <div className="card">
         <form onSubmit={onSearchId} className="flex flex-col gap-5">
-          <label className="w-ful">
+          <label>
             กรอกเลขประจำสถานประกอบการที่ต้องการเปลี่ยนสิทธิ{" "}
             <span className="text-blue-500">
               (กดปุ่ม Enter หรือ Icon แว่นขยายเพื่อทำการค้นหา)
@@ -262,7 +227,7 @@ const AccessControlPage = () => {
           </>
         ) : (
           isSubmitSuccessful &&
-          (response.hasControl && response.reportStatus.length > 0 ? (
+          (response.hasControl && response.reportStatus ? (
             <>
               <hr className="my-5" />
               <div className="flex flex-col gap-3">

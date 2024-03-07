@@ -8,27 +8,29 @@ import { errorHandler } from "@/lib/errorHandler";
 import { ReportStatus } from "@/types/dto/report";
 import { SearchForm, searchIdSchema } from "@/types/schemas/searchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Empty, Tag } from "antd";
+import { Empty, Modal, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 import useClientSession from "@/hooks/use-client-session";
 import { quarterMap } from "@/lib/quarter";
-import { Role } from "@/types/dto/role";
 import Portal from "@/components/Portal";
+import { useRouter } from "next/navigation";
+import { FilterContext } from "@/context";
+import { FaStar } from "react-icons/fa6";
 
 interface Response {
   hasControl: boolean;
-  reportStatus: ReportStatus[];
+  reportStatus: ReportStatus | null;
 }
 
 interface QtrAction {
-  year: number;
+  quarter: number;
   canCreate: boolean;
   isSend: boolean;
 }
@@ -44,28 +46,24 @@ interface SendStatus {
 
 interface DataType {
   key: React.Key;
-  year: number;
-  qtr1Status: SendStatus;
-  qtr2Status: SendStatus;
-  qtr3Status: SendStatus;
-  qtr4Status: SendStatus;
-  qtr1Action: QtrAction;
-  qtr2Action: QtrAction;
-  qtr3Action: QtrAction;
-  qtr4Action: QtrAction;
-  qtr1DateModified: string;
-  qtr2DateModified: string;
-  qtr3DateModified: string;
-  qtr4DateModified: string;
+  quarter: number;
+  status: SendStatus;
+  action: QtrAction;
+  dateCreated: string;
+  dateModified: string;
+  editor: string;
 }
 
 const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<Response>({
     hasControl: false,
-    reportStatus: [],
+    reportStatus: null,
   });
   const [id, setId] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [quarter, setQuarter] = useState<number | null>(null);
+  const { year } = useContext(FilterContext);
   const {
     register,
     handleSubmit,
@@ -73,6 +71,7 @@ const SearchPage = () => {
   } = useForm<SearchForm>({
     resolver: zodResolver(searchIdSchema),
   });
+  const router = useRouter();
 
   const session = useClientSession();
 
@@ -82,7 +81,13 @@ const SearchPage = () => {
       case "ส่งแล้ว":
         color = "success";
         break;
+      case "ตรวจแล้ว":
+        color = "success";
+        break;
       case "ยังไม่ส่ง":
+        color = "error";
+        break;
+      case "ยังไม่ตรวจ":
         color = "error";
         break;
       default:
@@ -137,23 +142,18 @@ const SearchPage = () => {
     }
   };
 
-  const renderActions = (actions: QtrAction, quarter: number) => {
+  const renderActions = (action: QtrAction) => {
     return (
       <div className="flex justify-center">
-        {session && session.user.role === Role.SUPERVISOR}
-        {actions.canCreate ? (
-          actions.isSend ? (
-            <Link
-              href={`/search/${id}?yr=${actions.year}&qtr=${quarter}&mode=edit`}
-            >
+        {action.canCreate ? (
+          action.isSend ? (
+            <Link href={`/search/${id}?qtr=${action.quarter}&mode=edit`}>
               <Button warning>แก้ไข</Button>
             </Link>
           ) : (
-            <Link
-              href={`/search/${id}?yr=${actions.year}&qtr=${quarter}&mode=create`}
-            >
-              <Button secondary>สร้าง</Button>
-            </Link>
+            <Button secondary onClick={() => renderCreate(action.quarter)}>
+              สร้าง
+            </Button>
           )
         ) : (
           ""
@@ -162,232 +162,136 @@ const SearchPage = () => {
     );
   };
 
+  const renderCreate = (quarter: number) => {
+    if (session) {
+      router.push(`/search/${id}?qtr=${quarter}&mode=create`);
+    } else {
+      setQuarter(quarter);
+      setModalOpen(true);
+    }
+  };
+
   const columns: ColumnsType<DataType> = [
     {
-      title: "ปี",
-      dataIndex: "year",
-      key: "year",
-      width: "4%",
+      title: "ไตรมาส",
+      dataIndex: "quarter",
+      key: "quarter",
       fixed: "left",
       align: "center",
+      width: "8%",
     },
     {
-      title: "ไตรมาส",
-      children: [
-        {
-          title: "ไตรมาสที่ 1",
-          children: [
-            {
-              title: "สถานะ",
-              dataIndex: "qtr1Status",
-              key: "qtr1Status",
-              width: "12%",
-              align: "center",
-              render: (_, { qtr1Status }) => renderTags(qtr1Status),
-            },
-            {
-              title: "แบบฟอร์ม",
-              dataIndex: "qtr1Action",
-              key: "qtr1Action",
-              width: "6%",
-              align: "center",
-              render: (_, { qtr1Action }) => renderActions(qtr1Action, 1),
-            },
-            {
-              title: "วันแก้ไขล่าสุด",
-              dataIndex: "qtr1DateModified",
-              key: "qtr1DateModified",
-              width: "6%",
-              align: "center",
-            },
-          ],
-        },
-        {
-          title: "ไตรมาสที่ 2",
-          children: [
-            {
-              title: "สถานะ",
-              dataIndex: "qtr2Status",
-              key: "qtr2Status",
-              width: "12%",
-              align: "center",
-              render: (_, { qtr2Status }) => renderTags(qtr2Status),
-            },
-            {
-              title: "แบบฟอร์ม",
-              dataIndex: "qtr2Action",
-              key: "qtr2Action",
-              width: "6%",
-              align: "center",
-              render: (_, { qtr2Action }) => renderActions(qtr2Action, 2),
-            },
-            {
-              title: "วันแก้ไขล่าสุด",
-              dataIndex: "qtr2DateModified",
-              key: "qtr2DateModified",
-              width: "6%",
-              align: "center",
-            },
-          ],
-        },
-        {
-          title: "ไตรมาสที่ 3",
-          children: [
-            {
-              title: "สถานะ",
-              dataIndex: "qtr3Status",
-              key: "qtr3Status",
-              width: "12%",
-              align: "center",
-              render: (_, { qtr3Status }) => renderTags(qtr3Status),
-            },
-            {
-              title: "แบบฟอร์ม",
-              dataIndex: "qtr3Action",
-              key: "qtr3Action",
-              width: "6%",
-              align: "center",
-              render: (_, { qtr3Action }) => renderActions(qtr3Action, 3),
-            },
-            {
-              title: "วันแก้ไขล่าสุด",
-              dataIndex: "qtr3DateModified",
-              key: "qtr3DateModified",
-              width: "6%",
-              align: "center",
-            },
-          ],
-        },
-        {
-          title: "ไตรมาสที่ 4",
-          children: [
-            {
-              title: "สถานะ",
-              dataIndex: "qtr4Status",
-              key: "qtr4Status",
-              width: "12%",
-              align: "center",
-              render: (_, { qtr4Status }) => renderTags(qtr4Status),
-            },
-            {
-              title: "แบบฟอร์ม",
-              dataIndex: "qtr4Action",
-              key: "qtr4Action",
-              width: "6%",
-              align: "center",
-              render: (_, { qtr4Action }) => renderActions(qtr4Action, 4),
-            },
-            {
-              title: "วันแก้ไขล่าสุด",
-              dataIndex: "qtr4DateModified",
-              key: "qtr4DateModified",
-              width: "6%",
-              align: "center",
-            },
-          ],
-        },
-      ],
+      title: "สถานะ",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      width: "30%",
+      render: (_, { status }) => renderTags(status),
+    },
+    {
+      title: "แบบฟอร์ม",
+      dataIndex: "action",
+      key: "action",
+      align: "center",
+      render: (_, { action }) => renderActions(action),
+    },
+    {
+      title: "วันที่สร้าง",
+      dataIndex: "dateCreated",
+      key: "dateCreated",
+      align: "center",
+      width: "12%",
+    },
+    {
+      title: "วันแก้ไขล่าสุด",
+      dataIndex: "dateModified",
+      key: "dateModified",
+      align: "center",
+      width: "12%",
+    },
+    {
+      title: "ผู้แก้ไขล่าสุด",
+      dataIndex: "editor",
+      key: "editor",
+      align: "center",
+      width: "18%",
     },
   ];
 
   const data: DataType[] = [];
-  if (response.hasControl && response.reportStatus.length > 0) {
-    for (const item of response.reportStatus) {
-      const {
-        no,
-        year,
-        canCreateQtr1,
-        canCreateQtr2,
-        canCreateQtr3,
-        canCreateQtr4,
-        isSendQtr1,
-        isSendQtr2,
-        isSendQtr3,
-        isSendQtr4,
-        report,
-      } = item;
+  if (response.hasControl && response.reportStatus) {
+    const {
+      year,
+      canCreateQtr1,
+      canCreateQtr2,
+      canCreateQtr3,
+      canCreateQtr4,
+      isSendQtr1,
+      isSendQtr2,
+      isSendQtr3,
+      isSendQtr4,
+      report,
+    } = response.reportStatus;
+    const canCreateArr = [
+      canCreateQtr1,
+      canCreateQtr2,
+      canCreateQtr3,
+      canCreateQtr4,
+    ];
+    const isSendArr = [isSendQtr1, isSendQtr2, isSendQtr3, isSendQtr4];
 
-      const quarterStatus: SendStatus[] = [];
-      for (let i = 0; i < 4; i++) {
-        const qtrTag: SendStatus = {
-          passOpenDate: false,
-          company: "ยังไม่ส่ง",
-          p1: "ยังไม่ส่ง",
-          p2: "ยังไม่ส่ง",
-          p3: "ยังไม่ส่ง",
-          p4: "ยังไม่ส่ง",
-        };
-        let isSend;
-        const res = quarterMap(Number("25" + year) - 543);
-        const startDate = moment(res[i].formSubmittedRange[0]);
-        const now = moment();
-
-        if (now >= startDate) {
-          qtrTag.passOpenDate = true;
-        }
-
-        switch (i) {
-          case 0:
-            isSend = isSendQtr1;
-            break;
-          case 1:
-            isSend = isSendQtr2;
-            break;
-          case 2:
-            isSend = isSendQtr3;
-            break;
-          case 3:
-            isSend = isSendQtr4;
-            break;
-        }
-
-        if (isSend) {
-          qtrTag.company = "ส่งแล้ว";
-        }
-
-        if (report) {
-          const reportQtr = report[i] || null;
-          if (reportQtr) {
-            if (reportQtr.P1) {
-              qtrTag.p1 = "ส่งแล้ว";
-            }
-            if (reportQtr.P2) {
-              qtrTag.p2 = "ส่งแล้ว";
-            }
-            if (reportQtr.P3) {
-              qtrTag.p3 = "ส่งแล้ว";
-            }
-            if (reportQtr.P4) {
-              qtrTag.p4 = "ส่งแล้ว";
-            }
+    for (let i = 0; i < 4; i++) {
+      const qtrTag: SendStatus = {
+        passOpenDate: false,
+        company: "ยังไม่ส่ง",
+        p1: "ยังไม่ตรวจ",
+        p2: "ยังไม่ตรวจ",
+        p3: "ยังไม่ตรวจ",
+        p4: "ยังไม่ตรวจ",
+      };
+      const isSend = isSendArr[i];
+      const res = quarterMap(Number("25" + year) - 543);
+      const startDate = moment(res[i].formSubmittedRange[0]);
+      const now = moment();
+      if (now >= startDate) {
+        qtrTag.passOpenDate = true;
+      }
+      if (isSend) {
+        qtrTag.company = "ส่งแล้ว";
+      }
+      if (report) {
+        const reportQtr = report[i] || null;
+        if (reportQtr) {
+          if (reportQtr.P1) {
+            qtrTag.p1 = "ตรวจแล้ว";
           }
-          quarterStatus.push(qtrTag);
+          if (reportQtr.P2) {
+            qtrTag.p2 = "ตรวจแล้ว";
+          }
+          if (reportQtr.P3) {
+            qtrTag.p3 = "ตรวจแล้ว";
+          }
+          if (reportQtr.P4) {
+            qtrTag.p4 = "ตรวจแล้ว";
+          }
         }
       }
-
       data.push({
-        key: no,
-        year,
-        qtr1Status: quarterStatus[0],
-        qtr2Status: quarterStatus[1],
-        qtr3Status: quarterStatus[2],
-        qtr4Status: quarterStatus[3],
-        qtr1Action: { year, canCreate: canCreateQtr1, isSend: isSendQtr1 },
-        qtr2Action: { year, canCreate: canCreateQtr2, isSend: isSendQtr2 },
-        qtr3Action: { year, canCreate: canCreateQtr3, isSend: isSendQtr3 },
-        qtr4Action: { year, canCreate: canCreateQtr4, isSend: isSendQtr4 },
-        qtr1DateModified: item.report[0]
-          ? moment(item.report[0].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+        key: i,
+        quarter: i + 1,
+        status: qtrTag,
+        action: {
+          quarter: i + 1,
+          canCreate: canCreateArr[i],
+          isSend: isSendArr[i],
+        },
+        dateCreated: report[i]
+          ? moment(report[i].createdAt).format("YYYY-MM-DD HH:mm:ss")
           : "-",
-        qtr2DateModified: item.report[1]
-          ? moment(item.report[1].updatedAt).format("YYYY-MM-DD HH:mm:ss")
+        dateModified: report[i]
+          ? moment(report[i].updatedAt).format("YYYY-MM-DD HH:mm:ss")
           : "-",
-        qtr3DateModified: item.report[2]
-          ? moment(item.report[2].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-          : "-",
-        qtr4DateModified: item.report[3]
-          ? moment(item.report[3].updatedAt).format("YYYY-MM-DD HH:mm:ss")
-          : "-",
+        editor: report[i] ? report[i].lastEditor : "-",
       });
     }
   }
@@ -399,11 +303,11 @@ const SearchPage = () => {
       if (session) {
         res = await axios.post(
           "/api/report_status",
-          { data, province: session.user.province },
+          { data, province: session.user.province, year },
           { headers: { authorization: session.user.accessToken } }
         );
       } else {
-        res = await axios.post("/api/report_status", { data });
+        res = await axios.post("/api/report_status", { data, year });
       }
 
       if (res.status === 200) {
@@ -417,14 +321,17 @@ const SearchPage = () => {
     }
   });
 
+  const onAcceptConsent = () => {
+    setModalOpen(false);
+    router.push(`/search/${id}?qtr=${quarter}&mode=create`);
+  };
+
   return (
     <Portal session={session}>
-      <div className="mb-10 flex flex-col gap-3">
-        <Title title="ค้นหาสถานประกอบการ"></Title>
-      </div>
+      <Title title="ค้นหาสถานประกอบการ" />
       <div className="card">
         <form onSubmit={onSearchId} className="flex flex-col gap-5">
-          <label className="w-ful">
+          <label>
             กรุณากรอกเลขประจำสถานประกอบการของท่าน{" "}
             <span className="text-blue-500">
               (กดปุ่ม Enter หรือ Icon แว่นขยายเพื่อทำการค้นหา)
@@ -454,7 +361,7 @@ const SearchPage = () => {
           </>
         ) : (
           isSubmitSuccessful &&
-          (response.hasControl && response.reportStatus.length > 0 ? (
+          (response.hasControl && response.reportStatus ? (
             <>
               <hr className="my-5" />
               <div className="flex flex-col gap-3">
@@ -465,7 +372,7 @@ const SearchPage = () => {
                   dataSource={data}
                   bordered
                   size="middle"
-                  scroll={{ x: "calc(1500px + 50%)" }}
+                  scroll={{ x: "calc(300px + 50%)" }}
                   pagination={false}
                 />
               </div>
@@ -478,6 +385,100 @@ const SearchPage = () => {
           ))
         )}
       </div>
+      <Modal
+        title={<p className="text-center text-xl">ยินยอมให้ข้อมูล</p>}
+        open={modalOpen}
+        closable={false}
+        footer={
+          <div className="flex justify-between items-center">
+            <p>ท่านยินยอมที่จะให้ข้อมูลกับสำนักงานสถิติแห่งชาติหรือไม่</p>
+            <div className="flex gap-5">
+              <Button key="back" danger onClick={() => setModalOpen(false)}>
+                ไม่ยินยอม
+              </Button>
+              <Button
+                key="submit"
+                primary
+                type="primary"
+                onClick={onAcceptConsent}
+              >
+                ยินยอม
+              </Button>
+            </div>
+          </div>
+        }
+        width={1000}
+      >
+        <div className="flex flex-col gap-2">
+          <h1 className="text-lg flex gap-3 items-center">
+            <FaStar className="text-yellow-500" />
+            การรักษาความลับข้อมูลของผู้ตอบแบบสอบถาม
+          </h1>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;สำนักงานสถิติแห่งชาติ
+            ขอยืนยันให้ท่านมั่นใจในการเก็บรักษาความลับของข้อมูลที่ท่านให้มา
+            ซึ่งเป็นข้อมูลส่วนบุคคลหรือข้อมูลรายกิจการ
+            โดยสำนักงานสถิติแห่งชาติจะนำมาประมวลเป็นค่าสถิติต่างๆ เช่น ค่าเฉลี่ย
+            ร้อยละ เพื่อเผยแพร่ในภาพรวมเท่านั้น
+            โดยจะไม่เปิดเผยข้อมูลรายกิจการที่จะทำให้ทราบได้ว่าเป็นสถานประกอบการใดโดยเด็ดขาด
+            ซึ่งท่านผู้ให้ข้อมูลจะได้รับความคุ้มครองตามพระราชบัญญัติสถิติ พ.ศ.
+            2550
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>มาตรา 15</b> บรรดาข้อมูลเฉพาะบุคคล
+            หรือเฉพาะรายที่ได้มาตามพระราชบัญญัตินี้
+            ต้องถือเป็นความลับโดยเคร่งครัด <b>ห้าม</b>
+            มิให้ผู้ซึ่งปฏิบัติหน้าที่ตามพระราชบัญญัตินี้หรือผู้มีหน้าที่เก็บรักษาเปิดเผยข้อมูลนั้นแก่บุคคลใด
+            ซึ่งไม่มีหน้าที่ตามพระราชบัญญัตินี้ เว้นแต่
+            <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)
+              เป็นการเปิดเผยเพื่อประโยชน์แก่การสอบสวนหรือการพิจารณาคดีที่ต้องหาว่ากระทำความผิดตามพระราชบัญญัตินี้
+            </div>
+            <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)
+              เป็นการเปิดเผยต่อหน่วยงาน เพื่อใช้ประโยชน์ในการจัดทำสถิติ
+              วิเคราะห์หรือวิจัย
+              ทั้งนี้เท่าที่ไม่ก่อให้เกิดความเสียหายแก่เจ้าของข้อมูล
+              และต้องไม่ระบุหรือเปิดเผยถึงเจ้าของข้อมูล
+            </div>
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>มาตรา 16</b> ภายใต้บังคับมาตรา 14
+            และมาตรา 15
+            ผู้ซึ่งปฏิบัติหน้าที่ในหน่วยงานหรือสำนักงานสถิติแห่งชาติต้องไม่นำบรรดาข้อมูลเฉพาะบุคคลหรือเฉพาะรายที่เจ้าของข้อมูลได้ให้ไว้หรือกรอกแบบสอบถามไปใช้ในกิจการอื่นนอกเหนือจากการจัดทำสถิติวิเคราะห์หรือวิจัย
+          </div>
+          <h1 className="text-lg flex gap-3 items-center">
+            <FaStar className="text-yellow-500" />
+            การให้ข้อมูล/ตอบแบบสอบถาม
+          </h1>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>มาตรา 18</b> ผู้ใดไม่ให้ข้อมูล
+            หรือไม่กรอกแบบสอบถามตามวิธีการที่กำหนดในประกาศมาตรา 10
+            หรือไม่ส่งคืนแบบสอบถามที่ได้กรอกรายการแล้วแก่พนักงานเจ้าหน้าที่หรือหน่วยงานภายในระยะเวลาที่กำหนดในประกาศตามมาตรา
+            10 (4)
+            หรือไม่ให้ความสะดวกแก่พนักงานเจ้าหน้าที่ในการปฏิบัติหน้าที่ตามมาตรา
+            12 ต้องระวางโทษปรับไม่เกินสามพันบาท
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>มาตรา 19</b>{" "}
+            ผู้ใดซึ่งมีหน้าที่ให้ข้อมูลตามมาตรา 11 แต่จงใจให้ข้อมูลเป็นเท็จ
+            ต้องระวางโทษจำคุกไม่เกินสามเดือน หรือปรับไม่เกินห้าพันบาท
+            หรือทั้งจำทั้งปรับ
+          </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>มาตรา 20</b> ผู้ใดฝ่าฝืนมาตรา 15
+            หรือมาตรา 16 ต้องระวางโทษจำคุกไม่เกินหนึ่งปี
+            หรือปรับไม่เกินสองหมื่นบาท หรือทั้งจำทั้งปรับ
+          </div>
+          <div className="border border-black rounded-md p-5">
+            &nbsp;&nbsp;&nbsp;&nbsp;สำนักงานสถิติแห่งชาติ
+            หวังเป็นอย่างยิ่งว่าจะได้รับความร่วมมือจากผู้ประกอบการทุกท่านในการให้ข้อมูลที่ถูกต้องเพื่อให้ประเทศมีข้อมูลสถิติที่เป็นจริง
+            ในการกำหนดนโยบาย การวางแผน
+            และการส่งเสริมการดำเนินงานทั้งภาครัฐและเอกชน
+            ซึ่งจะส่งผลให้ธุรกิจรุ่งเรือง เศรษฐกิจชาติก้าวไกล
+          </div>
+        </div>
+      </Modal>
     </Portal>
   );
 };

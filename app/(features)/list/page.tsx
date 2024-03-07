@@ -1,7 +1,6 @@
 "use client";
 
 import Badge from "@/components/Badge";
-import Dropdown from "@/components/Dropdown";
 import Loading from "@/components/Loading";
 import MyTooltip from "@/components/MyTooltip";
 import Title from "@/components/Title";
@@ -10,7 +9,6 @@ import { quarterMap } from "@/lib/quarter";
 import useClientSession from "@/hooks/use-client-session";
 import { QuarterArr } from "@/types/dto/common";
 import { ProvinceGroup } from "@/types/dto/report";
-import { yearOptions } from "@/utils/dropdownOption";
 import { Collapse, CollapseProps, Tag } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -18,13 +16,10 @@ import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FilterContext } from "@/context";
-import Link from "next/link";
-import { Role } from "@/types/dto/role";
-import Button from "@/components/Button";
 import Portal from "@/components/Portal";
 
 const ListPage = () => {
-  const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
+  const { year, quarter, setQuarter } = useContext(FilterContext);
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<ProvinceGroup | null>(null);
   const router = useRouter();
@@ -161,22 +156,8 @@ const ListPage = () => {
 
   return (
     <Portal session={session}>
-      <div className="mb-10 flex flex-col gap-3">
-        <Title title="ตรวจสอบรายจังหวัด"></Title>
-      </div>
+      <Title title="สถานะรายจังหวัด" />
       <div className="card flex flex-col gap-5">
-        <div className="flex items-center gap-3 w-full justify-end">
-          <label>ปีที่ค้นหา</label>
-          <Dropdown
-            name="year"
-            placeholder="ปี"
-            options={yearOptions}
-            className="w-36"
-            isControl={false}
-            setterFn={(year: number) => setYear(year)}
-            defaultValue={year}
-          />
-        </div>
         <div className="flex flex-wrap">
           {quarterArr.map((item) => (
             <Badge

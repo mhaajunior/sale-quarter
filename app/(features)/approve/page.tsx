@@ -21,7 +21,6 @@ import moment from "moment";
 import { quarterMap } from "@/lib/quarter";
 import Dropdown from "@/components/Dropdown";
 import { numberWithCommas } from "@/lib/common";
-import { yearOptions } from "@/utils/dropdownOption";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@/types/dto/role";
@@ -42,27 +41,37 @@ interface DataType {
   p2: boolean;
   p3: boolean;
   p4: boolean;
-  action: { data: any; canEdit: boolean };
+  action: { data: any; canEdit: boolean; canAccess: boolean };
 }
 
-interface Response {
-  reportStatus: ReportStatus[];
+interface Count {
   notApproveCount: number;
+  totalNotApproveCount: number;
   totalCount: number;
 }
 
+interface Response extends Count {
+  reportStatus: ReportStatus[];
+}
+
 const ApprovePage = () => {
-  const { year, quarter, setYear, setQuarter } = useContext(FilterContext);
+  const { year, quarter, setQuarter } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const proviceId = Number(searchParams.get("pvid"));
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<DataType[]>([]);
-  const [notApproveCount, setNotApproveCount] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [denied, setDenied] = useState<{ isDenied: boolean; code?: number }>({
+    isDenied: false,
+  });
   const [csvData, setCsvData] = useState([]);
   const [option, setOption] = useState(1);
   const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [count, setCount] = useState<Count>({
+    notApproveCount: 0,
+    totalNotApproveCount: 0,
+    totalCount: 0,
+  });
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue);
   const router = useRouter();
@@ -74,6 +83,14 @@ const ApprovePage = () => {
       if (!proviceId) {
         setNotFound(true);
         return;
+      } else {
+        if (
+          session.user.role === Role.SUPERVISOR &&
+          proviceId !== session.user.province
+        ) {
+          setDenied({ isDenied: true, code: 3 });
+          return;
+        }
       }
       fetchCompanyStatus();
     }
@@ -99,7 +116,7 @@ const ApprovePage = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "ลำดับ",
+      title: "ลำดับ (NO)",
       dataIndex: "key",
       key: "key",
       width: "10%",
@@ -207,15 +224,19 @@ const ApprovePage = () => {
       render: (_, { action }) => (
         <div className="flex justify-center items-center">
           {action.canEdit ? (
-            <Link
-              href={`/search/${action.data.ID}?yr=${
-                action.data.year
-              }&qtr=${quarter}&mode=edit${
-                session?.user.role === Role.SUBJECT ? `&pvid=${proviceId}` : ""
-              }`}
-            >
-              <Button primary>ตรวจสอบ</Button>
-            </Link>
+            action.canAccess ? (
+              <Link
+                href={`/search/${action.data.ID}?qtr=${quarter}&mode=edit${
+                  session?.user.role === Role.SUBJECT
+                    ? `&pvid=${proviceId}`
+                    : ""
+                }`}
+              >
+                <Button primary>ตรวจสอบ</Button>
+              </Link>
+            ) : (
+              <p className="px-5">ไม่อนุญาตให้แก้ไขได้</p>
+            )
           ) : (
             <p className="px-5">เจ้าหน้าที่ทุกคนต้องส่ง/อนุมัติแบบฟอร์มก่อน</p>
           )}
@@ -242,8 +263,11 @@ const ApprovePage = () => {
 
       if (res.status === 200) {
         const result: Response = res.data;
-        setNotApproveCount(result.notApproveCount);
-        setTotalCount(result.totalCount);
+        setCount({
+          notApproveCount: result.notApproveCount,
+          totalNotApproveCount: result.totalNotApproveCount,
+          totalCount: result.totalCount,
+        });
         let data: DataType[] = [];
         if (result.reportStatus.length > 0) {
           result.reportStatus.forEach(function (
@@ -251,37 +275,44 @@ const ApprovePage = () => {
             i: number
           ) {
             const status: DataType = {
-              key: (page - 1) * perPage + i + 1,
+              key: value.no,
               id: value.ID,
               company: false,
               p1: false,
               p2: false,
               p3: false,
               p4: false,
-              action: { data: value, canEdit: false },
+              action: { data: value, canEdit: false, canAccess: false },
             };
+            let canCreate = false;
             let isSend = false;
             let isApprove = false;
             switch (quarter) {
               case 1:
                 isSend = value.isSendQtr1;
                 isApprove = value.isApproveQtr1;
+                canCreate = value.canCreateQtr1;
                 break;
               case 2:
                 isSend = value.isSendQtr2;
                 isApprove = value.isApproveQtr2;
+                canCreate = value.canCreateQtr2;
                 break;
               case 3:
                 isSend = value.isSendQtr3;
                 isApprove = value.isApproveQtr3;
+                canCreate = value.canCreateQtr3;
                 break;
               case 4:
                 isSend = value.isSendQtr4;
                 isApprove = value.isApproveQtr4;
+                canCreate = value.canCreateQtr4;
                 break;
               default:
                 break;
             }
+
+            status.action.canAccess = canCreate;
 
             if (isSend && value.report[0]) {
               status.company = true;
@@ -341,39 +372,30 @@ const ApprovePage = () => {
   ];
 
   return (
-    <Portal session={session} notFound={notFound}>
-      <div className="mb-10 flex flex-col gap-3">
-        <Title
-          title={`อนุมัติสถานประกอบการจังหวัด${
-            mapProvinceName[proviceId as keyof typeof mapProvinceName]
-          }`}
-        >
-          {session?.user.role === Role.SUBJECT && (
+    <Portal session={session} notFound={notFound} denied={denied}>
+      <Title
+        title={
+          <div className="flex flex-col gap-3">
+            <div>
+              {proviceId !== 10 ? "จังหวัด" : ""}
+              {mapProvinceName[proviceId as keyof typeof mapProvinceName]}
+            </div>
+            <div>อนุมัติสถานประกอบการ</div>
+          </div>
+        }
+        addon={
+          session?.user.role === Role.SUBJECT && (
             <Button secondary onClick={() => router.push("/list")}>
               <IoChevronBack className="mr-1" />
               กลับ
             </Button>
-          )}
-        </Title>
-      </div>
+          )
+        }
+      />
       <div className="card flex flex-col gap-5">
-        <div className="lg:flex justify-between items-center w-full gap-3">
-          <h1 className="mb-5 lg:mb-0">
-            ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการ
-          </h1>
-          <div className="flex items-center gap-3 justify-between lg:justify-normal">
-            <label>ปีที่ค้นหา</label>
-            <Dropdown
-              name="year"
-              placeholder="ปี"
-              options={yearOptions}
-              className="w-36"
-              isControl={false}
-              setterFn={(year: number) => setYear(year)}
-              defaultValue={year}
-            />
-          </div>
-        </div>
+        <h1 className="mb-5 lg:mb-0">
+          ตารางแสดงสถานะการส่ง/อนุมัติแบบฟอร์มของแต่ละสถานประกอบการ
+        </h1>
         <div className="lg:flex justify-between items-center w-full gap-3">
           <div className="flex items-center gap-3 mb-5 lg:mb-0 justify-between lg:justify-normal">
             <label>ค้นหาสถานประกอบการ</label>
@@ -401,11 +423,12 @@ const ApprovePage = () => {
         </div>
         <div className="flex flex-wrap gap-3 md:gap-10">
           <p className="text-blue-500 mb-3 md:mb-0">
-            จำนวนสถานประกอบการที่พบทั้งหมด: {numberWithCommas(totalCount) || 0}
+            จำนวนสถานประกอบการที่พบทั้งหมด:{" "}
+            {numberWithCommas(count.totalCount) || 0}
           </p>
           <p className="text-red-500 mb-3 md:mb-0">
             จำนวนสถานประกอบการที่ผู้ตรวจยังไม่อนุมัติ:{" "}
-            {numberWithCommas(notApproveCount) || 0}
+            {numberWithCommas(count.notApproveCount) || 0}
           </p>
         </div>
 
@@ -414,7 +437,7 @@ const ApprovePage = () => {
             {session?.user.role === Role.SUBJECT && (
               <div className="w-full flex items-center gap-5">
                 <p>ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมด:</p>
-                {notApproveCount === 0 ? (
+                {count.totalNotApproveCount === 0 ? (
                   <CSVLink
                     data={csvData}
                     filename={`retail${year}-${quarter}-${proviceId}.csv`}
@@ -434,8 +457,8 @@ const ApprovePage = () => {
             {(session?.user.role === Role.SUPERVISOR ||
               session?.user.role === Role.SUBJECT) && (
               <div className="w-full flex items-center gap-5">
-                <p>ดูตาราง Specification:</p>
-                {notApproveCount === 0 ? (
+                <p>ดูตารางสถิติ:</p>
+                {count.totalNotApproveCount === 0 ? (
                   <Link
                     href={`/specification${
                       Role.SUBJECT ? `?pvid=${proviceId}` : ""
@@ -482,10 +505,10 @@ const ApprovePage = () => {
                   showSorterTooltip={false}
                   pagination={false}
                 />
-                {totalCount > 0 && (
+                {count.totalCount > 0 && (
                   <PageControl
                     page={page}
-                    totalPages={Math.ceil(totalCount / perPage)}
+                    totalPages={Math.ceil(count.totalCount / perPage)}
                     onChangePage={(page) => setPage(page)}
                   />
                 )}

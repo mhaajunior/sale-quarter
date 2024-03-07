@@ -1,6 +1,7 @@
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { decrypt } from "../../middleware";
 
 // get related data from previous quarter to be new control for current quarter
 export const GET = async (
@@ -17,7 +18,16 @@ export const GET = async (
       where: { es_id: parseInt(companyId) },
     });
     if (control) {
-      obj = { ...control, es_id: control.es_id.toString() };
+      const { firstname, lastname, regis_cid, regis_no, es_id } = control;
+
+      obj = {
+        ...control,
+        es_id: es_id.toString(),
+        firstname: decrypt(firstname),
+        lastname: decrypt(lastname),
+        regis_cid: decrypt(regis_cid),
+        regis_no: decrypt(regis_no),
+      };
     } else {
       return NextResponse.json("ไม่พบเลขประจำสถานประกอบการนี้", {
         status: 404,
@@ -90,6 +100,12 @@ export const GET = async (
         for (const [key, value] of Object.entries(report)) {
           if (!value) {
             delete report[key as keyof typeof report];
+          } else {
+            if (["FIRSTNAME", "LASTNAME", "LG1"].includes(key)) {
+              report[key as "FIRSTNAME" | "LASTNAME" | "LG1"] = decrypt(
+                value as string
+              );
+            }
           }
         }
         obj = report;

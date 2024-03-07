@@ -2,26 +2,26 @@ import { ReportControl } from "./control";
 
 export interface CompanyData {
   ID: string;
-  TITLE: string;
-  RANK: string;
-  FIRSTNAME: string;
-  LASTNAME: string;
-  EST_TITLE: string;
-  EST_NAME: string;
-  ADD_NO: string;
-  BUILDING: string;
-  ROOM: string;
-  STREET: string;
-  BLK: string;
-  SOI: string;
-  SUB_DIST: string;
-  DISTRICT: string;
-  PROVINCE: string;
-  POST_CODE: string;
-  TEL_NO: string;
-  E_MAIL: string;
-  WEBSITE: string;
-  SOCIAL: string;
+  TITLE?: string;
+  RANK?: string;
+  FIRSTNAME?: string;
+  LASTNAME?: string;
+  EST_TITLE?: string;
+  EST_NAME?: string;
+  ADD_NO?: string;
+  BUILDING?: string;
+  ROOM?: string;
+  STREET?: string;
+  BLK?: string;
+  SOI?: string;
+  SUB_DIST?: string;
+  DISTRICT?: string;
+  PROVINCE?: string;
+  POST_CODE?: string;
+  TEL_NO?: string;
+  E_MAIL?: string;
+  WEBSITE?: string;
+  SOCIAL?: string;
   ANSWER: number;
   TSIC_CHG?: number;
 }
@@ -106,7 +106,9 @@ export interface ReportStatus {
   province: number;
   province_name: string;
   report: {
+    createdAt: string;
     updatedAt: string;
+    lastEditor: string;
     P1: string;
     P2: string;
     P3: string;

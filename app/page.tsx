@@ -29,12 +29,14 @@ const HomePage = () => {
   return (
     <>
       <div className="main-bg h-svh">
-        <div className="mx-auto mt-40 lg:px-[30px] xl:w-4/5 2xl:w-3/4 xl:px-0 max-w-[1800px]">
-          <div className="flex lg:flex-row flex-col-reverse justify-between items-center gap-16 lg:gap-10 relative">
+        <div className="mx-auto mt-40 px-[30px] max-w-[1800px]">
+          <div className="flex lg:flex-row flex-col-reverse justify-between items-center gap-16 lg:gap-10 relative max-w-[1500px] mx-auto">
             <Image className="mb-10 lg:mb-0" src={idea} alt="idea" priority />
-            <h1 className="font-black xl:text-[75px] md:text-[55px] text-[40px] text-center lg:text-left md:w-3/4 text-black">
-              โครงการสำรวจยอดขายรายไตรมาส
-            </h1>
+            <div>
+              <h1 className="font-black m-auto xl:text-[75px] md:text-[55px] text-[30px] text-center lg:text-left text-black">
+                โครงการสำรวจยอดขายรายไตรมาส
+              </h1>
+            </div>
             <div className="absolute top-[9rem] md:top-[16rem] lg:top-[1.2rem] lg:left-[4rem]">
               <Button primary onClick={() => executeScroll(objectiveRef)}>
                 <h1 className="lg:text-xl">วัตถุประสงค์</h1>

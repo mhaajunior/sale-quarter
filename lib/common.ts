@@ -26,6 +26,13 @@ export const isNull = (x: any) => {
   return x;
 };
 
+export const changeToNull = (x: any) => {
+  if (x === "-") {
+    return null;
+  }
+  return x;
+};
+
 export const between = (x: number, min: number, max: number) => {
   return x >= min && x <= max;
 };

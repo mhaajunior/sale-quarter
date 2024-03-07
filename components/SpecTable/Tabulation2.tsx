@@ -1,7 +1,7 @@
 "use client";
 
 import useClientSession from "@/hooks/use-client-session";
-import { numberWithCommas, shouldAddStar } from "@/lib/common";
+import { isNull, numberWithCommas, shouldAddStar } from "@/lib/common";
 import { errorHandler } from "@/lib/errorHandler";
 import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -71,7 +71,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
           report_res.push({
             key: item.NO,
             NO: item.NO,
-            EST_NAME: item.EST_NAME,
+            EST_NAME: isNull(item.EST_NAME),
             TSIC_R: item.TSIC_R,
             SIZE_R: item.SIZE_R,
             TR_QTR1: item.TR_chg[0]
@@ -101,7 +101,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
           });
           excel.push([
             item.NO,
-            item.EST_NAME,
+            isNull(item.EST_NAME),
             item.TSIC_R,
             item.SIZE_R,
             item.TR_chg[0]

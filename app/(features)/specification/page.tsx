@@ -96,22 +96,23 @@ const SpecificationPage = () => {
 
   return (
     <Portal session={session} denied={denied} notFound={notFound}>
-      <div className="mb-10 flex flex-col gap-3">
-        <Title
-          title={`Specification Table ${
-            session?.user.role === Role.SUBJECT
-              ? `จังหวัด${
-                  mapProvinceName[proviceId as keyof typeof mapProvinceName]
-                }`
-              : ""
-          }`}
-        >
+      <Title
+        title={
+          <div className="flex flex-col gap-3">
+            <div>
+              {proviceId !== 10 ? "จังหวัด" : ""}
+              {mapProvinceName[proviceId as keyof typeof mapProvinceName]}
+            </div>
+            <div>ตารางสถิติ</div>
+          </div>
+        }
+        addon={
           <Button secondary onClick={onClickBack}>
             <IoChevronBack className="mr-1" />
             กลับ
           </Button>
-        </Title>
-      </div>
+        }
+      />
       <div className="card flex flex-col gap-5">
         <div className="flex flex-wrap gap-5 justify-between">
           {loading ? (

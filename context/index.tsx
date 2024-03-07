@@ -1,6 +1,6 @@
 "use client";
 
-import { calcQuarter, getThaiYear, quarterMap } from "@/lib/quarter";
+import { checkDateBetween, getThaiYear } from "@/lib/quarter";
 import moment from "moment";
 import {
   Dispatch,
@@ -26,14 +26,28 @@ export const FilterContext = createContext<FilterContent>({
 
 export default function FilterProvider({ children }: PropsWithChildren) {
   const fullYear = new Date().getFullYear();
-  const currentYear = getThaiYear(fullYear).yearSlice;
-  const res = quarterMap(fullYear);
-  const startDate = moment(res[calcQuarter() - 1].startDate);
-  const now = moment();
+  const startDate = `${fullYear}-01-01`;
+  const lastDate = `${fullYear}-03-31`;
+  let currentYear = getThaiYear(fullYear).yearSlice;
+  const currentDate = moment().format("YYYY-MM-DD");
+  // pending edit
+  // if (checkDateBetween(currentDate, startDate, lastDate)) {
+  //   currentYear--;
+  // }
 
-  let qtr = 1;
-  if (now >= startDate) {
-    qtr = calcQuarter();
+  let qtr;
+  if (checkDateBetween(currentDate, `${fullYear}-02-01`, `${fullYear}-04-30`)) {
+    qtr = 1;
+  } else if (
+    checkDateBetween(currentDate, `${fullYear}-05-01`, `${fullYear}-07-31`)
+  ) {
+    qtr = 2;
+  } else if (
+    checkDateBetween(currentDate, `${fullYear}-08-01`, `${fullYear}-10-31`)
+  ) {
+    qtr = 3;
+  } else {
+    qtr = 4;
   }
 
   const [year, setYear] = useState(currentYear);

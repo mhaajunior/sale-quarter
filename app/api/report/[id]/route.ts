@@ -1,6 +1,7 @@
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { decrypt } from "../../middleware";
 
 // get all report data when user want to edit report
 export const GET = async (
@@ -24,6 +25,12 @@ export const GET = async (
     for (const [key, value] of Object.entries(report)) {
       if (value !== 0 && !value) {
         delete report[key as keyof typeof report];
+      } else {
+        if (["FIRSTNAME", "LASTNAME", "LG1"].includes(key)) {
+          report[key as "FIRSTNAME" | "LASTNAME" | "LG1"] = decrypt(
+            value as string
+          );
+        }
       }
     }
     return NextResponse.json(report);

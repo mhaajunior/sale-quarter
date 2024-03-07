@@ -38,18 +38,25 @@ export const POST = async (req: NextRequest) => {
 
     if (control) {
       hasControl = true;
-      let whereObj: any = { ID };
+      let whereObj: any = { yearID: { ID, year: body.year } };
 
       if (body.province && role !== Role.SUBJECT) {
         whereObj.province = body.province;
       }
 
-      reportStatus = await prisma.reportStatus.findMany({
+      reportStatus = await prisma.reportStatus.findUnique({
         where: whereObj,
-        orderBy: [{ year: "desc" }],
         include: {
           report: {
-            select: { updatedAt: true, P1: true, P2: true, P3: true, P4: true },
+            select: {
+              lastEditor: true,
+              createdAt: true,
+              updatedAt: true,
+              P1: true,
+              P2: true,
+              P3: true,
+              P4: true,
+            },
             orderBy: { QTR: "asc" },
           },
         },
@@ -90,6 +97,7 @@ export const GET = async (req: NextRequest) => {
   try {
     let whereObj: any = { province, year };
     let whereObj2: any = { province, year };
+    let whereObj3: any = { province, year };
     if (searchId) {
       whereObj.ID = { startsWith: searchId };
       whereObj2.ID = { startsWith: searchId };
@@ -102,19 +110,27 @@ export const GET = async (req: NextRequest) => {
     switch (quarter) {
       case 1:
         whereObj.isApproveQtr1 = false;
+        whereObj3.isApproveQtr1 = false;
         break;
       case 2:
         whereObj.isApproveQtr2 = false;
+        whereObj3.isApproveQtr1 = false;
         break;
       case 3:
         whereObj.isApproveQtr3 = false;
+        whereObj3.isApproveQtr1 = false;
         break;
       case 4:
         whereObj.isApproveQtr4 = false;
+        whereObj3.isApproveQtr1 = false;
         break;
       default:
         break;
     }
+
+    const totalNotApproveCount = await prisma.reportStatus.count({
+      where: whereObj3,
+    });
 
     const notApproveCount = await prisma.reportStatus.count({
       where: whereObj,
@@ -126,7 +142,7 @@ export const GET = async (req: NextRequest) => {
 
     const reportStatus = await prisma.reportStatus.findMany({
       where: whereObj2,
-      orderBy: [{ ID: "asc" }],
+      orderBy: [{ no: "asc" }],
       include: {
         report: {
           where: { QTR: quarter },
@@ -139,6 +155,7 @@ export const GET = async (req: NextRequest) => {
 
     return NextResponse.json({
       reportStatus: reportStatus,
+      totalNotApproveCount,
       notApproveCount,
       totalCount,
     });

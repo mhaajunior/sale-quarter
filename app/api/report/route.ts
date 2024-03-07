@@ -5,7 +5,14 @@ import { createReportSchema } from "@/types/schemas/validationSchema";
 import { Prisma } from "@prisma/client";
 import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
-import { getUserRole, validateUserRole } from "../middleware";
+import {
+  decrypt,
+  encrypt,
+  getUserName,
+  getUserRole,
+  validateUserRole,
+} from "../middleware";
+import { changeToNull } from "@/lib/common";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -13,6 +20,7 @@ export const POST = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const mode = req.headers.get("mode");
   let role = null;
+  let lastEditor = "";
 
   const validation = createReportSchema.safeParse(body);
   if (!validation.success) {
@@ -28,6 +36,16 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
     role = getUserRole(accessToken);
+    const name = getUserName(accessToken);
+    if (role === Role.INTERVIEWER) {
+      lastEditor = `${name} (เจ้าหน้าที่บันทึกข้อมูล)`;
+    } else if (role === Role.SUPERVISOR) {
+      lastEditor = `${name} (ผู้ตรวจ)`;
+    } else if (role === Role.SUBJECT) {
+      lastEditor = `${name} (ส่วนกลาง)`;
+    }
+  } else {
+    lastEditor = "สถานประกอบการ";
   }
 
   const {
@@ -181,30 +199,30 @@ export const POST = async (req: NextRequest) => {
         TSIC_R,
         SIZE_R,
         ENU,
-        TITLE,
-        RANK,
-        FIRSTNAME,
-        LASTNAME,
-        EST_TITLE,
-        EST_NAME,
-        ADD_NO,
-        BUILDING,
-        ROOM,
-        STREET,
-        BLK,
-        SOI,
-        SUB_DIST,
-        DISTRICT,
-        PROVINCE,
-        POST_CODE,
-        TEL_NO,
-        E_MAIL,
-        WEBSITE,
-        SOCIAL,
+        TITLE: changeToNull(TITLE),
+        RANK: changeToNull(RANK),
+        FIRSTNAME: encrypt(changeToNull(FIRSTNAME)),
+        LASTNAME: encrypt(changeToNull(LASTNAME)),
+        EST_TITLE: changeToNull(EST_TITLE),
+        EST_NAME: changeToNull(EST_NAME),
+        ADD_NO: changeToNull(ADD_NO),
+        BUILDING: changeToNull(BUILDING),
+        ROOM: changeToNull(ROOM),
+        STREET: changeToNull(STREET),
+        BLK: changeToNull(BLK),
+        SOI: changeToNull(SOI),
+        SUB_DIST: changeToNull(SUB_DIST),
+        DISTRICT: changeToNull(DISTRICT),
+        PROVINCE: changeToNull(PROVINCE),
+        POST_CODE: changeToNull(POST_CODE),
+        TEL_NO: changeToNull(TEL_NO),
+        E_MAIL: changeToNull(E_MAIL),
+        WEBSITE: changeToNull(WEBSITE),
+        SOCIAL: changeToNull(SOCIAL),
         ANSWER,
         TSIC_CHG: TSIC_CHG || null,
         LG: LG || null,
-        LG1: LG1 || null,
+        LG1: encrypt(changeToNull(LG1)),
         LG1_temp,
         LG2: LG2 || null,
         LG3: LG3 || null,
@@ -267,6 +285,7 @@ export const POST = async (req: NextRequest) => {
         P2,
         P3,
         P4: p4,
+        lastEditor,
       },
       create: {
         ID,
@@ -285,30 +304,30 @@ export const POST = async (req: NextRequest) => {
         QTR,
         YR,
         ENU,
-        TITLE,
-        RANK,
-        FIRSTNAME,
-        LASTNAME,
-        EST_TITLE,
-        EST_NAME,
-        ADD_NO,
-        BUILDING,
-        ROOM,
-        STREET,
-        BLK,
-        SOI,
-        SUB_DIST,
-        DISTRICT,
-        PROVINCE,
-        POST_CODE,
-        TEL_NO,
-        E_MAIL,
-        WEBSITE,
-        SOCIAL,
+        TITLE: changeToNull(TITLE),
+        RANK: changeToNull(RANK),
+        FIRSTNAME: encrypt(changeToNull(FIRSTNAME)),
+        LASTNAME: encrypt(changeToNull(LASTNAME)),
+        EST_TITLE: changeToNull(EST_TITLE),
+        EST_NAME: changeToNull(EST_NAME),
+        ADD_NO: changeToNull(ADD_NO),
+        BUILDING: changeToNull(BUILDING),
+        ROOM: changeToNull(ROOM),
+        STREET: changeToNull(STREET),
+        BLK: changeToNull(BLK),
+        SOI: changeToNull(SOI),
+        SUB_DIST: changeToNull(SUB_DIST),
+        DISTRICT: changeToNull(DISTRICT),
+        PROVINCE: changeToNull(PROVINCE),
+        POST_CODE: changeToNull(POST_CODE),
+        TEL_NO: changeToNull(TEL_NO),
+        E_MAIL: changeToNull(E_MAIL),
+        WEBSITE: changeToNull(WEBSITE),
+        SOCIAL: changeToNull(SOCIAL),
         ANSWER,
         TSIC_CHG,
         LG,
-        LG1,
+        LG1: encrypt(changeToNull(LG1)),
         LG1_temp,
         LG2,
         LG3,
@@ -371,6 +390,7 @@ export const POST = async (req: NextRequest) => {
         P2,
         P3,
         P4,
+        lastEditor,
       },
     });
 
@@ -390,7 +410,7 @@ export const POST = async (req: NextRequest) => {
           updateObj = { isSendQtr4: true };
           break;
         default:
-          return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });
+          return NextResponse.json("ไตรมาสไม่ถูกต้อง", { status: 400 });
       }
 
       await prisma.reportStatus.update({
@@ -435,7 +455,7 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-// get all data in province for subject
+// get all data in province to download for subject
 export const GET = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
@@ -562,6 +582,12 @@ export const GET = async (req: NextRequest) => {
         P4: true,
       },
     });
+
+    for (const item of report) {
+      item.FIRSTNAME = decrypt(item.FIRSTNAME);
+      item.LASTNAME = decrypt(item.LASTNAME);
+      item.LG1 = decrypt(item.LG1);
+    }
 
     return NextResponse.json(report);
   } catch (e) {

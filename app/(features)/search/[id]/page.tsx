@@ -8,6 +8,7 @@ import Title from "@/components/Title";
 import {
   between,
   currencyToNumber,
+  isNull,
   numberWithCommas,
   removeNonNumeric,
 } from "@/lib/common";
@@ -25,7 +26,7 @@ import {
 } from "@/utils/dropdownOption";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, Col, FloatButton, Modal, Radio, Row, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import _ from "lodash";
@@ -41,6 +42,7 @@ import { CompanyReport } from "@/types/dto/report";
 import useClientSession from "@/hooks/use-client-session";
 import { Role } from "@/types/dto/role";
 import Portal from "@/components/Portal";
+import { FilterContext } from "@/context";
 
 const FormPage = () => {
   const [loading, setLoading] = useState(false);
@@ -61,12 +63,12 @@ const FormPage = () => {
   const params = useParams();
   const router = useRouter();
   const session = useClientSession();
+  const { year } = useContext(FilterContext);
   const searchParams = useSearchParams();
-  const yr = Number(searchParams.get("yr"));
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
   const provinceId = Number(searchParams.get("pvid")) || session?.user.province;
-  const quarterData = quarterMap(Number("25" + yr.toString()) - 543)[qtr - 1];
+  const quarterData = quarterMap(Number("25" + year.toString()) - 543)[qtr - 1];
 
   const {
     register,
@@ -86,7 +88,7 @@ const FormPage = () => {
       TR_temp: "",
       LG1_temp: "1",
       QTR: qtr,
-      YR: yr,
+      YR: year,
       ENU: "01",
       M1: quarterData?.rangeVal[0],
       M2: quarterData?.rangeVal[1],
@@ -110,8 +112,7 @@ const FormPage = () => {
       !qtr ||
       !between(qtr, 1, 4) ||
       !mode ||
-      !["create", "edit"].includes(mode) ||
-      !yr
+      !["create", "edit"].includes(mode)
     ) {
       setNotFound(true);
       return;
@@ -203,7 +204,7 @@ const FormPage = () => {
       const res = await axios.get(`/api/report_status/${params.id}`, {
         params: {
           quarter: qtr,
-          year: yr,
+          year,
         },
       });
 
@@ -322,7 +323,7 @@ const FormPage = () => {
       setLoading(true);
       if (await getAccessStatus()) {
         const res = await axios.get(`/api/control/${params.id}`, {
-          params: { quarter: qtr, year: yr },
+          params: { quarter: qtr, year },
         });
 
         if (res.status === 200) {
@@ -382,33 +383,33 @@ const FormPage = () => {
             setValue("SIZE_L", SIZE_L);
             setValue("NO", NO);
             setValue("ENU", ENU);
-            setValue("TITLE", TITLE);
-            setValue("RANK", RANK);
-            setValue("FIRSTNAME", FIRSTNAME);
-            setValue("LASTNAME", LASTNAME);
-            setValue("EST_TITLE", EST_TITLE);
-            setValue("EST_NAME", EST_NAME);
-            setValue("ADD_NO", ADD_NO);
-            setValue("BUILDING", BUILDING);
-            setValue("ROOM", ROOM);
-            setValue("STREET", STREET);
-            setValue("BLK", BLK);
-            setValue("SOI", SOI);
-            setValue("SUB_DIST", SUB_DIST);
-            setValue("DISTRICT", DISTRICT);
-            setValue("PROVINCE", PROVINCE);
-            setValue("POST_CODE", POST_CODE);
-            setValue("TEL_NO", TEL_NO);
-            setValue("E_MAIL", E_MAIL);
-            setValue("WEBSITE", WEBSITE);
-            setValue("SOCIAL", SOCIAL);
+            setValue("TITLE", isNull(TITLE));
+            setValue("RANK", isNull(RANK));
+            setValue("FIRSTNAME", isNull(FIRSTNAME));
+            setValue("LASTNAME", isNull(LASTNAME));
+            setValue("EST_TITLE", isNull(EST_TITLE));
+            setValue("EST_NAME", isNull(EST_NAME));
+            setValue("ADD_NO", isNull(ADD_NO));
+            setValue("BUILDING", isNull(BUILDING));
+            setValue("ROOM", isNull(ROOM));
+            setValue("STREET", isNull(STREET));
+            setValue("BLK", isNull(BLK));
+            setValue("SOI", isNull(SOI));
+            setValue("SUB_DIST", isNull(SUB_DIST));
+            setValue("DISTRICT", isNull(DISTRICT));
+            setValue("PROVINCE", isNull(PROVINCE));
+            setValue("POST_CODE", isNull(POST_CODE));
+            setValue("TEL_NO", isNull(TEL_NO));
+            setValue("E_MAIL", isNull(E_MAIL));
+            setValue("WEBSITE", isNull(WEBSITE));
+            setValue("SOCIAL", isNull(SOCIAL));
             setValue("TSIC_CHG", TSIC_CHG);
             if (LG) {
               setValue("LG", LG);
               switch (LG) {
                 case 1:
                   setValue("LG1_temp", LG1_temp);
-                  setValue("LG1", LG1);
+                  setValue("LG1", isNull(LG1));
                   break;
                 case 2:
                   setValue("LG2", LG2);
@@ -448,7 +449,7 @@ const FormPage = () => {
       setLoading(true);
       if (await getAccessStatus()) {
         const res = await axios.get(`/api/report/${params.id}`, {
-          params: { quarter: qtr, year: yr },
+          params: { quarter: qtr, year },
         });
 
         if (res.status === 200) {
@@ -564,26 +565,26 @@ const FormPage = () => {
             setValue("SIZE_L", SIZE_L);
             setValue("NO", NO);
             setValue("ENU", ENU);
-            setValue("TITLE", TITLE);
-            setValue("RANK", RANK);
-            setValue("FIRSTNAME", FIRSTNAME);
-            setValue("LASTNAME", LASTNAME);
-            setValue("EST_TITLE", EST_TITLE);
-            setValue("EST_NAME", EST_NAME);
-            setValue("ADD_NO", ADD_NO);
-            setValue("BUILDING", BUILDING);
-            setValue("ROOM", ROOM);
-            setValue("STREET", STREET);
-            setValue("BLK", BLK);
-            setValue("SOI", SOI);
-            setValue("SUB_DIST", SUB_DIST);
-            setValue("DISTRICT", DISTRICT);
-            setValue("PROVINCE", PROVINCE);
-            setValue("POST_CODE", POST_CODE);
-            setValue("TEL_NO", TEL_NO);
-            setValue("E_MAIL", E_MAIL);
-            setValue("WEBSITE", WEBSITE);
-            setValue("SOCIAL", SOCIAL);
+            setValue("TITLE", isNull(TITLE));
+            setValue("RANK", isNull(RANK));
+            setValue("FIRSTNAME", isNull(FIRSTNAME));
+            setValue("LASTNAME", isNull(LASTNAME));
+            setValue("EST_TITLE", isNull(EST_TITLE));
+            setValue("EST_NAME", isNull(EST_NAME));
+            setValue("ADD_NO", isNull(ADD_NO));
+            setValue("BUILDING", isNull(BUILDING));
+            setValue("ROOM", isNull(ROOM));
+            setValue("STREET", isNull(STREET));
+            setValue("BLK", isNull(BLK));
+            setValue("SOI", isNull(SOI));
+            setValue("SUB_DIST", isNull(SUB_DIST));
+            setValue("DISTRICT", isNull(DISTRICT));
+            setValue("PROVINCE", isNull(PROVINCE));
+            setValue("POST_CODE", isNull(POST_CODE));
+            setValue("TEL_NO", isNull(TEL_NO));
+            setValue("E_MAIL", isNull(E_MAIL));
+            setValue("WEBSITE", isNull(WEBSITE));
+            setValue("SOCIAL", isNull(SOCIAL));
             setValue("ANSWER", ANSWER);
             setValue("TSIC_CHG", TSIC_CHG);
             setValue("TYPE", TYPE);
@@ -646,7 +647,7 @@ const FormPage = () => {
               switch (LG) {
                 case 1:
                   setValue("LG1_temp", LG1_temp);
-                  setValue("LG1", LG1);
+                  setValue("LG1", isNull(LG1));
                   break;
                 case 2:
                   setValue("LG2", LG2);
@@ -763,18 +764,21 @@ const FormPage = () => {
   return (
     <Portal session={session} notFound={notFound} denied={denied}>
       {loading && <Loading type="full" />}
-      <div className="mb-10 flex flex-col gap-2">
-        <Title title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. 25${yr}`}>
+      <Title
+        title={`แบบฟอร์มสำรวจยอดขายรายไตรมาส พ.ศ. 25${year}`}
+        addon={
           <Button secondary onClick={onClickBack}>
             <IoChevronBack className="mr-1" />
             กลับ
           </Button>
-        </Title>
+        }
+      >
         <div className="text-xl">
           ไตรมาส {qtr} ({quarterData?.monthRange[0]} -{" "}
-          {quarterData?.monthRange[2]} {yr})
+          {quarterData?.monthRange[2]} {year})
         </div>
-      </div>
+      </Title>
+
       <div className="card">
         <h1 className="mb-3">เลขประจำสถานประกอบการ: {params.id}</h1>
         <p className="mb-3 text-blue-500">
@@ -881,19 +885,6 @@ const FormPage = () => {
                   />
                 </div>
                 <div className="flex items-center gap-5">
-                  <label className="w-10">TSIC_R</label>
-                  <Input
-                    name="TSIC_R"
-                    type="number"
-                    placeholder="TSIC_R"
-                    register={register}
-                    className="w-20"
-                    errors={errors.TSIC_R}
-                    isNumber
-                    right
-                  />
-                </div>
-                <div className="flex items-center gap-5">
                   <label className="w-10">TSIC_L</label>
                   <Input
                     name="TSIC_L"
@@ -908,13 +899,15 @@ const FormPage = () => {
                   />
                 </div>
                 <div className="flex items-center gap-5">
-                  <label className="w-10">SIZE_R</label>
+                  <label className="w-10">TSIC_R</label>
                   <Input
-                    name="SIZE_R"
-                    placeholder="SIZE_R"
+                    name="TSIC_R"
+                    type="number"
+                    placeholder="TSIC_R"
                     register={register}
                     className="w-20"
-                    errors={errors.SIZE_R}
+                    errors={errors.TSIC_R}
+                    isNumber
                     right
                   />
                 </div>
@@ -927,6 +920,17 @@ const FormPage = () => {
                     className="w-20"
                     errors={errors.SIZE_L}
                     disabled
+                    right
+                  />
+                </div>
+                <div className="flex items-center gap-5">
+                  <label className="w-10">SIZE_R</label>
+                  <Input
+                    name="SIZE_R"
+                    placeholder="SIZE_R"
+                    register={register}
+                    className="w-20"
+                    errors={errors.SIZE_R}
                     right
                   />
                 </div>
@@ -1301,6 +1305,12 @@ const FormPage = () => {
                                   errors={errors.LG1}
                                   showName={!!session}
                                 />
+                                {lg1_temp === "1" && (
+                                  <p className="text-blue-500">
+                                    หากไม่ต้องการกรอกให้กรอกเป็นเครื่องหมายขีด (
+                                    - ) แทน
+                                  </p>
+                                )}
                               </div>
                             )}
                           </Radio>

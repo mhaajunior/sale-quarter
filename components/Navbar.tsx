@@ -65,7 +65,7 @@ const Navbar = () => {
       role: [Role.SUPERVISOR],
     },
     {
-      title: "ตรวจสอบรายจังหวัด",
+      title: "สถานะรายจังหวัด",
       path: "/list",
       link: "/list",
       role: [Role.SUBJECT],

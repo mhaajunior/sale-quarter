@@ -121,8 +121,8 @@ const UploadControl = () => {
   return (
     <Portal session={session}>
       {fullLoading && <Loading type="full" />}
+      <Title title="อัพโหลด Control" />
       <div className="flex flex-col gap-10">
-        <Title title="อัพโหลด Control" />
         <Dragger {...props}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined />

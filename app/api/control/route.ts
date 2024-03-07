@@ -2,7 +2,7 @@ import { verifyJwt } from "@/lib/jwt";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { validateUserRole } from "../middleware";
+import { encrypt, validateUserRole } from "../middleware";
 import { Role } from "@/types/dto/role";
 import { controlAttr } from "@/utils/control";
 import { getThaiYear } from "@/lib/quarter";
@@ -38,6 +38,16 @@ export const POST = async (req: NextRequest) => {
       if (count !== 28) {
         return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
       }
+      // var encrypted = CryptoES.AES.encrypt(
+      //   "Message",
+      //   process.env.NEXT_PUBLIC_PASSPHRASE as string
+      // );
+      // console.log(encrypted.toString());
+      // var decrypted = CryptoES.AES.decrypt(
+      //   encrypted,
+      //   process.env.NEXT_PUBLIC_PASSPHRASE as string
+      // );
+      // console.log(decrypted.toString(CryptoES.enc.Utf8));
 
       const {
         es_id,
@@ -77,8 +87,8 @@ export const POST = async (req: NextRequest) => {
           tsic_code: Number(tsic_code),
           size12: padZero(size12, 2),
           name_title,
-          firstname,
-          lastname,
+          firstname: encrypt(firstname),
+          lastname: encrypt(lastname),
           initial,
           comp_name: comp_name.toString(),
           mun: Number(mun),
@@ -95,8 +105,8 @@ export const POST = async (req: NextRequest) => {
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
           econ_fm: Number(econ_fm),
-          regis_cid: regis_cid.toString(),
-          regis_no: regis_no.toString(),
+          regis_cid: encrypt(regis_cid),
+          regis_no: encrypt(regis_no),
           cwt: Number(cwt),
           cwt_name: cwt_name.toString(),
           reg: Number(reg),
@@ -107,8 +117,8 @@ export const POST = async (req: NextRequest) => {
           tsic_code: Number(tsic_code),
           size12: padZero(size12, 2),
           name_title,
-          firstname,
-          lastname,
+          firstname: encrypt(firstname),
+          lastname: encrypt(lastname),
           initial,
           comp_name: comp_name.toString(),
           mun: Number(mun),
@@ -125,8 +135,8 @@ export const POST = async (req: NextRequest) => {
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
           econ_fm: Number(econ_fm),
-          regis_cid: regis_cid.toString(),
-          regis_no: regis_no.toString(),
+          regis_cid: encrypt(regis_cid),
+          regis_no: encrypt(regis_no),
           cwt: Number(cwt),
           cwt_name: cwt_name.toString(),
           reg: Number(reg),
@@ -142,7 +152,7 @@ export const POST = async (req: NextRequest) => {
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,
-          canCreateQtr1: false,
+          canCreateQtr1: true, //pending edit
           canCreateQtr2: false,
           canCreateQtr3: false,
           canCreateQtr4: false,

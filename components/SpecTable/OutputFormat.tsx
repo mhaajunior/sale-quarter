@@ -27,6 +27,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<CompanyReport[]>([]);
   const [excelData, setExcelData] = useState<any>([]);
+  const [answerCount, setAnswerCount] = useState<number[]>([]);
   const router = useRouter();
   const session = useClientSession();
 
@@ -54,35 +55,43 @@ const OutputFormat = ({ data }: { data: Data }) => {
         const report: CompanyReport[] = res.data;
         const report_res = [];
         const excel = [];
+        let interview = 0;
+        let webApp = 0;
         for (const item of report) {
+          if (item.ANSWER === 1) {
+            interview++;
+          } else {
+            webApp++;
+          }
           report_res.push({ ...item, key: item.ID });
           excel.push([
             item.NO,
             item.ID,
             item.TSIC_R,
             item.SIZE_R,
-            item.TITLE,
-            item.FIRSTNAME,
-            item.LASTNAME,
-            item.EST_TITLE,
-            item.EST_NAME,
-            item.ADD_NO,
-            item.BUILDING,
-            item.ROOM,
-            item.STREET,
-            item.BLK,
-            item.SOI,
-            item.SUB_DIST,
-            item.DISTRICT,
+            isNull(item.TITLE),
+            isNull(item.FIRSTNAME),
+            isNull(item.LASTNAME),
+            isNull(item.EST_TITLE),
+            isNull(item.EST_NAME),
+            isNull(item.ADD_NO),
+            isNull(item.BUILDING),
+            isNull(item.ROOM),
+            isNull(item.STREET),
+            isNull(item.BLK),
+            isNull(item.SOI),
+            isNull(item.SUB_DIST),
+            isNull(item.DISTRICT),
             item.CWT,
-            item.POST_CODE,
-            item.TEL_NO,
-            item.E_MAIL,
+            isNull(item.POST_CODE),
+            isNull(item.TEL_NO),
+            isNull(item.E_MAIL),
             item.ENU,
             item.ANSWER,
             isNull(item.TSIC_CHG),
           ]);
         }
+        setAnswerCount([interview, webApp]);
         setResponse(report_res);
         setExcelData(excel);
       }
@@ -126,30 +135,35 @@ const OutputFormat = ({ data }: { data: Data }) => {
           dataIndex: "TITLE",
           key: "TITLE",
           align: "center",
+          render: (x) => isNull(x),
         },
         {
           title: "ชื่อตัว",
           dataIndex: "FIRSTNAME",
           key: "FIRSTNAME",
           align: "center",
+          render: (x) => isNull(x),
         },
         {
           title: "ชื่อสกุล",
           dataIndex: "LASTNAME",
           key: "LASTNAME",
           align: "center",
+          render: (x) => isNull(x),
         },
         {
           title: "คำนำหน้าชื่อสถานประกอบการ",
           dataIndex: "EST_TITLE",
           key: "EST_TITLE",
           align: "center",
+          render: (x) => isNull(x),
         },
         {
           title: "ชื่อสถานประกอบการ",
           dataIndex: "EST_NAME",
           key: "EST_NAME",
           align: "center",
+          render: (x) => isNull(x),
         },
       ],
     },
@@ -158,48 +172,56 @@ const OutputFormat = ({ data }: { data: Data }) => {
       dataIndex: "ADD_NO",
       key: "ADD_NO",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ชื่ออาคาร/หมู่บ้าน",
       dataIndex: "BUILDING",
       key: "BUILDING",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ห้องเลขที่/ชั้นที่",
       dataIndex: "ROOM",
       key: "ROOM",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ถนน",
       dataIndex: "STREET",
       key: "STREET",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ตรอก",
       dataIndex: "BLK",
       key: "BLK",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ซอย",
       dataIndex: "SOI",
       key: "SOI",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ตำบล/แขวง",
       dataIndex: "SUB_DIST",
       key: "SUB_DIST",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "อำเภอ/เขต",
       dataIndex: "DISTRICT",
       key: "DISTRICT",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "จังหวัด",
@@ -212,18 +234,21 @@ const OutputFormat = ({ data }: { data: Data }) => {
       dataIndex: "POST_CODE",
       key: "POST_CODE",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "โทรศัพท์",
       dataIndex: "TEL_NO",
       key: "TEL_NO",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "อีเมล",
       dataIndex: "E_MAIL",
       key: "E_MAIL",
       align: "center",
+      render: (x) => isNull(x),
     },
     {
       title: "ผลการแจงนับ",
@@ -270,10 +295,16 @@ const OutputFormat = ({ data }: { data: Data }) => {
 
     worksheet.getCell("A4").value = "จังหวัด";
     worksheet.getCell("B4").value = province;
-    worksheet.getCell("X4").value = "ไตรมาส";
-    worksheet.getCell("Y4").value = `${quarter}/25${year}`;
+    worksheet.getCell("T4").value = "ไตรมาส";
+    worksheet.getCell("U4").value = `${quarter}/25${year}`;
+    worksheet.getCell("V4").value = "สัมภาษณ์ (สถานประกอบการ)";
+    worksheet.getCell("W4").value = answerCount[0];
+    worksheet.getCell("X4").value = "เว็บแอปพลิเคชั่น (สถานประกอบการ)";
+    worksheet.getCell("Y4").value = answerCount[1];
     worksheet.getRow(4).font = { name: "TH SarabunPSK", size: 16 };
     worksheet.getRow(4).alignment = { horizontal: "left" };
+    worksheet.getCell("W4").alignment = { horizontal: "right" };
+    worksheet.getCell("Y4").alignment = { horizontal: "right" };
     worksheet.getRow(5).font = { name: "TH SarabunPSK", size: 16 };
     worksheet.getRow(5).alignment = { vertical: "top", horizontal: "center" };
     worksheet.getRow(6).font = { name: "TH SarabunPSK", size: 16 };
