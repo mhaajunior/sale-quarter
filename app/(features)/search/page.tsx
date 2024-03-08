@@ -178,7 +178,7 @@ const SearchPage = () => {
       key: "quarter",
       fixed: "left",
       align: "center",
-      width: "10%",
+      width: "11%",
     },
     {
       title: "สถานะ",

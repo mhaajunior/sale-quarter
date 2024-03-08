@@ -142,7 +142,7 @@ const ApprovePage = () => {
       title: "เลขประจำสถานประกอบการ",
       dataIndex: "id",
       key: "id",
-      width: "20%",
+      width: "21%",
       align: "center",
     },
     {
@@ -254,7 +254,7 @@ const ApprovePage = () => {
               <p className="px-5">ไม่อนุญาตให้แก้ไขได้</p>
             )
           ) : (
-            <p className="px-5">เจ้าหน้าที่ทุกคนต้องส่ง/อนุมัติแบบฟอร์มก่อน</p>
+            <p className="px-5">เจ้าหน้าที่ทุกคนต้องอนุมัติแบบฟอร์มก่อน</p>
           )}
         </div>
       ),
@@ -517,7 +517,7 @@ const ApprovePage = () => {
                   dataSource={response}
                   bordered
                   size="middle"
-                  scroll={{ x: "calc(500px + 50%)" }}
+                  scroll={{ x: "calc(520px + 50%)" }}
                   showSorterTooltip={false}
                   pagination={false}
                 />
