@@ -1280,14 +1280,14 @@ const FormPage = () => {
                                       onChange={onChange}
                                       ref={register("LG1_temp").ref}
                                     >
-                                      <Space direction="horizontal">
-                                        <Radio value="1">
+                                      <div className="flex flex-wrap gap-1">
+                                        <Radio value="1" className="start">
                                           เลขบัตรประจำตัวประชาชน
                                         </Radio>
-                                        <Radio value="2">
+                                        <Radio value="2" className="start">
                                           เลขทะเบียนพาณิชย์
                                         </Radio>
-                                      </Space>
+                                      </div>
                                     </Radio.Group>
                                   )}
                                 />
@@ -1301,7 +1301,7 @@ const FormPage = () => {
                                       : "เลขทะเบียนพาณิชย์"
                                   }
                                   register={register}
-                                  className="w-60 md:w-72"
+                                  className="w-48 sm:w-60 md:w-72"
                                   errors={errors.LG1}
                                   showName={!!session}
                                 />
@@ -1356,7 +1356,7 @@ const FormPage = () => {
                           <Radio value={5} className="start">
                             5. สหกรณ์
                           </Radio>
-                          <Radio value={6}>
+                          <Radio value={6} className="start">
                             6. การรวมกลุ่ม (เช่น กลุ่มเกษตรกร กลุ่มแม่บ้าน
                             เป็นต้น)
                           </Radio>
@@ -1457,7 +1457,7 @@ const FormPage = () => {
                   <b>เป็นจำนวนเต็ม (บาท)</b>
                 </p>
                 <div className="flex flex-col gap-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex gap-1 justify-between items-center">
                     <p>เดือน {quarterData?.monthRange[0]}</p>
                     <Input
                       name="R1_temp"
@@ -1467,14 +1467,14 @@ const FormPage = () => {
                           : `ยอดขายเดือน ${quarterData?.monthRange[0]}`
                       }
                       register={register}
-                      className="w-60 md:w-72"
+                      className="w-48 md:w-72"
                       errors={errors.R1_temp}
                       showWord="บาท"
                       showName={!!session}
                       right
                     />
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex gap-1 justify-between items-center">
                     <p>เดือน {quarterData?.monthRange[1]}</p>
                     <Input
                       name="R2_temp"
@@ -1484,14 +1484,14 @@ const FormPage = () => {
                           : `ยอดขายเดือน ${quarterData?.monthRange[1]}`
                       }
                       register={register}
-                      className="w-60 md:w-72"
+                      className="w-48 md:w-72"
                       errors={errors.R2_temp}
                       showWord="บาท"
                       showName={!!session}
                       right
                     />
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex gap-1 justify-between items-center">
                     <p>เดือน {quarterData?.monthRange[2]}</p>
                     <Input
                       name="R3_temp"
@@ -1501,20 +1501,20 @@ const FormPage = () => {
                           : `ยอดขายเดือน ${quarterData?.monthRange[2]}`
                       }
                       register={register}
-                      className="w-60 md:w-72"
+                      className="w-48 md:w-72"
                       errors={errors.R3_temp}
                       showWord="บาท"
                       showName={!!session}
                       right
                     />
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex gap-1 justify-between items-center">
                     <p className="font-bold">รวม 3 เดือน</p>
                     <Input
                       name="TR_temp"
                       placeholder={session ? "TR" : "ยอดขายรวมทั้ง 3 เดือน"}
                       register={register}
-                      className="w-60 md:w-72"
+                      className="w-48 md:w-72"
                       errors={errors.TR_temp}
                       showWord="บาท"
                       showName={!!session}
@@ -2062,8 +2062,8 @@ const FormPage = () => {
                         ref={register("FAC").ref}
                         disabled={!(!!chg && chg !== 1)}
                       >
-                        <div className="flex">
-                          <Space direction="vertical" className="w-2/4">
+                        <div className="flex flex-wrap">
+                          <Space direction="vertical" className="sm:w-2/4">
                             <Radio value={1} className="start">
                               1. ฤดูกาล เทศกาล
                             </Radio>
@@ -2080,7 +2080,7 @@ const FormPage = () => {
                               5. การปรับปรุงกิจการ
                             </Radio>
                           </Space>
-                          <Space direction="vertical">
+                          <Space direction="vertical" className="sm:w-2/4">
                             <Radio value={6} className="start">
                               6. ภาวะเศรษฐกิจ
                             </Radio>
@@ -2193,7 +2193,7 @@ const FormPage = () => {
                     name="STO_temp"
                     placeholder={session ? "STO" : "มูลค่าคงเหลือ"}
                     register={register}
-                    className="w-60 md:w-72"
+                    className="w-48 md:w-72"
                     errors={errors.STO_temp}
                     showWord="บาท"
                     showName={!!session}
@@ -2262,7 +2262,7 @@ const FormPage = () => {
                         <Row gutter={16} className="text-center">
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - ต้นทุน
+                              -ต้นทุน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP1]
@@ -2305,7 +2305,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - กำไร
+                              -กำไร
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP2]
@@ -2348,7 +2348,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - ราคาขายสินค้า/บริการของท่าน
+                              -ราคาขายสินค้า/บริการของท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP3]
@@ -2391,7 +2391,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - สภาพการแข่งขันของธุรกิจในพื้นที่
+                              -สภาพการแข่งขันของธุรกิจในพื้นที่
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP4]
@@ -2434,7 +2434,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - สภาพคล่องทางการเงินของธุรกิจท่าน
+                              -สภาพคล่องทางการเงินของธุรกิจท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP5]
@@ -2477,7 +2477,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - แนวโน้มการลงทุนในกิจการของท่าน
+                              -แนวโน้มการลงทุนในกิจการของท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP6]
@@ -2524,7 +2524,7 @@ const FormPage = () => {
                         <Row gutter={16} className="text-center">
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - ต้นทุน
+                              -ต้นทุน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP7]
@@ -2567,7 +2567,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - กำไร
+                              -กำไร
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP8]
@@ -2610,7 +2610,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - ราคาขายสินค้า/บริการของท่าน
+                              -ราคาขายสินค้า/บริการของท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP9]
@@ -2653,7 +2653,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - สภาพการแข่งขันของธุรกิจในพื้นที่
+                              -สภาพการแข่งขันของธุรกิจในพื้นที่
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP10]
@@ -2696,7 +2696,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - สภาพคล่องทางการเงินของธุรกิจท่าน
+                              -สภาพคล่องทางการเงินของธุรกิจท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP11]
@@ -2739,7 +2739,7 @@ const FormPage = () => {
                         <Row gutter={16}>
                           <Col className="gutter-row text-left" span={8}>
                             <p>
-                              - แนวโน้มการลงทุนในกิจการของท่าน
+                              -แนวโน้มการลงทุนในกิจการของท่าน
                               {session && (
                                 <span className="ml-3 !text-xs text-gray-400">
                                   [OP12]
@@ -2776,7 +2776,7 @@ const FormPage = () => {
               {(session?.user.role === Role.INTERVIEWER ||
                 session?.user.role === Role.SUBJECT) && (
                 <>
-                  <div className="flex gap-5 items-center">
+                  <div className="flex flex-wrap gap-1 items-center w-full justify-between">
                     เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล
                     <Input
                       name="P1"
@@ -2787,7 +2787,7 @@ const FormPage = () => {
                       showName
                     />
                   </div>
-                  <div className="flex gap-5 items-center">
+                  <div className="flex flex-wrap gap-1 items-center w-full justify-between">
                     เจ้าหน้าที่บรรณาธิกรและลงรหัส
                     <Input
                       name="P2"
@@ -2798,7 +2798,7 @@ const FormPage = () => {
                       showName
                     />
                   </div>
-                  <div className="flex gap-5 items-center">
+                  <div className="flex flex-wrap gap-1 items-center w-full justify-between">
                     เจ้าหน้าที่บันทึกข้อมูล
                     <Input
                       name="P3"
@@ -2813,7 +2813,7 @@ const FormPage = () => {
               )}
               {(session?.user.role === Role.SUPERVISOR ||
                 session?.user.role === Role.SUBJECT) && (
-                <div className="flex gap-5 items-center">
+                <div className="flex flex-wrap gap-1 items-center w-full justify-between">
                   ผู้ตรวจ
                   <Input
                     name="P4"

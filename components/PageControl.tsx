@@ -1,5 +1,7 @@
 import React from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Dropdown from "./Dropdown";
+import { SelectOption } from "@/types/dto/common";
 
 const PageControl = ({
   page,
@@ -14,15 +16,30 @@ const PageControl = ({
   const nextPage = page + 1;
 
   const pageNumbers = [];
+  const pageOptions: SelectOption[] = [];
   const offsetNumber = 3;
   for (let i = page - offsetNumber; i <= page + offsetNumber; i++) {
     if (i >= 1 && i <= totalPages) {
       pageNumbers.push(i);
     }
   }
+  for (let i = 1; i <= totalPages; i++) {
+    pageOptions.push({ label: i.toString(), value: i });
+  }
 
   return (
-    <div className="w-full flex justify-end items-center">
+    <div className="w-full flex justify-end items-center gap-5">
+      <p>ไปยังหน้า</p>
+      <Dropdown
+        name="approve"
+        placeholder="หน้า"
+        options={pageOptions}
+        className="w-20"
+        isControl={false}
+        setterFn={(page: number) => onChangePage(page)}
+        defaultValue={page}
+        styles={{ padding: 0 }}
+      />
       <div className="flex border-[1px] gap-4 rounded-[10px] border-light-green p-2 items-center text-sm">
         {page === 1 ? (
           <div className="opacity-60" aria-disabled="true">

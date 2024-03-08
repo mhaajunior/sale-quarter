@@ -107,31 +107,31 @@ const SearchPage = () => {
     } else {
       return (
         <div className="flex flex-col gap-3">
-          <div className="flex gap-3 items-center justify-between">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
             <p className="text-left">สถานประกอบการ</p>
             <div>
               <Tag color={mapTagColor(status.company)}>{status.company}</Tag>
             </div>
           </div>
-          <div className="flex gap-3 items-center justify-between">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
             <p className="text-left">เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล</p>
             <div>
               <Tag color={mapTagColor(status.p1)}>{status.p1}</Tag>
             </div>
           </div>
-          <div className="flex gap-3 items-center justify-between">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
             <p className="text-left">เจ้าหน้าที่บรรณาธิกรและลงรหัส</p>
             <div>
               <Tag color={mapTagColor(status.p2)}>{status.p2}</Tag>
             </div>
           </div>
-          <div className="flex gap-3 items-center justify-between">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
             <p className="text-left">เจ้าหน้าที่บันทึกข้อมูล</p>
             <div>
               <Tag color={mapTagColor(status.p3)}>{status.p3}</Tag>
             </div>
           </div>
-          <div className="flex gap-3 items-center justify-between">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
             <p className="text-left">ผู้ตรวจ</p>
             <div>
               <Tag color={mapTagColor(status.p4)}>{status.p4}</Tag>
@@ -178,7 +178,7 @@ const SearchPage = () => {
       key: "quarter",
       fixed: "left",
       align: "center",
-      width: "8%",
+      width: "10%",
     },
     {
       title: "สถานะ",
@@ -372,7 +372,7 @@ const SearchPage = () => {
                   dataSource={data}
                   bordered
                   size="middle"
-                  scroll={{ x: "calc(300px + 50%)" }}
+                  scroll={{ x: "calc(500px + 50%)" }}
                   pagination={false}
                 />
               </div>

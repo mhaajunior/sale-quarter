@@ -28,6 +28,13 @@ const Dropdown = ({
     error: errors,
   });
 
+  const customStyles = {
+    control: (base: any) => ({
+      ...base,
+      ...rest.styles,
+    }),
+  };
+
   const getValue = (value: number | string | null) => {
     if (value) {
       for (let option of options) {
@@ -61,6 +68,7 @@ const Dropdown = ({
                 classNamePrefix="dropdown"
                 placeholder={placeholder}
                 isSearchable={false}
+                styles={customStyles}
               />
             )}
           />
@@ -82,6 +90,7 @@ const Dropdown = ({
           classNamePrefix="dropdown"
           placeholder={placeholder}
           isSearchable={false}
+          styles={customStyles}
         />
       )}
       <ErrorMessage>{errors?.message}</ErrorMessage>

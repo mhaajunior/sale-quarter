@@ -24,7 +24,12 @@ import { numberWithCommas } from "@/lib/common";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@/types/dto/role";
-import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
+import {
+  IoChevronBack,
+  IoCloudDownloadOutline,
+  IoSwapVertical,
+} from "react-icons/io5";
+import { AiOutlineVerticalAlignBottom } from "react-icons/ai";
 import { CSVLink } from "react-csv";
 import Input from "@/components/Input";
 import { FilterContext } from "@/context";
@@ -32,6 +37,7 @@ import PageControl from "@/components/PageControl";
 import useDebounce from "@/hooks/use-debounce";
 import { mapProvinceName } from "@/utils/province";
 import Portal from "@/components/Portal";
+import useWindowSize from "@/hooks/use-window-size";
 
 interface DataType {
   key: React.Key;
@@ -55,7 +61,8 @@ interface Response extends Count {
 }
 
 const ApprovePage = () => {
-  const { year, quarter, setQuarter } = useContext(FilterContext);
+  const { year, quarter, setQuarter, page, setPage } =
+    useContext(FilterContext);
   const searchParams = useSearchParams();
   const proviceId = Number(searchParams.get("pvid"));
   const [loading, setLoading] = useState(false);
@@ -66,7 +73,6 @@ const ApprovePage = () => {
   });
   const [csvData, setCsvData] = useState([]);
   const [option, setOption] = useState(1);
-  const [page, setPage] = useState(1);
   const [count, setCount] = useState<Count>({
     notApproveCount: 0,
     totalNotApproveCount: 0,
@@ -76,6 +82,7 @@ const ApprovePage = () => {
   const debouncedSearchValue = useDebounce(searchValue);
   const router = useRouter();
   const session = useClientSession();
+  const size = useWindowSize();
   const perPage = 100;
 
   useEffect(() => {
@@ -114,6 +121,15 @@ const ApprovePage = () => {
     });
   }
 
+  let p1 =
+    size.width && size.width > 768
+      ? "เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล"
+      : "P1";
+  let p2 =
+    size.width && size.width > 768 ? "เจ้าหน้าที่บรรณาธิกรและลงรหัส" : "P2";
+  let p3 = size.width && size.width > 768 ? "เจ้าหน้าที่บันทึกข้อมูล" : "P3";
+  let p4 = size.width && size.width > 768 ? "ผู้ตรวจ" : "P4";
+
   const columns: ColumnsType<DataType> = [
     {
       title: "ลำดับ (NO)",
@@ -149,7 +165,7 @@ const ApprovePage = () => {
           ),
         },
         {
-          title: "เจ้าหน้าที่ปฏิบัติงานเก็บรวบรวมข้อมูล",
+          title: p1,
           dataIndex: "p1",
           key: "p1",
           width: "10%",
@@ -165,7 +181,7 @@ const ApprovePage = () => {
           ),
         },
         {
-          title: "เจ้าหน้าที่บรรณาธิกรและลงรหัส",
+          title: p2,
           dataIndex: "p2",
           key: "p2",
           width: "10%",
@@ -181,7 +197,7 @@ const ApprovePage = () => {
           ),
         },
         {
-          title: "เจ้าหน้าที่บันทึกข้อมูล",
+          title: p3,
           dataIndex: "p3",
           key: "p3",
           width: "10%",
@@ -197,7 +213,7 @@ const ApprovePage = () => {
           ),
         },
         {
-          title: "ผู้ตรวจ",
+          title: p4,
           dataIndex: "p4",
           key: "p4",
           width: "10%",
@@ -218,7 +234,7 @@ const ApprovePage = () => {
       title: "ตรวจสอบ",
       dataIndex: "action",
       key: "action",
-      width: "20%",
+      width: "18%",
       align: "center",
       fixed: "right",
       render: (_, { action }) => (
@@ -435,7 +451,7 @@ const ApprovePage = () => {
         {!loading && (
           <>
             {session?.user.role === Role.SUBJECT && (
-              <div className="w-full flex items-center gap-5">
+              <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
                 <p>ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมด:</p>
                 {count.totalNotApproveCount === 0 ? (
                   <CSVLink
@@ -456,7 +472,7 @@ const ApprovePage = () => {
             )}
             {(session?.user.role === Role.SUPERVISOR ||
               session?.user.role === Role.SUBJECT) && (
-              <div className="w-full flex items-center gap-5">
+              <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
                 <p>ดูตารางสถิติ:</p>
                 {count.totalNotApproveCount === 0 ? (
                   <Link
@@ -517,7 +533,23 @@ const ApprovePage = () => {
           </div>
         </div>
       </div>
-      <FloatButton.BackTop visibilityHeight={0} />
+      <FloatButton.Group
+        trigger="hover"
+        type="primary"
+        icon={<IoSwapVertical />}
+      >
+        <FloatButton.BackTop visibilityHeight={0} />
+        <FloatButton
+          icon={<AiOutlineVerticalAlignBottom />}
+          onClick={() =>
+            window.scrollTo({
+              left: 0,
+              top: document.body.scrollHeight,
+              behavior: "smooth",
+            })
+          }
+        />
+      </FloatButton.Group>
     </Portal>
   );
 };
