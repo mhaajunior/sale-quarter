@@ -30,34 +30,32 @@ const HomePage = () => {
     <>
       <div className="main-bg h-svh">
         <div className="mx-auto mt-40 px-[30px] max-w-[1800px]">
-          <div className="flex lg:flex-row flex-col-reverse justify-between items-center gap-16 lg:gap-10 relative max-w-[1500px] mx-auto">
+          <div className="flex xl:flex-row flex-col-reverse justify-between items-center gap-16 xl:gap-10 relative max-w-[1500px] mx-auto">
             <Image className="mb-10 lg:mb-0" src={idea} alt="idea" priority />
-            <div>
-              <h1 className="font-black m-auto xl:text-[75px] md:text-[55px] text-[30px] text-center lg:text-left text-black">
-                โครงการสำรวจยอดขายรายไตรมาส
-              </h1>
-            </div>
-            <div className="absolute top-[9rem] md:top-[16rem] lg:top-[1.2rem] lg:left-[4rem]">
+            <h1 className="font-black m-auto xl:text-[75px] md:text-[55px] sm:text-[40px] text-[30px] text-center xl:text-left text-black">
+              โครงการสำรวจยอดขายรายไตรมาส
+            </h1>
+            <div className="absolute top-[9rem] md:top-[16rem] lg:top-[12rem] xl:top-[1.2rem] xl:left-[4rem]">
               <Button primary onClick={() => executeScroll(objectiveRef)}>
                 <h1 className="lg:text-xl">วัตถุประสงค์</h1>
               </Button>
             </div>
-            <div className="absolute top-[13rem] md:top-[21rem] lg:-top-2 lg:left-[32rem]">
+            <div className="absolute top-[13rem] md:top-[21rem] lg:top-[17rem] xl:-top-2 xl:left-[32rem]">
               <Button primary onClick={() => executeScroll(areaRef)}>
                 <h1 className="lg:text-xl">พื้นที่เก็บข้อมูล</h1>
               </Button>
             </div>
-            <div className="absolute top-[17rem] md:top-[26rem] lg:top-[4.6rem] lg:left-[31rem]">
+            <div className="absolute top-[17rem] md:top-[26rem] lg:top-[22rem] xl:top-[4.6rem] xl:left-[31rem]">
               <Button primary onClick={() => executeScroll(benefitRef)}>
                 <h1 className="lg:text-xl">ประโยชน์ที่ได้รับ</h1>
               </Button>
             </div>
-            <div className="absolute top-[21rem] md:top-[31rem] lg:top-[10.2rem] lg:left-[4rem]">
+            <div className="absolute top-[21rem] md:top-[31rem] lg:top-[27rem] xl:top-[10.2rem] xl:left-[4rem]">
               <Button primary onClick={() => executeScroll(taskRef)}>
                 <h1 className="lg:text-xl">อำนาจหน้าที่</h1>
               </Button>
             </div>
-            <div className="absolute top-[25rem] md:top-[36rem] lg:top-[25.6rem] lg:left-[1rem]">
+            <div className="absolute top-[25rem] md:top-[36rem] lg:top-[32rem] xl:top-[25.6rem] xl:left-[1rem]">
               <Button primary onClick={() => executeScroll(securityRef)}>
                 <h1 className="lg:text-xl">การรักษาความลับ</h1>
               </Button>

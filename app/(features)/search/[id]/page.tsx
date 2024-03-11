@@ -67,6 +67,7 @@ const FormPage = () => {
   const searchParams = useSearchParams();
   const qtr = Number(searchParams.get("qtr"));
   const mode = searchParams.get("mode");
+  const page = Number(searchParams.get("pg")) || 1;
   const provinceId = Number(searchParams.get("pvid")) || session?.user.province;
   const quarterData = quarterMap(Number("25" + year.toString()) - 543)[qtr - 1];
 
@@ -755,7 +756,7 @@ const FormPage = () => {
       session?.user.role === Role.SUPERVISOR ||
       session?.user.role === Role.SUBJECT
     ) {
-      router.push(`/approve?pvid=${provinceId}`);
+      router.push(`/approve?pvid=${provinceId}&pg=${page}`);
     } else {
       router.push("/search");
     }

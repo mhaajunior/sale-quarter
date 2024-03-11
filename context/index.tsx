@@ -13,19 +13,15 @@ import {
 export interface FilterContent {
   year: number;
   quarter: number;
-  page: number;
   setYear: Dispatch<SetStateAction<number>>;
   setQuarter: Dispatch<SetStateAction<number>>;
-  setPage: Dispatch<SetStateAction<number>>;
 }
 
 export const FilterContext = createContext<FilterContent>({
   year: getThaiYear(new Date().getFullYear()).yearSlice,
   quarter: 1,
-  page: 1,
   setYear: (year) => {},
   setQuarter: (quarter) => {},
-  setPage: (page) => {},
 });
 
 export default function FilterProvider({ children }: PropsWithChildren) {
@@ -56,12 +52,9 @@ export default function FilterProvider({ children }: PropsWithChildren) {
 
   const [year, setYear] = useState(currentYear);
   const [quarter, setQuarter] = useState(qtr);
-  const [page, setPage] = useState(1);
 
   return (
-    <FilterContext.Provider
-      value={{ year, quarter, page, setYear, setQuarter, setPage }}
-    >
+    <FilterContext.Provider value={{ year, quarter, setYear, setQuarter }}>
       {children}
     </FilterContext.Provider>
   );

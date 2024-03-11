@@ -24,12 +24,7 @@ import { numberWithCommas } from "@/lib/common";
 import { QuarterArr } from "@/types/dto/common";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Role } from "@/types/dto/role";
-import {
-  IoChevronBack,
-  IoCloudDownloadOutline,
-  IoSwapVertical,
-} from "react-icons/io5";
-import { AiOutlineVerticalAlignBottom } from "react-icons/ai";
+import { IoChevronBack, IoCloudDownloadOutline } from "react-icons/io5";
 import { CSVLink } from "react-csv";
 import Input from "@/components/Input";
 import { FilterContext } from "@/context";
@@ -61,8 +56,7 @@ interface Response extends Count {
 }
 
 const ApprovePage = () => {
-  const { year, quarter, setQuarter, page, setPage } =
-    useContext(FilterContext);
+  const { year, quarter, setQuarter } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const proviceId = Number(searchParams.get("pvid"));
   const [loading, setLoading] = useState(false);
@@ -78,6 +72,7 @@ const ApprovePage = () => {
     totalNotApproveCount: 0,
     totalCount: 0,
   });
+  const [page, setPage] = useState(Number(searchParams.get("pg")) || 1);
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue);
   const router = useRouter();
@@ -242,7 +237,9 @@ const ApprovePage = () => {
           {action.canEdit ? (
             action.canAccess ? (
               <Link
-                href={`/search/${action.data.ID}?qtr=${quarter}&mode=edit${
+                href={`/search/${
+                  action.data.ID
+                }?qtr=${quarter}&mode=edit&pg=${page}${
                   session?.user.role === Role.SUBJECT
                     ? `&pvid=${proviceId}`
                     : ""
@@ -272,7 +269,7 @@ const ApprovePage = () => {
           page,
           perPage,
           option,
-          searchId: debouncedSearchValue,
+          searchId: debouncedSearchValue || null,
         },
         headers: { authorization: session?.user.accessToken },
       });
@@ -382,6 +379,21 @@ const ApprovePage = () => {
     }
   };
 
+  const onChangePage = (page: number) => {
+    setPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const onSearchCompany = (e: any) => {
+    setPage(1);
+    setSearchValue(e.target.value);
+  };
+
+  const onChangeOption = (val: number) => {
+    setPage(1);
+    setOption(val);
+  };
+
   const approveOptions = [
     { label: "ทั้งหมด", value: 1 },
     { label: "ยังไม่อนุมัติ", value: 2 },
@@ -419,7 +431,7 @@ const ApprovePage = () => {
               name="ID"
               placeholder="เลขประจำสถานประกอบการ"
               value={searchValue}
-              onChange={(e: any) => setSearchValue(e.target.value)}
+              onChange={(e: any) => onSearchCompany(e)}
               isControl={false}
               className="w-60 md:w-72"
             />
@@ -432,7 +444,7 @@ const ApprovePage = () => {
               options={approveOptions}
               className="w-36"
               isControl={false}
-              setterFn={(val: number) => setOption(val)}
+              setterFn={(val: number) => onChangeOption(val)}
               defaultValue={option}
             />
           </div>
@@ -495,23 +507,30 @@ const ApprovePage = () => {
           </>
         )}
 
-        <div className="flex flex-wrap">
-          {quarterArr.map((item) => (
-            <Badge
-              key={item.value}
-              color={item.color}
-              onClick={() => item.passOpenDate && setQuarter(item.value)}
-              active={item.value === quarter}
-              disabled={!item.passOpenDate}
-            >
-              {item.label}
-            </Badge>
-          ))}
-          <div className="w-full min-h-40 flex flex-col gap-3 items-center">
-            {loading ? (
-              <Loading type="partial" />
-            ) : (
-              <>
+        <div className="w-full min-h-40 flex flex-col gap-3 items-center">
+          {loading ? (
+            <Loading type="partial" />
+          ) : (
+            <>
+              {count.totalCount > 0 && (
+                <PageControl
+                  page={page}
+                  totalPages={Math.ceil(count.totalCount / perPage)}
+                  onChangePage={(page) => onChangePage(page)}
+                />
+              )}
+              <div className="flex flex-wrap">
+                {quarterArr.map((item) => (
+                  <Badge
+                    key={item.value}
+                    color={item.color}
+                    onClick={() => item.passOpenDate && setQuarter(item.value)}
+                    active={item.value === quarter}
+                    disabled={!item.passOpenDate}
+                  >
+                    {item.label}
+                  </Badge>
+                ))}
                 <Table
                   columns={columns}
                   dataSource={response}
@@ -521,35 +540,19 @@ const ApprovePage = () => {
                   showSorterTooltip={false}
                   pagination={false}
                 />
-                {count.totalCount > 0 && (
-                  <PageControl
-                    page={page}
-                    totalPages={Math.ceil(count.totalCount / perPage)}
-                    onChangePage={(page) => setPage(page)}
-                  />
-                )}
-              </>
-            )}
-          </div>
+              </div>
+              {count.totalCount > 0 && (
+                <PageControl
+                  page={page}
+                  totalPages={Math.ceil(count.totalCount / perPage)}
+                  onChangePage={(page) => onChangePage(page)}
+                />
+              )}
+            </>
+          )}
         </div>
       </div>
-      <FloatButton.Group
-        trigger="hover"
-        type="primary"
-        icon={<IoSwapVertical />}
-      >
-        <FloatButton.BackTop visibilityHeight={0} />
-        <FloatButton
-          icon={<AiOutlineVerticalAlignBottom />}
-          onClick={() =>
-            window.scrollTo({
-              left: 0,
-              top: document.body.scrollHeight,
-              behavior: "smooth",
-            })
-          }
-        />
-      </FloatButton.Group>
+      <FloatButton.BackTop visibilityHeight={0} />
     </Portal>
   );
 };

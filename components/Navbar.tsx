@@ -114,7 +114,7 @@ const Navbar = () => {
             currentPath !== "/" ? "nav-bottom" : ""
           } bg-white bg-opacity-85 md:bg-opacity-40 absolute w-full z-40`}
         >
-          <nav className="flex justify-between items-center text-gray-500 font-semibold lg:w-4/5 w-full mx-auto lg:px-0 px-5">
+          <nav className="flex justify-between items-center text-gray-500 font-semibold mx-auto max-w-[1300px] sm:px-16 md:px-20 px-6">
             <ul className="flex items-center md:gap-10 gap-8 w-3/5">
               <li>
                 <Link href="/">
