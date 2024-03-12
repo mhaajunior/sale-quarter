@@ -607,7 +607,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-wrap justify-between items-center gap-3">
         <h1>ตารางบัญชีรายชื่อสถานประกอบการตัวอย่างประจำไตรมาสที่ {quarter}</h1>
         <Button secondary loading={loading} onClick={handleDownload}>
@@ -623,7 +623,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
           dataSource={response}
           bordered
           size="middle"
-          scroll={{ x: "calc(2200px + 50%)" }}
+          scroll={{ x: "calc(2500px + 50%)" }}
           showSorterTooltip={false}
           pagination={{
             defaultPageSize: 100,

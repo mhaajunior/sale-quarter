@@ -35,27 +35,27 @@ const HomePage = () => {
             <h1 className="font-black m-auto xl:text-[75px] md:text-[55px] sm:text-[40px] text-[30px] text-center xl:text-left text-black">
               โครงการสำรวจยอดขายรายไตรมาส
             </h1>
-            <div className="absolute top-[9rem] md:top-[16rem] lg:top-[12rem] xl:top-[1.2rem] xl:left-[4rem]">
+            <div className="absolute top-[9rem] md:top-[16rem] lg:top-[12rem] xl:top-[1.6rem] xl:left-[4rem]">
               <Button primary onClick={() => executeScroll(objectiveRef)}>
                 <h1 className="lg:text-xl">วัตถุประสงค์</h1>
               </Button>
             </div>
-            <div className="absolute top-[13rem] md:top-[21rem] lg:top-[17rem] xl:-top-2 xl:left-[32rem]">
+            <div className="absolute top-[13rem] md:top-[21rem] lg:top-[17rem] xl:-top-[0.2rem] xl:left-[32rem]">
               <Button primary onClick={() => executeScroll(areaRef)}>
                 <h1 className="lg:text-xl">พื้นที่เก็บข้อมูล</h1>
               </Button>
             </div>
-            <div className="absolute top-[17rem] md:top-[26rem] lg:top-[22rem] xl:top-[4.6rem] xl:left-[31rem]">
+            <div className="absolute top-[17rem] md:top-[26rem] lg:top-[22rem] xl:top-[5rem] xl:left-[31rem]">
               <Button primary onClick={() => executeScroll(benefitRef)}>
                 <h1 className="lg:text-xl">ประโยชน์ที่ได้รับ</h1>
               </Button>
             </div>
-            <div className="absolute top-[21rem] md:top-[31rem] lg:top-[27rem] xl:top-[10.2rem] xl:left-[4rem]">
+            <div className="absolute top-[21rem] md:top-[31rem] lg:top-[27rem] xl:top-[10.8rem] xl:left-[4rem]">
               <Button primary onClick={() => executeScroll(taskRef)}>
                 <h1 className="lg:text-xl">อำนาจหน้าที่</h1>
               </Button>
             </div>
-            <div className="absolute top-[25rem] md:top-[36rem] lg:top-[32rem] xl:top-[25.6rem] xl:left-[1rem]">
+            <div className="absolute top-[25rem] md:top-[36rem] lg:top-[32rem] xl:top-[26.3rem] xl:left-[1rem]">
               <Button primary onClick={() => executeScroll(securityRef)}>
                 <h1 className="lg:text-xl">การรักษาความลับ</h1>
               </Button>
@@ -68,7 +68,7 @@ const HomePage = () => {
           <div className="wave"></div>
         </div>
       </div>
-      <div className="pt-10 md:w-4/5 mx-auto max-w-[1500px]">
+      <div className="py-10 md:w-4/5 mx-auto max-w-[1500px]">
         <div className="flex flex-col">
           <Reveal>
             <div

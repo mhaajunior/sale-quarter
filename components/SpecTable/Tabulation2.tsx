@@ -443,7 +443,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-wrap justify-between items-center gap-3">
         <h1>ตาราง ข</h1>
         <Button secondary loading={loading} onClick={handleDownload}>
