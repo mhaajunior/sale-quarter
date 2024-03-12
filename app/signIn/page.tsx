@@ -120,7 +120,7 @@ const SignInPage = (props: Props) => {
               >
                 เข้าสู่ระบบ
               </Button>
-              <p className="text-center">
+              <p className="text-center mt-2">
                 <span
                   className="cursor-pointer hover:text-black"
                   onClick={() => router.push("/")}
