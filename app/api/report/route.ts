@@ -580,6 +580,8 @@ export const GET = async (req: NextRequest) => {
         P2: true,
         P3: true,
         P4: true,
+        WWKNSO: true,
+        WWKNESDB: true,
       },
     });
 

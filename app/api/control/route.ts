@@ -38,16 +38,6 @@ export const POST = async (req: NextRequest) => {
       if (count !== 28) {
         return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
       }
-      // var encrypted = CryptoES.AES.encrypt(
-      //   "Message",
-      //   process.env.NEXT_PUBLIC_PASSPHRASE as string
-      // );
-      // console.log(encrypted.toString());
-      // var decrypted = CryptoES.AES.decrypt(
-      //   encrypted,
-      //   process.env.NEXT_PUBLIC_PASSPHRASE as string
-      // );
-      // console.log(decrypted.toString(CryptoES.enc.Utf8));
 
       const {
         es_id,
