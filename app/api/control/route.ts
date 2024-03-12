@@ -149,6 +149,7 @@ export const POST = async (req: NextRequest) => {
       await prisma.reportStatus.upsert({
         where: { yearID: { ID: es_id.toString(), year: currentYear } },
         update: {
+          no: Number(no),
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,
@@ -168,6 +169,7 @@ export const POST = async (req: NextRequest) => {
         create: {
           ID: es_id.toString(),
           year: currentYear,
+          no: Number(no),
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,

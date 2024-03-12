@@ -169,9 +169,9 @@ model Report {
 }
 
 model ReportStatus {
-  no            Int     @id @default(autoincrement())
   ID            String  @db.NVarChar(15)
   year          Int     @db.SmallInt
+  no            Int     @db.SmallInt
   province      Int     @db.SmallInt
   province_name String  @db.NVarChar(30)
   region        Int     @db.SmallInt

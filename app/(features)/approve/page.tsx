@@ -385,7 +385,7 @@ const ApprovePage = () => {
 
   const onChangePage = (page: number) => {
     setPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   };
 
   const onSearchCompany = (e: any) => {
