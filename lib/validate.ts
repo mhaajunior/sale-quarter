@@ -14,11 +14,12 @@ export const cleansingFormData = (data: ReportForm) => {
 
 export const checkErrorFromRole = (
   data: ReportForm,
-  role: Role | undefined,
+  role: Role,
+  username: string,
   mode: number
 ) => {
   let errData: FormErrors[] = [];
-  const { TSIC_R, SIZE_R, TYPE, P1, P2, P3, P4 } = data;
+  const { TSIC_R, SIZE_R, P1, P2, P3, P4 } = data;
   if (role) {
     if (!TSIC_R) {
       errData.push({
@@ -48,9 +49,16 @@ export const checkErrorFromRole = (
           message: "กรุณากรอก P4",
         });
       }
+
+      if (P4 !== username) {
+        errData.push({
+          label: ["P4"],
+          message: "กรุณากรอก P4 ให้ถูกต้อง",
+        });
+      }
     }
   }
-  let res: any = [];
+  let res: FormErrors[] = [];
   if (role) {
     if (mode === 1) {
       res = consistencyCheck1(data);

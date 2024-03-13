@@ -191,7 +191,7 @@ const FormPage = () => {
         );
       setValue("TR", R1 + R2 + R3);
     } else {
-      setValue("TR", 0);
+      setValue("TR", null);
     }
   }, [r1, r2, r3, tr_temp]);
 
@@ -686,9 +686,19 @@ const FormPage = () => {
   const onSubmit = handleSubmit((data) => {
     let err: FormErrors[] = [];
     if (Number(data.ENU) === 1) {
-      err = checkErrorFromRole(data, session?.user.role, 1);
+      err = checkErrorFromRole(
+        data,
+        session?.user.role!,
+        session?.user.username!,
+        1
+      );
     } else {
-      err = checkErrorFromRole(data, session?.user.role, 2);
+      err = checkErrorFromRole(
+        data,
+        session?.user.role!,
+        session?.user.username!,
+        2
+      );
     }
     if (err.length > 0) {
       setFormErrors(err);

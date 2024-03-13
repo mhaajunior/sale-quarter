@@ -10,6 +10,7 @@ declare module "next-auth" {
 
 interface IUser {
   id: number;
+  username: string;
   role: Role;
   fullname: string;
   province: number;

@@ -493,7 +493,9 @@ const ApprovePage = () => {
                 {count.totalNotApproveCount === 0 ? (
                   <Link
                     href={`/specification${
-                      Role.SUBJECT ? `?pvid=${proviceId}` : ""
+                      session.user.role === Role.SUBJECT
+                        ? `?pvid=${proviceId}`
+                        : ""
                     }`}
                   >
                     <Button secondary>

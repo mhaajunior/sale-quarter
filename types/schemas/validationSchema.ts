@@ -587,6 +587,9 @@ export const createReportSchema = z
       {
         LG1,
         LG1_temp,
+        R1_temp,
+        R2_temp,
+        R3_temp,
         TR,
         TR_temp,
         SI,
@@ -638,7 +641,10 @@ export const createReportSchema = z
         });
       }
 
-      if (currencyToNumber(TR_temp as string) !== TR) {
+      if (
+        (R1_temp || R2_temp || R3_temp) &&
+        currencyToNumber(TR_temp as string) !== TR
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "จำนวนรวมทั้ง 3 เดือนที่กรอกไม่ถูกต้อง",
