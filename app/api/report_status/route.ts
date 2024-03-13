@@ -114,15 +114,15 @@ export const GET = async (req: NextRequest) => {
         break;
       case 2:
         whereObj.isApproveQtr2 = false;
-        whereObj3.isApproveQtr1 = false;
+        whereObj3.isApproveQtr2 = false;
         break;
       case 3:
         whereObj.isApproveQtr3 = false;
-        whereObj3.isApproveQtr1 = false;
+        whereObj3.isApproveQtr3 = false;
         break;
       case 4:
         whereObj.isApproveQtr4 = false;
-        whereObj3.isApproveQtr1 = false;
+        whereObj3.isApproveQtr4 = false;
         break;
       default:
         break;
