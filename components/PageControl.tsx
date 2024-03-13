@@ -27,6 +27,10 @@ const PageControl = ({
     pageOptions.push({ label: i.toString(), value: i });
   }
 
+  if (totalPages <= 1) {
+    return null;
+  }
+
   return (
     <div className="w-full flex flex-wrap-reverse justify-end items-center gap-5">
       <div className="flex gap-3 items-center">

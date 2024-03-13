@@ -127,7 +127,7 @@ const ApprovePage = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "ลำดับ (NO)",
+      title: "ลำดับที่",
       dataIndex: "key",
       key: "key",
       width: "10%",
@@ -516,13 +516,11 @@ const ApprovePage = () => {
             <Loading type="partial" />
           ) : (
             <>
-              {count.totalCount > 0 && (
-                <PageControl
-                  page={page}
-                  totalPages={Math.ceil(count.totalCount / perPage)}
-                  onChangePage={(page) => onChangePage(page)}
-                />
-              )}
+              <PageControl
+                page={page}
+                totalPages={Math.ceil(count.totalCount / perPage)}
+                onChangePage={(page) => onChangePage(page)}
+              />
               <div className="flex flex-wrap">
                 {quarterArr.map((item) => (
                   <Badge
@@ -545,13 +543,11 @@ const ApprovePage = () => {
                   pagination={false}
                 />
               </div>
-              {count.totalCount > 0 && (
-                <PageControl
-                  page={page}
-                  totalPages={Math.ceil(count.totalCount / perPage)}
-                  onChangePage={(page) => onChangePage(page)}
-                />
-              )}
+              <PageControl
+                page={page}
+                totalPages={Math.ceil(count.totalCount / perPage)}
+                onChangePage={(page) => onChangePage(page)}
+              />
             </>
           )}
         </div>
