@@ -426,13 +426,13 @@ export const POST = async (req: NextRequest) => {
           updateObj = { isApproveQtr1: p4 ? true : false };
           break;
         case 2:
-          updateObj = { isApproveQtr1: p4 ? true : false };
+          updateObj = { isApproveQtr2: p4 ? true : false };
           break;
         case 3:
-          updateObj = { isApproveQtr1: p4 ? true : false };
+          updateObj = { isApproveQtr3: p4 ? true : false };
           break;
         case 4:
-          updateObj = { isApproveQtr1: p4 ? true : false };
+          updateObj = { isApproveQtr4: p4 ? true : false };
           break;
         default:
           return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });
