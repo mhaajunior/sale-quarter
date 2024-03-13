@@ -37,7 +37,7 @@ export const GET = async (req: NextRequest) => {
 
   try {
     const report = await prisma.report.findMany({
-      where: { YR: year, CWT: province, ENU: { equals: "01" } },
+      where: { YR: year, CWT: province },
       select: {
         ID: true,
         NO: true,
@@ -55,7 +55,7 @@ export const GET = async (req: NextRequest) => {
       const { ID, NO, EST_NAME, TSIC_R, SIZE_R, TR, STO } = item;
       if (temp[ID]) {
         temp[ID].TR_arr.push(TR || 0);
-        temp[ID].STO_arr.push(STO || "0");
+        temp[ID].STO_arr.push(Number(STO) || 0);
         temp[ID].TSIC_R = TSIC_R;
         temp[ID].SIZE_R = SIZE_R;
       } else {
@@ -65,7 +65,7 @@ export const GET = async (req: NextRequest) => {
           TSIC_R,
           SIZE_R,
           TR_arr: [TR || 0],
-          STO_arr: [STO || "0"],
+          STO_arr: [Number(STO) || 0],
         };
       }
     }

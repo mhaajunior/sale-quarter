@@ -455,7 +455,7 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-// get all data in province to download for subject
+// get all data in province to download for supervisor and subject
 export const GET = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const quarter = Number(req.nextUrl.searchParams.get("quarter"));
@@ -495,32 +495,9 @@ export const GET = async (req: NextRequest) => {
         QTR: true,
         YR: true,
         ENU: true,
-        TITLE: true,
-        RANK: true,
-        FIRSTNAME: true,
-        LASTNAME: true,
-        EST_TITLE: true,
-        EST_NAME: true,
-        ADD_NO: true,
-        BUILDING: true,
-        ROOM: true,
-        STREET: true,
-        BLK: true,
-        SOI: true,
-        SUB_DIST: true,
-        DISTRICT: true,
-        PROVINCE: true,
-        POST_CODE: true,
-        TEL_NO: true,
-        E_MAIL: true,
-        WEBSITE: true,
-        SOCIAL: true,
         ANSWER: true,
         TSIC_CHG: true,
         LG: true,
-        LG1: true,
-        LG2: true,
-        LG3: true,
         LG4: true,
         DES_TYPE: true,
         TYPE: true,
@@ -584,12 +561,6 @@ export const GET = async (req: NextRequest) => {
         WWKNESDB: true,
       },
     });
-
-    for (const item of report) {
-      item.FIRSTNAME = decrypt(item.FIRSTNAME);
-      item.LASTNAME = decrypt(item.LASTNAME);
-      item.LG1 = decrypt(item.LG1);
-    }
 
     return NextResponse.json(report);
   } catch (e) {

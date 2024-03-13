@@ -287,10 +287,7 @@ const ApprovePage = () => {
         });
         let data: DataType[] = [];
         if (result.reportStatus.length > 0) {
-          result.reportStatus.forEach(function (
-            value: ReportStatus,
-            i: number
-          ) {
+          result.reportStatus.forEach((value: ReportStatus) => {
             const status: DataType = {
               key: value.no,
               id: value.ID,
@@ -350,10 +347,7 @@ const ApprovePage = () => {
           });
         }
         setResponse(data);
-        if (
-          session?.user.role === Role.SUBJECT &&
-          result.notApproveCount === 0
-        ) {
+        if (result.notApproveCount === 0) {
           downloadData();
         }
       }
@@ -466,50 +460,45 @@ const ApprovePage = () => {
 
         {!loading && (
           <>
-            {session?.user.role === Role.SUBJECT && (
-              <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
-                <p>ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมด:</p>
-                {count.totalNotApproveCount === 0 ? (
-                  <CSVLink
-                    data={csvData}
-                    filename={`retail${year}-${quarter}-${proviceId}.csv`}
-                  >
-                    <Button secondary>
-                      <IoCloudDownloadOutline className="mr-1" />
-                      ดาวน์โหลด
-                    </Button>
-                  </CSVLink>
-                ) : (
-                  <p>
-                    ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
-                  </p>
-                )}
-              </div>
-            )}
-            {(session?.user.role === Role.SUPERVISOR ||
-              session?.user.role === Role.SUBJECT) && (
-              <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
-                <p>ดูตารางสถิติ:</p>
-                {count.totalNotApproveCount === 0 ? (
-                  <Link
-                    href={`/specification${
-                      session.user.role === Role.SUBJECT
-                        ? `?pvid=${proviceId}`
-                        : ""
-                    }`}
-                  >
-                    <Button secondary>
-                      <FaExternalLinkAlt className="mr-1" />
-                      ดูตาราง
-                    </Button>
-                  </Link>
-                ) : (
-                  <p>
-                    ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
-                  </p>
-                )}
-              </div>
-            )}
+            <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
+              <p>ดาวน์โหลดข้อมูลของสถานประกอบการทั้งหมด:</p>
+              {count.totalNotApproveCount === 0 ? (
+                <CSVLink
+                  data={csvData}
+                  filename={`retail${year}-${quarter}-${proviceId}.csv`}
+                >
+                  <Button secondary>
+                    <IoCloudDownloadOutline className="mr-1" />
+                    ดาวน์โหลด
+                  </Button>
+                </CSVLink>
+              ) : (
+                <p>
+                  ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
+                </p>
+              )}
+            </div>
+            <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
+              <p>ดูตารางสถิติ:</p>
+              {count.totalNotApproveCount === 0 ? (
+                <Link
+                  href={`/specification${
+                    session?.user.role === Role.SUBJECT
+                      ? `?pvid=${proviceId}`
+                      : ""
+                  }`}
+                >
+                  <Button secondary>
+                    <FaExternalLinkAlt className="mr-1" />
+                    ดูตาราง
+                  </Button>
+                </Link>
+              ) : (
+                <p>
+                  ไม่สามารถดำเนินการได้จนกว่าทุกสถานประกอบการจะได้รับการอนุมัติโดยผู้ตรวจ
+                </p>
+              )}
+            </div>
           </>
         )}
 
