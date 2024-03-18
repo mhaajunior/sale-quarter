@@ -75,7 +75,7 @@ export const consistencyCheck1 = (data: ReportForm) => {
   const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
 
   if (EMP) {
-    const str = getSizeRErrorString(Number(SIZE_R));
+    const str = `Err SIZE_R = ${SIZE_R}, `;
     if (between(EMP, 1, 5) && Number(SIZE_R) !== 1) {
       errData.push({
         label: ["SIZE_R", "EMP"],
@@ -254,49 +254,4 @@ export const consistencyCheck2 = (data: ReportForm) => {
   }
 
   return errData;
-};
-
-const getSizeRErrorString = (sizeR: number) => {
-  let str = "";
-  switch (sizeR) {
-    case 1:
-      str = "Err SIZE_R = 01, ";
-      break;
-    case 2:
-      str = "Err SIZE_R = 02, ";
-      break;
-    case 3:
-      str = "Err SIZE_R = 03, ";
-      break;
-    case 4:
-      str = "Err SIZE_R = 04, ";
-      break;
-    case 5:
-      str = "Err SIZE_R = 05, ";
-      break;
-    case 6:
-      str = "Err SIZE_R = 06, ";
-      break;
-    case 7:
-      str = "Err SIZE_R = 07, ";
-      break;
-    case 8:
-      str = "Err SIZE_R = 08, ";
-      break;
-    case 9:
-      str = "Err SIZE_R = 09, ";
-      break;
-    case 10:
-      str = "Err SIZE_R = 10, ";
-      break;
-    case 11:
-      str = "Err SIZE_R = 11, ";
-      break;
-    case 12:
-      str = "Err SIZE_R = 12, ";
-      break;
-    default:
-      break;
-  }
-  return str;
 };
