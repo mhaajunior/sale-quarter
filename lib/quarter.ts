@@ -1,7 +1,5 @@
 import moment from "moment";
 
-export const LAST_DAY = "";
-
 export const quarterMap = (year: number) => {
   return [
     {
@@ -19,7 +17,8 @@ export const quarterMap = (year: number) => {
       endDate: `${year}-06-30`,
       monthRange: ["เม.ย.", "พ.ค.", "มิ.ย."],
       rangeVal: [4, 5, 6],
-      formSubmittedRange: [`${year}-07-01`, `${year}-07-31`],
+      // formSubmittedRange: [`${year}-07-01`, `${year}-07-31`],
+      formSubmittedRange: [`${year}-01-01`, `${year}-04-30`], //pending edit
       cronRange: [`${year}-07-01`, `${year}-07-31`],
     },
     {

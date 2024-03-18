@@ -6,13 +6,13 @@ import { Prisma } from "@prisma/client";
 import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  decrypt,
   encrypt,
   getUserName,
   getUserRole,
   validateUserRole,
 } from "../middleware";
 import { changeToNull } from "@/lib/common";
+import { checkErrorFromRole } from "@/lib/validate";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -20,6 +20,7 @@ export const POST = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const mode = req.headers.get("mode");
   let role = null;
+  let name = null;
   let lastEditor = "";
 
   const validation = createReportSchema.safeParse(body);
@@ -36,7 +37,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
     role = getUserRole(accessToken);
-    const name = getUserName(accessToken);
+    name = getUserName(accessToken);
     if (role === Role.INTERVIEWER) {
       lastEditor = `${name} (เจ้าหน้าที่บันทึกข้อมูล)`;
     } else if (role === Role.SUPERVISOR) {
@@ -487,10 +488,10 @@ export const GET = async (req: NextRequest) => {
         MUN: true,
         EA: true,
         VIL: true,
-        TSIC_R: true,
         TSIC_L: true,
-        SIZE_R: true,
+        TSIC_R: true,
         SIZE_L: true,
+        SIZE_R: true,
         NO: true,
         QTR: true,
         YR: true,
@@ -501,11 +502,12 @@ export const GET = async (req: NextRequest) => {
         LG4: true,
         DES_TYPE: true,
         TYPE: true,
+        EMP: true,
         M1: true,
-        M2: true,
-        M3: true,
         R1: true,
+        M2: true,
         R2: true,
+        M3: true,
         R3: true,
         TR: true,
         SI: true,
@@ -538,7 +540,6 @@ export const GET = async (req: NextRequest) => {
         PRVS: true,
         PIN: true,
         PDE: true,
-        EMP: true,
         STO: true,
         DAY: true,
         OP1: true,

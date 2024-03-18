@@ -26,7 +26,7 @@ import {
 } from "@/utils/dropdownOption";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, Col, FloatButton, Modal, Radio, Row, Space } from "antd";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import _ from "lodash";
@@ -56,12 +56,14 @@ const FormPage = () => {
   const [si5, setSi5] = useState<boolean | undefined>();
   const [si6, setSi6] = useState<boolean | undefined>();
   const [si7, setSi7] = useState<boolean | undefined>();
+  const [trError, setTrError] = useState<any>(null);
   const [denied, setDenied] = useState<{ isDenied: boolean; code?: number }>({
     isDenied: false,
   });
   const [notFound, setNotFound] = useState(false);
   const params = useParams();
   const router = useRouter();
+  const trRef = useRef<null | HTMLDivElement>(null);
   const session = useClientSession();
   const { year } = useContext(FilterContext);
   const searchParams = useSearchParams();
@@ -184,12 +186,19 @@ const FormPage = () => {
         setValue("R2_temp", numberWithCommas(removeNonNumeric(r2 as string)));
       if (R3)
         setValue("R3_temp", numberWithCommas(removeNonNumeric(r3 as string)));
-      if (TR)
+      if (TR) {
         setValue(
           "TR_temp",
           numberWithCommas(removeNonNumeric(tr_temp as string))
         );
-      setValue("TR", R1 + R2 + R3);
+        setValue("TR", R1 + R2 + R3);
+
+        if (TR !== R1 + R2 + R3) {
+          setTrError({ message: "จำนวนรวมทั้ง 3 เดือนที่กรอกไม่ถูกต้อง" });
+        } else {
+          setTrError(null);
+        }
+      }
     } else {
       setValue("TR", null);
     }
@@ -342,7 +351,6 @@ const FormPage = () => {
               SIZE_R,
               SIZE_L,
               NO,
-              ENU,
               TITLE,
               RANK,
               FIRSTNAME,
@@ -363,7 +371,6 @@ const FormPage = () => {
               E_MAIL,
               WEBSITE,
               SOCIAL,
-              TSIC_CHG,
               LG,
               LG1,
               LG1_temp,
@@ -383,7 +390,6 @@ const FormPage = () => {
             setValue("SIZE_R", SIZE_R);
             setValue("SIZE_L", SIZE_L);
             setValue("NO", NO);
-            setValue("ENU", ENU);
             setValue("TITLE", isNull(TITLE));
             setValue("RANK", isNull(RANK));
             setValue("FIRSTNAME", isNull(FIRSTNAME));
@@ -404,7 +410,6 @@ const FormPage = () => {
             setValue("E_MAIL", isNull(E_MAIL));
             setValue("WEBSITE", isNull(WEBSITE));
             setValue("SOCIAL", isNull(SOCIAL));
-            setValue("TSIC_CHG", TSIC_CHG);
             if (LG) {
               setValue("LG", LG);
               switch (LG) {
@@ -684,6 +689,10 @@ const FormPage = () => {
   };
 
   const onSubmit = handleSubmit((data) => {
+    if (trError) {
+      trRef?.current!.scrollIntoView();
+      return;
+    }
     let err: FormErrors[] = [];
     if (Number(data.ENU) === 1) {
       err = checkErrorFromRole(
@@ -801,8 +810,9 @@ const FormPage = () => {
           onSubmit={onSubmit}
         >
           {formErrors.length > 0 && (
-            <div className="card w-full border error !bg-red-100 flex flex-wrap gap-y-5">
-              {renderErrors()}
+            <div className="card w-full border error !bg-red-100">
+              <div className="mb-3 font-bold">Consistency Check</div>
+              <div className="flex flex-wrap gap-y-5">{renderErrors()}</div>
             </div>
           )}
 
@@ -1004,7 +1014,7 @@ const FormPage = () => {
             <div className="w-full">1. ข้อมูลสถานประกอบการ</div>
             <p className="w-full text-blue-500">
               *** กรุณากรอกข้อมูลให้ครบทุกช่อง
-              หากช่องไหนไม่มีข้อมูลให้ใช้เครื่องหมายขีด ( - )
+              หากช่องใดไม่มีข้อมูลให้บันทึกเครื่องหมายขีด ( - )
             </p>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
               <label className="w-full sm:w-32">คำนำหน้านาม</label>
@@ -1241,7 +1251,8 @@ const FormPage = () => {
             {Number(enu) === 8 && (
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                 <label className="w-full sm:w-32">
-                  รหัส TSIC นอกข่ายการสำรวจฯ
+                  <div className="inline-block sm:block">รหัส TSIC นอกข่าย</div>
+                  <div className="inline-block sm:block">การสำรวจฯ</div>
                 </label>
                 <Input
                   name="TSIC_CHG"
@@ -1318,8 +1329,8 @@ const FormPage = () => {
                                 />
                                 {lg1_temp === "1" && (
                                   <p className="text-blue-500">
-                                    หากไม่ต้องการกรอกให้กรอกเป็นเครื่องหมายขีด (
-                                    - ) แทน
+                                    หากไม่ประสงค์ให้ข้อมูลให้บันทึกเครื่องหมายขีด
+                                    ( - )
                                   </p>
                                 )}
                               </div>
@@ -1467,7 +1478,7 @@ const FormPage = () => {
                   บันทึกยอดขายหรือรายรับจากการขายสินค้า/บริการ แต่ละเดือน
                   <b>เป็นจำนวนเต็ม (บาท)</b>
                 </p>
-                <div className="flex flex-col gap-3">
+                <div ref={trRef} className="flex flex-col gap-3">
                   <div className="flex gap-1 justify-between items-center">
                     <p>เดือน {quarterData?.monthRange[0]}</p>
                     <Input
@@ -1526,7 +1537,7 @@ const FormPage = () => {
                       placeholder={session ? "TR" : "ยอดขายรวมทั้ง 3 เดือน"}
                       register={register}
                       className="w-48 md:w-72"
-                      errors={errors.TR_temp}
+                      errors={trError || errors.TR_temp}
                       showWord="บาท"
                       showName={!!session}
                       right

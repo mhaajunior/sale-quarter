@@ -29,7 +29,7 @@ const ListPage = () => {
     if (session) {
       fetchProvinceStatus();
     }
-  }, [session]);
+  }, [session, quarter]);
 
   const genExtra = (id: number, notApprove: number) => (
     <div className="flex items-center gap-5">

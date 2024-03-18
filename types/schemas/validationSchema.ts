@@ -287,11 +287,7 @@ export const createReportSchema = z
       .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
       .refine((data) => data.startsWith("0"), "เลขทะเบียนนิติบุคคลไม่ถูกต้อง")
       .optional(),
-    LG4: z
-      .string()
-      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
-      .max(60, "ข้อมูลในช่องนี้ห้ามเกิน 60 ตัวอักษร")
-      .optional(),
+    LG4: z.string().max(60, "ข้อมูลในช่องนี้ห้ามเกิน 60 ตัวอักษร").optional(),
     TYPE: z
       .number({ invalid_type_error: "กรุณาเลือกประเภทกิจการ" })
       .gte(1, "กรุณาเลือกประเภทกิจการ")
@@ -360,7 +356,6 @@ export const createReportSchema = z
     SI7: z.boolean().optional(),
     SI8: z
       .string()
-      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .max(60, "ข้อมูลในช่องนี้ห้ามเกินกว่า 60 ตัวอักษร")
       .optional(),
     SI11: z
@@ -672,9 +667,58 @@ export const createReportSchema = z
           ) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "สัดส่วนที่กรอกในข้อ 6.2 ต้องรวมกันได้ 100%",
+              message: "สัดส่วนที่บันทึกในข้อ 6.2 ต้องรวมกันเท่ากับ 100%",
               path: ["SI7"],
             });
+            if (SI1) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI11"],
+              });
+            }
+            if (SI2) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI22"],
+              });
+            }
+            if (SI3) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI33"],
+              });
+            }
+            if (SI4) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI44"],
+              });
+            }
+            if (SI5) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI55"],
+              });
+            }
+            if (SI6) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI66"],
+              });
+            }
+            if (SI7) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: " ",
+                path: ["SI77"],
+              });
+            }
           }
         }
       }

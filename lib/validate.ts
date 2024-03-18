@@ -74,25 +74,68 @@ export const consistencyCheck1 = (data: ReportForm) => {
   const errData: FormErrors[] = [];
   const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
 
-  if (
-    EMP &&
-    ((Number(SIZE_R) === 1 && !between(EMP, 1, 5)) ||
-      (Number(SIZE_R) === 2 && !between(EMP, 6, 10)) ||
-      (Number(SIZE_R) === 3 && !between(EMP, 11, 15)) ||
-      (Number(SIZE_R) === 4 && !between(EMP, 16, 20)) ||
-      (Number(SIZE_R) === 5 && !between(EMP, 21, 25)) ||
-      (Number(SIZE_R) === 6 && !between(EMP, 26, 30)) ||
-      (Number(SIZE_R) === 7 && !between(EMP, 31, 50)) ||
-      (Number(SIZE_R) === 8 && !between(EMP, 51, 100)) ||
-      (Number(SIZE_R) === 9 && !between(EMP, 101, 200)) ||
-      (Number(SIZE_R) === 10 && !between(EMP, 201, 500)) ||
-      (Number(SIZE_R) === 11 && !between(EMP, 501, 1000)) ||
-      (Number(SIZE_R) === 12 && EMP <= 1000))
-  ) {
-    errData.push({
-      label: ["SIZE_R", "EMP"],
-      message: "SIZE_R กับ EMP ไม่สอดคล้องกัน",
-    });
+  if (EMP) {
+    if (between(EMP, 1, 5) && Number(SIZE_R) !== 1) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 1-5 SIZE_R ต้องเท่ากับ 01",
+      });
+    } else if (between(EMP, 6, 10) && Number(SIZE_R) !== 2) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 6-10 SIZE_R ต้องเท่ากับ 02",
+      });
+    } else if (between(EMP, 11, 15) && Number(SIZE_R) !== 3) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 11-15 SIZE_R ต้องเท่ากับ 03",
+      });
+    } else if (between(EMP, 16, 20) && Number(SIZE_R) !== 4) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 16-20 SIZE_R ต้องเท่ากับ 04",
+      });
+    } else if (between(EMP, 21, 25) && Number(SIZE_R) !== 5) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 21-25 SIZE_R ต้องเท่ากับ 05",
+      });
+    } else if (between(EMP, 26, 30) && Number(SIZE_R) !== 6) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 26-30 SIZE_R ต้องเท่ากับ 06",
+      });
+    } else if (between(EMP, 31, 50) && Number(SIZE_R) !== 7) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 31-50 SIZE_R ต้องเท่ากับ 07",
+      });
+    } else if (between(EMP, 51, 100) && Number(SIZE_R) !== 8) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 51-100 SIZE_R ต้องเท่ากับ 09",
+      });
+    } else if (between(EMP, 101, 200) && Number(SIZE_R) !== 9) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 101-200 SIZE_R ต้องเท่ากับ 09",
+      });
+    } else if (between(EMP, 201, 500) && Number(SIZE_R) !== 10) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 201-500 SIZE_R ต้องเท่ากับ 10",
+      });
+    } else if (between(EMP, 501, 1000) && Number(SIZE_R) !== 11) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP ระหว่าง 501-1000 SIZE_R ต้องเท่ากับ 11",
+      });
+    } else if (EMP > 1000 && Number(SIZE_R) !== 12) {
+      errData.push({
+        label: ["SIZE_R", "EMP"],
+        message: "EMP มากกว่า 1000 SIZE_R ต้องเท่ากับ 12",
+      });
+    }
   }
 
   if (TSIC_R) {

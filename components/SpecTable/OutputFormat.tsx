@@ -116,13 +116,13 @@ const OutputFormat = ({ data }: { data: Data }) => {
       align: "center",
     },
     {
-      title: "รหัสตามมาตรฐานอุตสาหกรรมฯ",
+      title: "รหัสตามมาตรฐานอุตสาหกรรมฯ\n(TSIC_R)",
       dataIndex: "TSIC_R",
       key: "TSIC_R",
       align: "center",
     },
     {
-      title: "ขนาด",
+      title: "ขนาด\n(SIZE_R)",
       dataIndex: "SIZE_R",
       key: "SIZE_R",
       align: "center",
@@ -263,7 +263,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
       align: "center",
     },
     {
-      title: "TSIC_นอกข่าย",
+      title: "TSIC นอกข่าย",
       dataIndex: "TSIC_CHG",
       key: "TSIC_CHG",
       align: "center",
@@ -346,7 +346,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("C5:C6");
-    worksheet.getCell("C5").value = "รหัสตามมาตรฐานอุตสาหกรรมฯ";
+    worksheet.getCell("C5").value = "รหัสตามมาตรฐานอุตสาหกรรมฯ\r\nTSIC_R";
     worksheet.getCell("C5").alignment = {
       vertical: "top",
       horizontal: "center",
@@ -358,10 +358,11 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("D5:D6");
-    worksheet.getCell("D5").value = "ขนาด";
+    worksheet.getCell("D5").value = "ขนาด\r\nSIZE_R";
     worksheet.getCell("D5").alignment = {
       vertical: "top",
       horizontal: "center",
+      wrapText: true,
     };
     worksheet.getCell("D5").border = {
       right: { style: "thin" },
@@ -624,6 +625,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
           bordered
           size="middle"
           scroll={{ x: "calc(2500px + 50%)" }}
+          style={{ whiteSpace: "pre" }}
           showSorterTooltip={false}
           pagination={{
             defaultPageSize: 100,

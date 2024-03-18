@@ -163,14 +163,14 @@ const Tabulation2 = ({ data }: { data: Data }) => {
       width: "16%",
     },
     {
-      title: "รหัสตามมาตรฐานอุตสาหกรรมฯ",
+      title: "รหัสตามมาตรฐานอุตสาหกรรมฯ\n(TSIC_R)",
       dataIndex: "TSIC_R",
       key: "TSIC_R",
       align: "center",
       width: "13%",
     },
     {
-      title: "ขนาด",
+      title: "ขนาด\n(SIZE_R)",
       dataIndex: "SIZE_R",
       key: "SIZE_R",
       align: "center",
@@ -244,7 +244,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
 
     worksheet.mergeCells("A1:O1");
     worksheet.getCell("A1").value =
-      "ตาราง ข. ตรวจสอบร้อยละของการเปลี่ยนแปลงรายรับจากการขายและสินค้าคงเหลือเป็นรายไตรมาส";
+      "ตาราง ข ตรวจสอบร้อยละของการเปลี่ยนแปลงรายรับจากการขายและสินค้าคงเหลือเป็นรายไตรมาส";
     worksheet.getCell("A1").font = {
       bold: true,
       name: "TH SarabunPSK",
@@ -460,6 +460,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
           bordered
           size="middle"
           scroll={{ x: "calc(1200px + 50%)" }}
+          style={{ whiteSpace: "pre" }}
           showSorterTooltip={false}
           pagination={{
             defaultPageSize: 100,

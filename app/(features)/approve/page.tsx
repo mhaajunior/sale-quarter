@@ -96,7 +96,7 @@ const ApprovePage = () => {
       }
       fetchCompanyStatus();
     }
-  }, [session, page, debouncedSearchValue, option]);
+  }, [session, page, debouncedSearchValue, option, quarter]);
 
   const quarterArr: QuarterArr[] = [];
   for (let i = 1; i <= 4; i++) {
@@ -392,6 +392,13 @@ const ApprovePage = () => {
     setOption(val);
   };
 
+  const onChangeQuarter = (item: QuarterArr) => {
+    if (item.passOpenDate) {
+      setPage(1);
+      setQuarter(item.value);
+    }
+  };
+
   const approveOptions = [
     { label: "ทั้งหมด", value: 1 },
     { label: "ยังไม่อนุมัติ", value: 2 },
@@ -479,7 +486,7 @@ const ApprovePage = () => {
               )}
             </div>
             <div className="w-full flex flex-wrap items-center gap-x-5 gap-y-1">
-              <p>ดูตารางสถิติ:</p>
+              <p>ตารางสถิติ:</p>
               {count.totalNotApproveCount === 0 ? (
                 <Link
                   href={`/specification${
@@ -517,7 +524,7 @@ const ApprovePage = () => {
                   <Badge
                     key={item.value}
                     color={item.color}
-                    onClick={() => item.passOpenDate && setQuarter(item.value)}
+                    onClick={() => onChangeQuarter(item)}
                     active={item.value === quarter}
                     disabled={!item.passOpenDate}
                   >
