@@ -12,7 +12,6 @@ import {
   validateUserRole,
 } from "../middleware";
 import { changeToNull } from "@/lib/common";
-import { checkErrorFromRole } from "@/lib/validate";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -20,7 +19,6 @@ export const POST = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
   const mode = req.headers.get("mode");
   let role = null;
-  let name = null;
   let lastEditor = "";
 
   const validation = createReportSchema.safeParse(body);
@@ -37,7 +35,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
     }
     role = getUserRole(accessToken);
-    name = getUserName(accessToken);
+    const name = getUserName(accessToken);
     if (role === Role.INTERVIEWER) {
       lastEditor = `${name} (เจ้าหน้าที่บันทึกข้อมูล)`;
     } else if (role === Role.SUPERVISOR) {

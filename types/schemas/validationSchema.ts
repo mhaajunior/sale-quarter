@@ -287,7 +287,11 @@ export const createReportSchema = z
       .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
       .refine((data) => data.startsWith("0"), "เลขทะเบียนนิติบุคคลไม่ถูกต้อง")
       .optional(),
-    LG4: z.string().max(60, "ข้อมูลในช่องนี้ห้ามเกิน 60 ตัวอักษร").optional(),
+    LG4: z
+      .string()
+      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
+      .max(60, "ข้อมูลในช่องนี้ห้ามเกิน 60 ตัวอักษร")
+      .optional(),
     TYPE: z
       .number({ invalid_type_error: "กรุณาเลือกประเภทกิจการ" })
       .gte(1, "กรุณาเลือกประเภทกิจการ")
@@ -356,6 +360,7 @@ export const createReportSchema = z
     SI7: z.boolean().optional(),
     SI8: z
       .string()
+      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
       .max(60, "ข้อมูลในช่องนี้ห้ามเกินกว่า 60 ตัวอักษร")
       .optional(),
     SI11: z
