@@ -75,65 +75,66 @@ export const consistencyCheck1 = (data: ReportForm) => {
   const { SIZE_R, EMP, TYPE, TSIC_R, STO_temp, DAY } = data;
 
   if (EMP) {
+    const str = getSizeRErrorString(Number(SIZE_R));
     if (between(EMP, 1, 5) && Number(SIZE_R) !== 1) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 1-5 SIZE_R ต้องเท่ากับ 01",
+        message: str + "Err EMP = 01",
       });
     } else if (between(EMP, 6, 10) && Number(SIZE_R) !== 2) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 6-10 SIZE_R ต้องเท่ากับ 02",
+        message: str + "Err EMP = 02",
       });
     } else if (between(EMP, 11, 15) && Number(SIZE_R) !== 3) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 11-15 SIZE_R ต้องเท่ากับ 03",
+        message: str + "Err EMP = 03 ",
       });
     } else if (between(EMP, 16, 20) && Number(SIZE_R) !== 4) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 16-20 SIZE_R ต้องเท่ากับ 04",
+        message: str + "Err EMP = 04 ",
       });
     } else if (between(EMP, 21, 25) && Number(SIZE_R) !== 5) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 21-25 SIZE_R ต้องเท่ากับ 05",
+        message: str + "Err EMP = 05 ",
       });
     } else if (between(EMP, 26, 30) && Number(SIZE_R) !== 6) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 26-30 SIZE_R ต้องเท่ากับ 06",
+        message: str + "Err EMP = 06 ",
       });
     } else if (between(EMP, 31, 50) && Number(SIZE_R) !== 7) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 31-50 SIZE_R ต้องเท่ากับ 07",
+        message: str + "Err EMP = 07 ",
       });
     } else if (between(EMP, 51, 100) && Number(SIZE_R) !== 8) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 51-100 SIZE_R ต้องเท่ากับ 09",
+        message: str + "Err EMP = 08 ",
       });
     } else if (between(EMP, 101, 200) && Number(SIZE_R) !== 9) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 101-200 SIZE_R ต้องเท่ากับ 09",
+        message: str + "Err EMP = 09 ",
       });
     } else if (between(EMP, 201, 500) && Number(SIZE_R) !== 10) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 201-500 SIZE_R ต้องเท่ากับ 10",
+        message: str + "Err EMP = 10 ",
       });
     } else if (between(EMP, 501, 1000) && Number(SIZE_R) !== 11) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP ระหว่าง 501-1000 SIZE_R ต้องเท่ากับ 11",
+        message: str + "Err EMP = 11 ",
       });
     } else if (EMP > 1000 && Number(SIZE_R) !== 12) {
       errData.push({
         label: ["SIZE_R", "EMP"],
-        message: "EMP มากกว่า 1000 SIZE_R ต้องเท่ากับ 12",
+        message: str + "Err EMP = 12 ",
       });
     }
   }
@@ -253,4 +254,49 @@ export const consistencyCheck2 = (data: ReportForm) => {
   }
 
   return errData;
+};
+
+const getSizeRErrorString = (sizeR: number) => {
+  let str = "";
+  switch (sizeR) {
+    case 1:
+      str = "Err SIZE_R = 01, ";
+      break;
+    case 2:
+      str = "Err SIZE_R = 02, ";
+      break;
+    case 3:
+      str = "Err SIZE_R = 03, ";
+      break;
+    case 4:
+      str = "Err SIZE_R = 04, ";
+      break;
+    case 5:
+      str = "Err SIZE_R = 05, ";
+      break;
+    case 6:
+      str = "Err SIZE_R = 06, ";
+      break;
+    case 7:
+      str = "Err SIZE_R = 07, ";
+      break;
+    case 8:
+      str = "Err SIZE_R = 08, ";
+      break;
+    case 9:
+      str = "Err SIZE_R = 09, ";
+      break;
+    case 10:
+      str = "Err SIZE_R = 10, ";
+      break;
+    case 11:
+      str = "Err SIZE_R = 11, ";
+      break;
+    case 12:
+      str = "Err SIZE_R = 12, ";
+      break;
+    default:
+      break;
+  }
+  return str;
 };
