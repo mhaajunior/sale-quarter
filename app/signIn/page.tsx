@@ -96,7 +96,7 @@ const SignInPage = (props: Props) => {
             )}
             <Input
               name="username"
-              placeholder="ชื่อผู้ใช้"
+              placeholder="รหัสผู้ใช้"
               register={register}
               errors={errors.username}
               className="w-60 md:w-72"

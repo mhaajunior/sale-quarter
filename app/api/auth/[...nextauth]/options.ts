@@ -11,9 +11,9 @@ export const options = {
       name: "Credentials",
       credentials: {
         username: {
-          label: "ชื่อผู้ใช้",
+          label: "รหัสผู้ใช้",
           type: "username",
-          placeholder: "ชื่อผู้ใช้",
+          placeholder: "รหัสผู้ใช้",
         },
         password: {
           label: "รหัสผ่าน",
