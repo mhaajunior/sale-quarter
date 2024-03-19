@@ -370,7 +370,30 @@ const ApprovePage = () => {
       });
 
       if (res.status === 200) {
-        setCsvData(res.data);
+        let excel = res.data;
+        for (const item of excel) {
+          delete item.TITLE;
+          delete item.RANK;
+          delete item.FIRSTNAME;
+          delete item.LASTNAME;
+          delete item.EST_TITLE;
+          delete item.EST_NAME;
+          delete item.ADD_NO;
+          delete item.BUILDING;
+          delete item.ROOM;
+          delete item.STREET;
+          delete item.BLK;
+          delete item.SOI;
+          delete item.SUB_DIST;
+          delete item.DISTRICT;
+          delete item.PROVINCE;
+          delete item.POST_CODE;
+          delete item.TEL_NO;
+          delete item.E_MAIL;
+          delete item.WEBSITE;
+          delete item.SOCIAL;
+        }
+        setCsvData(excel);
       }
     } catch (err: any) {
       errorHandler(err);

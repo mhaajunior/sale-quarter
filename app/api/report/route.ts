@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client";
 import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import {
+  decrypt,
   encrypt,
   getUserName,
   getUserRole,
@@ -494,6 +495,26 @@ export const GET = async (req: NextRequest) => {
         QTR: true,
         YR: true,
         ENU: true,
+        TITLE: true,
+        RANK: true,
+        FIRSTNAME: true,
+        LASTNAME: true,
+        EST_TITLE: true,
+        EST_NAME: true,
+        ADD_NO: true,
+        BUILDING: true,
+        ROOM: true,
+        STREET: true,
+        BLK: true,
+        SOI: true,
+        SUB_DIST: true,
+        DISTRICT: true,
+        PROVINCE: true,
+        POST_CODE: true,
+        TEL_NO: true,
+        E_MAIL: true,
+        WEBSITE: true,
+        SOCIAL: true,
         ANSWER: true,
         TSIC_CHG: true,
         LG: true,
@@ -560,6 +581,11 @@ export const GET = async (req: NextRequest) => {
         WWKNESDB: true,
       },
     });
+
+    for (const item of report) {
+      item.FIRSTNAME = decrypt(item.FIRSTNAME);
+      item.LASTNAME = decrypt(item.LASTNAME);
+    }
 
     return NextResponse.json(report);
   } catch (e) {
