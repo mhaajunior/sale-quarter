@@ -88,8 +88,7 @@ const Navbar = () => {
   let manualLink = process.env.NEXT_PUBLIC_COMPANY_MANUAL;
   if (!session) {
     navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
-  }
-  if (session?.user.role === Role.INTERVIEWER) {
+  } else if (session?.user.role === Role.INTERVIEWER) {
     navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
     manualLink = process.env.NEXT_PUBLIC_INTERVIEWER_MANUAL;
   } else if (session?.user.role === Role.SUPERVISOR) {
