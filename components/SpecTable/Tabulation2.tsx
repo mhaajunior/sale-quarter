@@ -253,7 +253,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
 
     worksheet.getCell("A2").value = "จังหวัด";
     worksheet.getCell("B2").value = province;
-    worksheet.getCell("L2").value = `ปี 25${year}`;
+    worksheet.getCell("M2").value = `ปี 25${year}`;
     worksheet.getRow(2).font = { name: "TH SarabunPSK", size: 16 };
     worksheet.getRow(2).alignment = { horizontal: "left" };
     worksheet.getRow(4).font = { name: "TH SarabunPSK", size: 16 };
@@ -275,7 +275,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("B4:B5");
-    worksheet.getCell("B4").value = "คำนำหน้านาม\r\nEST_NAME";
+    worksheet.getCell("B4").value = "ชื่อสถานประกอบการ\r\nEST_NAME";
     worksheet.getCell("B4").alignment = {
       vertical: "top",
       horizontal: "center",
@@ -326,13 +326,14 @@ const Tabulation2 = ({ data }: { data: Data }) => {
     worksheet.mergeCells("I4:L4");
     worksheet.getCell(
       "I4"
-    ).value = `ร้อยละการเปลี่ยนแปลงของมูลค่าสินค้าคงเหลือปี 25${year} (บาท)`;
+    ).value = `ร้อยละการเปลี่ยนแปลงของมูลค่าสินค้าคงเหลือปี 25${year}`;
     worksheet.getCell("I4").alignment = {
       vertical: "top",
       horizontal: "center",
     };
     worksheet.getCell("I4").border = {
       bottom: { style: "thin" },
+      right: { style: "thin" },
     };
 
     worksheet.getCell("E5").value = "ไตรมาส 1 (QTR1)";
@@ -415,6 +416,16 @@ const Tabulation2 = ({ data }: { data: Data }) => {
       right: { style: "thin" },
     };
 
+    worksheet.mergeCells("M4:M5");
+    worksheet.getCell("M4").value = "หมายเหตุ";
+    worksheet.getCell("M4").alignment = {
+      vertical: "top",
+      horizontal: "center",
+    };
+    worksheet.getCell("M4").border = {
+      bottom: { style: "thin" },
+    };
+
     for (let i = 0; i < excelData.length; i++) {
       let lastRow = worksheet.lastRow!.number;
       let insertRow = ++lastRow;
@@ -430,7 +441,7 @@ const Tabulation2 = ({ data }: { data: Data }) => {
     }
 
     let lastRow = worksheet.lastRow!.number;
-    createOuterBorder(worksheet, [1, 4], [12, lastRow]);
+    createOuterBorder(worksheet, [1, 4], [13, lastRow]);
 
     const buffer = await workbook.xlsx.writeBuffer();
     const fileType =

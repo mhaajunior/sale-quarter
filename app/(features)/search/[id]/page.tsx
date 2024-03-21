@@ -191,7 +191,6 @@ const FormPage = () => {
           "TR_temp",
           numberWithCommas(removeNonNumeric(tr_temp as string))
         );
-        setValue("TR", R1 + R2 + R3);
 
         if (TR !== R1 + R2 + R3) {
           setTrError({ message: "จำนวนรวมทั้ง 3 เดือนที่กรอกไม่ถูกต้อง" });
@@ -199,6 +198,7 @@ const FormPage = () => {
           setTrError(null);
         }
       }
+      setValue("TR", R1 + R2 + R3);
     } else {
       setValue("TR", null);
     }
@@ -1249,22 +1249,37 @@ const FormPage = () => {
               />
             </div>
             {Number(enu) === 8 && (
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                <label className="w-full sm:w-32">
-                  <div className="inline-block sm:block">รหัส TSIC นอกข่าย</div>
-                  <div className="inline-block sm:block">การสำรวจฯ</div>
-                </label>
-                <Input
-                  name="TSIC_CHG"
-                  type="number"
-                  placeholder="TSIC_CHG"
-                  register={register}
-                  className="w-60 md:w-72"
-                  errors={errors.TSIC_CHG}
-                  isNumber
-                  showName
-                />
-              </div>
+              <>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <label className="w-full sm:w-32">ประเภทของกิจการ</label>
+                  <Input
+                    name="DES_TYPE"
+                    placeholder="DES_TYPE"
+                    register={register}
+                    className="w-60 md:w-72"
+                    errors={errors.DES_TYPE}
+                    showName
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <label className="w-full sm:w-32">
+                    <div className="inline-block sm:block">
+                      รหัส TSIC นอกข่าย
+                    </div>
+                    <div className="inline-block sm:block">การสำรวจฯ</div>
+                  </label>
+                  <Input
+                    name="TSIC_CHG"
+                    type="number"
+                    placeholder="TSIC_CHG"
+                    register={register}
+                    className="w-60 md:w-72"
+                    errors={errors.TSIC_CHG}
+                    isNumber
+                    showName
+                  />
+                </div>
+              </>
             )}
           </div>
 

@@ -235,7 +235,7 @@ const OutputFormat = ({ data }: { data: Data }) => {
     };
 
     worksheet.mergeCells("B4:B5");
-    worksheet.getCell("B4").value = "คำนำหน้านาม\r\nEST_NAME";
+    worksheet.getCell("B4").value = "ชื่อสถานประกอบการ\r\nEST_NAME";
     worksheet.getCell("B4").alignment = {
       vertical: "top",
       horizontal: "center",

@@ -604,7 +604,7 @@ const ResponseRate = ({ data }: { data: Data }) => {
 
     worksheet.mergeCells("T7:U8");
     worksheet.getCell("T7").value =
-      "เป็นสถานประกอบการ\r\nแต่ไม่อยู่ในคุ้ม\r\n(ENU=8)";
+      "เป็นสถานประกอบการ\r\nแต่ไม่อยู่ในคุ้มรวม\r\n(ENU=8)";
     worksheet.getCell("T7").alignment = {
       vertical: "middle",
       horizontal: "center",

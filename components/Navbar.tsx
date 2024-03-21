@@ -4,14 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
-import { FaSignOutAlt, FaAngleDown, FaUser, FaSignInAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaAngleDown, FaUser, FaBook } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import { Role } from "@/types/dto/role";
 import { Dropdown, Space } from "antd";
 import Swal from "sweetalert2";
 import { signOut } from "next-auth/react";
 import logo from "@/public/images/nso-logo.png";
-import Button from "./Button";
 import useWindowSize from "@/hooks/use-window-size";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -39,7 +38,9 @@ const Navbar = () => {
       cancelButtonText: "ยกเลิก",
     }).then((result) => {
       if (result.isConfirmed) {
-        signOut({ callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL });
+        signOut({
+          callbackUrl: `${process.env.NEXT_PUBLIC_CALLBACK_URL}/signIn`,
+        });
       }
     });
   };
@@ -84,9 +85,39 @@ const Navbar = () => {
     },
   ];
 
+  let manualLink = process.env.NEXT_PUBLIC_COMPANY_MANUAL;
+  if (!session) {
+    navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
+  }
+  if (session?.user.role === Role.INTERVIEWER) {
+    navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
+    manualLink = process.env.NEXT_PUBLIC_INTERVIEWER_MANUAL;
+  } else if (session?.user.role === Role.SUPERVISOR) {
+    navItems = navItems.filter((item) => item.role.includes(Role.SUPERVISOR));
+    manualLink = process.env.NEXT_PUBLIC_SUPERVISOR_MANUAL;
+  } else if (session?.user.role === Role.SUBJECT) {
+    navItems = navItems.filter((item) => item.role.includes(Role.SUBJECT));
+    manualLink = process.env.NEXT_PUBLIC_SUBJECT_MANUAL;
+  } else if (session?.user.role === Role.ADMIN) {
+    navItems = navItems.filter((item) => item.role.includes(Role.ADMIN));
+  }
+
   let manageItems = [
     {
-      key: "1",
+      key: 2,
+      label: (
+        <a
+          href={manualLink}
+          className="flex items-center gap-3"
+          target="_blank"
+        >
+          <FaBook />
+          คู่มือการใช้งาน
+        </a>
+      ),
+    },
+    {
+      key: 1,
       label: (
         <div onClick={doSignOut} className="flex items-center gap-3">
           <FaSignOutAlt />
@@ -96,14 +127,8 @@ const Navbar = () => {
     },
   ];
 
-  if (!session || session?.user.role === Role.INTERVIEWER) {
-    navItems = navItems.filter((item) => item.role.includes(Role.INTERVIEWER));
-  } else if (session?.user.role === Role.SUPERVISOR) {
-    navItems = navItems.filter((item) => item.role.includes(Role.SUPERVISOR));
-  } else if (session?.user.role === Role.SUBJECT) {
-    navItems = navItems.filter((item) => item.role.includes(Role.SUBJECT));
-  } else if (session?.user.role === Role.ADMIN) {
-    navItems = navItems.filter((item) => item.role.includes(Role.ADMIN));
+  if (session?.user.role === Role.ADMIN) {
+    manageItems = manageItems.filter((item) => item.key !== 2);
   }
 
   return (
@@ -129,22 +154,32 @@ const Navbar = () => {
               </li>
               {session !== undefined
                 ? size.width &&
-                  size.width > 768 &&
-                  navItems.map((item) => (
-                    <li
-                      key={item.title}
-                      className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden"
-                    >
-                      <Link
-                        href={item.link}
-                        className={
-                          item.path === currentPath ? "text-gray-900" : ""
-                        }
-                      >
-                        {item.title}
-                      </Link>
-                    </li>
-                  ))
+                  size.width > 768 && (
+                    <>
+                      {navItems.map((item) => (
+                        <li
+                          key={item.title}
+                          className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden"
+                        >
+                          <Link
+                            href={item.link}
+                            className={
+                              item.path === currentPath ? "text-gray-900" : ""
+                            }
+                          >
+                            {item.title}
+                          </Link>
+                        </li>
+                      ))}
+                      {!session && (
+                        <li className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer">
+                          <a href={manualLink} target="_blank">
+                            คู่มือการใช้งาน
+                          </a>
+                        </li>
+                      )}
+                    </>
+                  )
                 : ""}
             </ul>
             {size.width &&
@@ -156,7 +191,7 @@ const Navbar = () => {
                 />
               ) : (
                 <>
-                  {session ? (
+                  {session && (
                     <ul className="flex items-center justify-end">
                       <li className="hover:text-black text-center whitespace-nowrap text-ellipsis overflow-hidden">
                         <Dropdown
@@ -173,14 +208,6 @@ const Navbar = () => {
                         </Dropdown>
                       </li>
                     </ul>
-                  ) : (
-                    <Button
-                      primary
-                      className="!shadow-none"
-                      onClick={() => router.push("/api/auth/signin")}
-                    >
-                      เข้าสู่ระบบ
-                    </Button>
                   )}
                 </>
               ))}
@@ -222,12 +249,10 @@ const Navbar = () => {
                     ))}
                   </>
                 ) : (
-                  <li
-                    className="p-5 hover:text-black cursor-pointer flex items-center gap-3"
-                    onClick={() => router.push("/api/auth/signin")}
-                  >
-                    <FaSignInAlt />
-                    เข้าสู่ระบบ
+                  <li className="p-5 hover:text-black cursor-pointer flex items-center gap-3">
+                    <a href={manualLink} target="_blank">
+                      คู่มือการใช้งาน
+                    </a>
                   </li>
                 )}
               </motion.ul>

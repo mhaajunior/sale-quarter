@@ -64,7 +64,7 @@ const SignInPage = (props: Props) => {
     <div className="w-full flex h-svh">
       <div className="w-2/4 relative min-h-screen">
         <div className="absolute bottom-0 left-0">
-          <Image src={wave} alt="bottom wave" width={600} />
+          <Image src={wave} className="w-auto" alt="bottom wave" width={600} />
         </div>
         <div className="center w-full">
           <Image src={city} alt="city background" priority />
@@ -83,11 +83,12 @@ const SignInPage = (props: Props) => {
             className="w-[300px] md:w-[500px] flex flex-col gap-8 items-center relative !px-5 md:!px-16"
             onSubmit={onSubmit}
           >
-            <div>
-              <div className="text-3xl text-center text-[#09ad7f]">
+            <div className="flex flex-col gap-2 text-center">
+              <div className="text-3xl text-[#09ad7f]">
                 <h1>โครงการสำรวจ</h1>
                 <h1>ยอดขายรายไตรมาส</h1>
               </div>
+              <p>สำหรับเจ้าหน้าที่</p>
             </div>
             {props.searchParams?.error && (
               <div className="w-60 md:w-72 text-red-500 bg-red-100 p-3 rounded-md text-sm">
@@ -120,14 +121,6 @@ const SignInPage = (props: Props) => {
               >
                 เข้าสู่ระบบ
               </Button>
-              <p className="text-center mt-2">
-                <span
-                  className="cursor-pointer hover:text-black"
-                  onClick={() => router.push("/")}
-                >
-                  กลับไปหน้าแรก
-                </span>
-              </p>
             </div>
           </form>
         </div>
