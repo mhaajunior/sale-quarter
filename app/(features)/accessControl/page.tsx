@@ -113,7 +113,7 @@ const AccessControlPage = () => {
             <Switch
               defaultChecked={canCreateQtr2}
               onChange={(checked: boolean) => onSwitchChange(checked, 2)}
-              // disabled={!isPassOpenDate(2)} // pending edit
+              disabled={!isPassOpenDate(2)}
               className="bg-gray-500"
             />
           ),
