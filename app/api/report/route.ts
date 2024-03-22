@@ -435,7 +435,7 @@ export const POST = async (req: NextRequest) => {
           updateObj = { isApproveQtr4: p4 ? true : false };
           break;
         default:
-          return NextResponse.json("ไตรมาสไม่ถูกต้แง", { status: 400 });
+          return NextResponse.json("ไตรมาสไม่ถูกต้อง", { status: 400 });
       }
 
       await prisma.reportStatus.update({
