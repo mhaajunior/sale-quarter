@@ -480,11 +480,11 @@ const ApprovePage = () => {
         <div className="flex flex-wrap gap-3 md:gap-10">
           <p className="text-blue-500 mb-3 md:mb-0">
             จำนวนสถานประกอบการที่พบทั้งหมด:{" "}
-            {numberWithCommas(count.totalCount) || 0}
+            {numberWithCommas(count.totalCount) || 0} แห่ง
           </p>
           <p className="text-red-500 mb-3 md:mb-0">
             จำนวนสถานประกอบการที่ผู้ตรวจยังไม่อนุมัติ:{" "}
-            {numberWithCommas(count.notApproveCount) || 0}
+            {numberWithCommas(count.notApproveCount) || 0} แห่ง
           </p>
         </div>
 

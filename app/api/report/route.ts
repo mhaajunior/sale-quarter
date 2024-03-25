@@ -160,6 +160,9 @@ export const POST = async (req: NextRequest) => {
   let si5 = null;
   let si6 = null;
   let si7 = null;
+  let p1 = P1;
+  let p2 = P2;
+  let p3 = P3;
   let p4 = P4;
 
   if (SI === 2) {
@@ -173,17 +176,13 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
-    if (mode === "edit" && role !== Role.SUPERVISOR && role !== Role.SUBJECT) {
-      const report = await prisma.report.findUnique({
-        where: {
-          uniqueReport: { ID, YR, QTR },
-        },
-        select: {
-          P4: true,
-        },
-      });
-
-      if (report?.P4) {
+    if (mode === "edit") {
+      if (!accessToken) {
+        p1 = null;
+        p2 = null;
+        p3 = null;
+        p4 = null;
+      } else if (role === Role.INTERVIEWER) {
         p4 = null;
       }
     }
@@ -281,9 +280,9 @@ export const POST = async (req: NextRequest) => {
         OP10: OP10 || null,
         OP11: OP11 || null,
         OP12: OP12 || null,
-        P1,
-        P2,
-        P3,
+        P1: p1,
+        P2: p2,
+        P3: p3,
         P4: p4,
         lastEditor,
       },
@@ -386,10 +385,10 @@ export const POST = async (req: NextRequest) => {
         OP10,
         OP11,
         OP12,
-        P1,
-        P2,
-        P3,
-        P4,
+        P1: p1,
+        P2: p2,
+        P3: p3,
+        P4: p4,
         lastEditor,
       },
     });
@@ -446,7 +445,7 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    return NextResponse.json("สร้างแบบฟอร์มสำเร็จ");
+    return NextResponse.json("บันทึกแบบฟอร์มสำเร็จ");
   } catch (e) {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
