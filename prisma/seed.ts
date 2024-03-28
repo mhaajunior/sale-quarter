@@ -11,11 +11,15 @@ async function main() {
     const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
     await prisma.user.upsert({
       where: { username: item.staff_username.toString() },
-      update: {},
+      update: {
+        password: hashPassword,
+        fullname: item.staff_name.toString(),
+        province: item.staff_prov,
+      },
       create: {
         username: item.staff_username.toString(),
         password: hashPassword,
-        fullname: item.staff_name,
+        fullname: item.staff_name.toString(),
         province: item.staff_prov,
         role: "INTERVIEWER",
       },
@@ -25,11 +29,15 @@ async function main() {
     const hashPassword = await bcrypt.hash(item.staff_password.toString(), 10);
     await prisma.user.upsert({
       where: { username: item.staff_username.toString() },
-      update: {},
+      update: {
+        password: hashPassword,
+        fullname: item.staff_name.toString(),
+        province: item.staff_prov,
+      },
       create: {
         username: item.staff_username.toString(),
         password: hashPassword,
-        fullname: item.staff_name,
+        fullname: item.staff_name.toString(),
         province: item.staff_prov,
         role: "SUPERVISOR",
       },

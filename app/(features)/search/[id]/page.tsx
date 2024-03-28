@@ -856,6 +856,7 @@ const FormPage = () => {
                     register={register}
                     className="w-20"
                     errors={errors.AMP}
+                    disabled
                     right
                   />
                 </div>
@@ -867,6 +868,7 @@ const FormPage = () => {
                     register={register}
                     className="w-20"
                     errors={errors.TAM}
+                    disabled
                     right
                   />
                 </div>
@@ -880,6 +882,7 @@ const FormPage = () => {
                     className="w-20"
                     errors={errors.MUN}
                     isNumber
+                    disabled
                     right
                   />
                 </div>
@@ -891,6 +894,7 @@ const FormPage = () => {
                     register={register}
                     className="w-20"
                     errors={errors.EA}
+                    disabled
                     right
                   />
                 </div>
@@ -902,6 +906,7 @@ const FormPage = () => {
                     register={register}
                     className="w-20"
                     errors={errors.VIL}
+                    disabled
                     right
                   />
                 </div>
@@ -1342,12 +1347,10 @@ const FormPage = () => {
                                   errors={errors.LG1}
                                   showName={!!session}
                                 />
-                                {lg1_temp === "1" && (
-                                  <p className="text-blue-500">
-                                    หากไม่ประสงค์ให้ข้อมูลให้บันทึกเครื่องหมายขีด
-                                    ( - )
-                                  </p>
-                                )}
+                                <p className="text-blue-500">
+                                  หากไม่ประสงค์ให้ข้อมูลให้บันทึกเครื่องหมายขีด
+                                  ( - )
+                                </p>
                               </div>
                             )}
                           </Radio>
@@ -1366,6 +1369,10 @@ const FormPage = () => {
                                   errors={errors.LG2}
                                   showName={!!session}
                                 />
+                                <p className="text-blue-500">
+                                  หากไม่ประสงค์ให้ข้อมูลให้บันทึกเครื่องหมายขีด
+                                  ( - )
+                                </p>
                               </div>
                             )}
                           </Radio>
@@ -1384,6 +1391,10 @@ const FormPage = () => {
                                   errors={errors.LG3}
                                   showName={!!session}
                                 />
+                                <p className="text-blue-500">
+                                  หากไม่ประสงค์ให้ข้อมูลให้บันทึกเครื่องหมายขีด
+                                  ( - )
+                                </p>
                               </div>
                             )}
                           </Radio>

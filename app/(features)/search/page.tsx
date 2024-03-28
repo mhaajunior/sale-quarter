@@ -393,9 +393,6 @@ const SearchPage = () => {
           <div className="flex flex-wrap justify-between items-center">
             <p>ท่านยินยอมที่จะให้ข้อมูลกับสำนักงานสถิติแห่งชาติหรือไม่</p>
             <div className="flex gap-5">
-              <Button key="back" danger onClick={() => setModalOpen(false)}>
-                ไม่ยินยอม
-              </Button>
               <Button
                 key="submit"
                 primary

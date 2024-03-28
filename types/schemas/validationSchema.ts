@@ -268,25 +268,28 @@ export const createReportSchema = z
         .min(1, "กรุณากรอกข้อมูลในช่องนี้")
         .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
         .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-        .refine((data) => !data.startsWith("-"), "ข้อมูลในช่องนี้ไม่ถูกต้อง")
         .optional(),
       z.literal("-"),
     ]),
     LG1_temp: z.string().length(1).optional(),
-    LG2: z
-      .string()
-      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
-      .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
-      .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-      .refine((data) => data.startsWith("0"), "เลขทะเบียนนิติบุคคลไม่ถูกต้อง")
-      .optional(),
-    LG3: z
-      .string()
-      .min(1, "กรุณากรอกข้อมูลในช่องนี้")
-      .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
-      .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
-      .refine((data) => data.startsWith("0"), "เลขทะเบียนนิติบุคคลไม่ถูกต้อง")
-      .optional(),
+    LG2: z.union([
+      z
+        .string()
+        .min(1, "กรุณากรอกข้อมูลในช่องนี้")
+        .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
+        .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
+        .optional(),
+      z.literal("-"),
+    ]),
+    LG3: z.union([
+      z
+        .string()
+        .min(1, "กรุณากรอกข้อมูลในช่องนี้")
+        .length(13, "ข้อมูลในช่องนี้ต้องมี 13 หลัก")
+        .refine((data) => Number(data), "ข้อมูลในช่องนี้ต้องเป็นตัวเลข")
+        .optional(),
+      z.literal("-"),
+    ]),
     LG4: z
       .string()
       .min(1, "กรุณากรอกข้อมูลในช่องนี้")
@@ -613,26 +616,6 @@ export const createReportSchema = z
       },
       ctx
     ) => {
-      if (LG1) {
-        if (LG1_temp === "1") {
-          if (LG1 !== "-" && !assertThaiId(LG1)) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "เลขบัตรประชาชนที่กรอกไม่ถูกต้อง",
-              path: ["LG1"],
-            });
-          }
-        } else {
-          if (LG1 === "-") {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "เลขทะเบียนพาณิชย์ที่กรอกไม่ถูกต้อง",
-              path: ["LG1"],
-            });
-          }
-        }
-      }
-
       if (Number(ENU) === 1 && CHG !== 1 && !FAC) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
