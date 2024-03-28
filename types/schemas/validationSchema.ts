@@ -307,28 +307,28 @@ export const createReportSchema = z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับในเดือนนี้")
       .max(15, "ยอดขายหรือรายรับห้ามเกินกว่า 12 หลัก")
-      .refine(
-        (data) => Number(currencyToNumber(data)),
-        "ยอดขายหรือรายรับต้องเป็นตัวเลข"
-      )
+      // .refine(
+      //   (data) => Number(currencyToNumber(data)),
+      //   "ยอดขายหรือรายรับต้องเป็นตัวเลข"
+      // )
       .optional(),
     R2_temp: z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับในเดือนนี้")
       .max(15, "ยอดขายหรือรายรับห้ามเกินกว่า 12 หลัก")
-      .refine(
-        (data) => Number(currencyToNumber(data)),
-        "ยอดขายหรือรายรับต้องเป็นตัวเลข"
-      )
+      // .refine(
+      //   (data) => Number(currencyToNumber(data)),
+      //   "ยอดขายหรือรายรับต้องเป็นตัวเลข"
+      // )
       .optional(),
     R3_temp: z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับในเดือนนี้")
       .max(15, "ยอดขายหรือรายรับห้ามเกินกว่า 12 หลัก")
-      .refine(
-        (data) => Number(currencyToNumber(data)),
-        "ยอดขายหรือรายรับต้องเป็นตัวเลข"
-      )
+      // .refine(
+      //   (data) => Number(currencyToNumber(data)),
+      //   "ยอดขายหรือรายรับต้องเป็นตัวเลข"
+      // )
       .optional(),
     TR_temp: z
       .string()
@@ -490,13 +490,11 @@ export const createReportSchema = z
       .optional(),
     STO_temp: z
       .union([
-        z
-          .string()
-          .max(15, "มูลค่าสินค่าคงเหลือห้ามเกินกว่า 12 หลัก")
-          .refine(
-            (data) => Number(currencyToNumber(data)),
-            "มูลค่าสินค่าคงเหลือต้องเป็นตัวเลข"
-          ),
+        z.string().max(15, "มูลค่าสินค่าคงเหลือห้ามเกินกว่า 12 หลัก"),
+        // .refine(
+        //   (data) => Number(currencyToNumber(data)),
+        //   "มูลค่าสินค่าคงเหลือต้องเป็นตัวเลข"
+        // )
         z.literal(""),
       ])
       .optional(),
