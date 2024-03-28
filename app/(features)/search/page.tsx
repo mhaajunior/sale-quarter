@@ -388,7 +388,7 @@ const SearchPage = () => {
       <Modal
         title={<p className="text-center text-xl">ยินยอมให้ข้อมูล</p>}
         open={modalOpen}
-        closable={false}
+        onCancel={() => setModalOpen(false)}
         footer={
           <div className="flex flex-wrap justify-between items-center">
             <p>ท่านยินยอมที่จะให้ข้อมูลกับสำนักงานสถิติแห่งชาติหรือไม่</p>
