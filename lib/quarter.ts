@@ -8,7 +8,7 @@ export const quarterMap = (year: number) => {
       endDate: `${year}-03-31`,
       monthRange: ["ม.ค.", "ก.พ.", "มี.ค."],
       rangeVal: [1, 2, 3],
-      formSubmittedRange: [`${year}-01-01`, `${year}-04-30`], //pending edit
+      formSubmittedRange: [`${year}-04-01`, `${year}-04-30`],
       cronRange: [`${year}-04-01`, `${year}-04-30`],
     },
     {

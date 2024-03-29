@@ -143,7 +143,7 @@ export const POST = async (req: NextRequest) => {
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,
-          canCreateQtr1: true, //pending edit
+          canCreateQtr1: false,
           canCreateQtr2: false,
           canCreateQtr3: false,
           canCreateQtr4: false,
@@ -163,7 +163,7 @@ export const POST = async (req: NextRequest) => {
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,
-          canCreateQtr1: true, //pending edit,
+          canCreateQtr1: false,
           canCreateQtr2: false,
           canCreateQtr3: false,
           canCreateQtr4: false,

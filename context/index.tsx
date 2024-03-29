@@ -30,10 +30,9 @@ export default function FilterProvider({ children }: PropsWithChildren) {
   const lastDate = `${fullYear}-03-31`;
   let currentYear = getThaiYear(fullYear).yearSlice;
   const currentDate = moment().format("YYYY-MM-DD");
-  // pending edit
-  // if (checkDateBetween(currentDate, startDate, lastDate)) {
-  //   currentYear--;
-  // }
+  if (checkDateBetween(currentDate, startDate, lastDate)) {
+    currentYear--;
+  }
 
   let qtr;
   if (checkDateBetween(currentDate, `${fullYear}-02-01`, `${fullYear}-04-30`)) {

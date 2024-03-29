@@ -12,7 +12,7 @@ import {
   getUserRole,
   validateUserRole,
 } from "../middleware";
-import { changeToNull } from "@/lib/common";
+import { changeToNull, checkValidZero } from "@/lib/common";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -231,10 +231,10 @@ export const POST = async (req: NextRequest) => {
         M1: M1 || null,
         M2: M2 || null,
         M3: M3 || null,
-        R1: R1 || null,
-        R2: R2 || null,
-        R3: R3 || null,
-        TR: TR || null,
+        R1: checkValidZero(R1) ? R1 : null,
+        R2: checkValidZero(R2) ? R2 : null,
+        R3: checkValidZero(R3) ? R3 : null,
+        TR: checkValidZero(TR) ? TR : null,
         SI: SI || null,
         ITR: ITR || null,
         SI1: si1,
@@ -336,10 +336,10 @@ export const POST = async (req: NextRequest) => {
         M1,
         M2,
         M3,
-        R1,
-        R2,
-        R3,
-        TR,
+        R1: checkValidZero(R1) ? R1 : null,
+        R2: checkValidZero(R2) ? R2 : null,
+        R3: checkValidZero(R3) ? R3 : null,
+        TR: checkValidZero(TR) ? TR : null,
         SI,
         ITR,
         SI1: si1,

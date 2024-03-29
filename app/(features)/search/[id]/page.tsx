@@ -181,10 +181,11 @@ const FormPage = () => {
     const R3 = currencyToNumber(r3 as string);
     const TR = currencyToNumber(tr_temp as string);
     if (
-      checkValidZero(R1) ||
-      checkValidZero(R2) ||
-      checkValidZero(R3) ||
-      checkValidZero(TR)
+      (checkValidZero(R1) ||
+        checkValidZero(R2) ||
+        checkValidZero(R3) ||
+        checkValidZero(TR)) &&
+      enu == "01"
     ) {
       if (checkValidZero(R1))
         setValue("R1_temp", numberWithCommas(removeNonNumeric(r1 as string)));
