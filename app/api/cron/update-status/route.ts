@@ -13,7 +13,7 @@ export const PATCH = async (req: NextRequest) => {
   const now = new Date().toJSON().slice(0, 10);
   const month = new Date().getMonth();
   let currentYear = getThaiYear(fullYear).yearSlice;
-  if (month === 0) {
+  if (month === 0 || month === 1) {
     currentYear--;
   }
 
