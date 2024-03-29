@@ -490,19 +490,21 @@ export const createReportSchema = z
       .optional(),
     STO_temp: z
       .union([
-        z.string().max(15, "มูลค่าสินค่าคงเหลือห้ามเกินกว่า 12 หลัก"),
-        // .refine(
-        //   (data) => Number(currencyToNumber(data)),
-        //   "มูลค่าสินค่าคงเหลือต้องเป็นตัวเลข"
-        // )
+        z
+          .string()
+          .max(15, "มูลค่าสินค่าคงเหลือห้ามเกินกว่า 12 หลัก")
+          .refine(
+            (data) => Number(currencyToNumber(data)),
+            "มูลค่าสินค่าคงเหลือต้องเป็นจำนวนบวก"
+          ),
         z.literal(""),
       ])
       .optional(),
-    STO: z.number().max(999999999999).nonnegative().optional(),
+    STO: z.number().max(999999999999).positive().optional(),
     DAY: z.coerce
       .number({ invalid_type_error: "จำนวนวันต้องเป็นตัวเลข" })
       .int("จำนวนวันต้องเป็นจำนวนเต็ม")
-      .nonnegative("จำนวนวันห้ามเป็นลบ")
+      .positive("จำนวนวันต้องเป็นจำนวนบวก")
       .lte(365, "จำนวนวันห้ามเกิน 365 วัน")
       .nullable()
       .optional(),

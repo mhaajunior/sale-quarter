@@ -218,7 +218,7 @@ export const consistencyCheck1 = (data: ReportForm) => {
         });
       }
     } else {
-      if (!checkValidZero(STO_temp) || !checkValidZero(DAY)) {
+      if (!STO_temp || !DAY) {
         errData.push({
           label: ["TYPE", "STO", "DAY"],
           message: "ถ้า TYPE เป็นขายปลีก ต้องมีค่า STO และ DAY",
