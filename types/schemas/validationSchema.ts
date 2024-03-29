@@ -504,7 +504,7 @@ export const createReportSchema = z
     DAY: z.coerce
       .number({ invalid_type_error: "จำนวนวันต้องเป็นตัวเลข" })
       .int("จำนวนวันต้องเป็นจำนวนเต็ม")
-      .positive("จำนวนวันต้องเป็นจำนวนบวก")
+      .nonnegative("จำนวนวันต้องเป็นจำนวนบวก")
       .lte(365, "จำนวนวันห้ามเกิน 365 วัน")
       .nullable()
       .optional(),
