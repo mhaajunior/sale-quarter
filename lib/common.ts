@@ -87,3 +87,11 @@ export const shouldAddStar = (num: number, tsic_code: number) => {
   }
   return "";
 };
+
+export const checkValidZero = (val: any) => {
+  if (val === 0 || val) {
+    return true;
+  }
+
+  return false;
+};

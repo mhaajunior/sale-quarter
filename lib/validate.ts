@@ -1,5 +1,5 @@
 import { ReportForm } from "@/types/schemas/validationSchema";
-import { between, currencyToNumber } from "./common";
+import { between, checkValidZero, currencyToNumber } from "./common";
 import { FormErrors } from "@/types/dto/common";
 import { Role } from "@/types/dto/role";
 
@@ -218,7 +218,7 @@ export const consistencyCheck1 = (data: ReportForm) => {
         });
       }
     } else {
-      if (!STO_temp || !DAY) {
+      if (!checkValidZero(STO_temp) || !checkValidZero(DAY)) {
         errData.push({
           label: ["TYPE", "STO", "DAY"],
           message: "ถ้า TYPE เป็นขายปลีก ต้องมีค่า STO และ DAY",

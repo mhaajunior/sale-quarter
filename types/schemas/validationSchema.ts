@@ -334,10 +334,10 @@ export const createReportSchema = z
       .string()
       .min(1, "กรุณากรอกยอดขายหรือรายรับที่รวมทั้ง 3 เดือน")
       .max(15, "ยอดขายหรือรายรับห้ามเกินกว่า 12 หลัก")
-      .refine(
-        (data) => Number(currencyToNumber(data)),
-        "ยอดขายหรือรายรับต้องเป็นตัวเลข"
-      )
+      // .refine(
+      //   (data) => Number(currencyToNumber(data)),
+      //   "ยอดขายหรือรายรับต้องเป็นตัวเลข"
+      // )
       .optional(),
     R1: z.number().max(999999999999).nonnegative().optional(),
     R2: z.number().max(999999999999).nonnegative().optional(),

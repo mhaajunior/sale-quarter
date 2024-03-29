@@ -7,6 +7,7 @@ import Input from "@/components/Input";
 import Title from "@/components/Title";
 import {
   between,
+  checkValidZero,
   currencyToNumber,
   isNull,
   numberWithCommas,
@@ -179,19 +180,23 @@ const FormPage = () => {
     const R2 = currencyToNumber(r2 as string);
     const R3 = currencyToNumber(r3 as string);
     const TR = currencyToNumber(tr_temp as string);
-    if (R1 || R2 || R3 || TR) {
-      if (R1)
+    if (
+      checkValidZero(R1) ||
+      checkValidZero(R2) ||
+      checkValidZero(R3) ||
+      checkValidZero(TR)
+    ) {
+      if (checkValidZero(R1))
         setValue("R1_temp", numberWithCommas(removeNonNumeric(r1 as string)));
-      if (R2)
+      if (checkValidZero(R2))
         setValue("R2_temp", numberWithCommas(removeNonNumeric(r2 as string)));
-      if (R3)
+      if (checkValidZero(R3))
         setValue("R3_temp", numberWithCommas(removeNonNumeric(r3 as string)));
-      if (TR) {
+      if (checkValidZero(TR)) {
         setValue(
           "TR_temp",
           numberWithCommas(removeNonNumeric(tr_temp as string))
         );
-
         if (TR !== R1 + R2 + R3) {
           setTrError({ message: "จำนวนรวมทั้ง 3 เดือนที่กรอกไม่ถูกต้อง" });
         } else {
