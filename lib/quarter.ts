@@ -52,7 +52,7 @@ export const checkDateBetween = (
   date2: string,
   date3: string
 ) => {
-  return moment(date1).isBetween(date2, date3);
+  return moment(date1).isBetween(date2, date3, undefined, "[]");
 };
 
 export const getThaiYear = (date: number) => {
