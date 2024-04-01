@@ -66,12 +66,17 @@ export const PATCH = async (req: NextRequest) => {
         break;
     }
   }
+  const updateSql = `${Object.keys(updateObj)} = ${
+    Object.values(updateObj) ? 1 : 0
+  }`;
 
   try {
-    await prisma.reportStatus.updateMany({
-      where: { year: currentYear },
-      data: updateObj,
-    });
+    await prisma.$executeRawUnsafe(`
+      UPDATE reportStatus
+      SET ${updateSql} 
+      WHERE year = ${currentYear}
+    `);
+
     return NextResponse.json("เปลี่ยนสถานะเรียบร้อย");
   } catch (e) {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
