@@ -120,7 +120,7 @@ export const POST = async (req: NextRequest) => {
           building: building.toString(),
           tam: padZero(tam, 2),
           tam_name: tam_name.toString(),
-          amp: padZero(tam, 2),
+          amp: padZero(amp, 2),
           amp_name: amp_name.toString(),
           tel_no: tel_no.toString(),
           e_mail: e_mail.toString(),
