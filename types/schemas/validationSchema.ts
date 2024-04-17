@@ -60,7 +60,7 @@ export const createReportSchema = z
       .length(4, "เขตการแจงนับที่กรอกไม่ถูกต้อง")
       .refine((data) => onlyNumber(data), "เขตการแจงนับที่กรอกไม่ถูกต้อง")
       .refine(
-        (data) => between(Number(data), 1, 9999),
+        (data) => between(Number(data), 0, 9999),
         "เขตการแจงนับที่กรอกไม่ถูกต้อง"
       ),
     VIL: z
