@@ -10,6 +10,7 @@ const Dropdown = ({
   placeholder,
   options,
   isControl = true,
+  isSearchable = false,
   showName = false,
   errors,
   defaultValue,
@@ -19,6 +20,7 @@ const Dropdown = ({
   placeholder: string;
   options: SelectOption[];
   isControl?: boolean;
+  isSearchable?: boolean;
   showName?: boolean;
   errors?: any;
   defaultValue?: string | number;
@@ -67,7 +69,7 @@ const Dropdown = ({
                 value={getValue(value)}
                 classNamePrefix="dropdown"
                 placeholder={placeholder}
-                isSearchable={false}
+                isSearchable={isSearchable}
                 styles={customStyles}
               />
             )}
@@ -89,7 +91,7 @@ const Dropdown = ({
           name={name}
           classNamePrefix="dropdown"
           placeholder={placeholder}
-          isSearchable={false}
+          isSearchable={isSearchable}
           styles={customStyles}
         />
       )}

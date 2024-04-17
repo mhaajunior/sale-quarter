@@ -1,5 +1,7 @@
 import { getThaiYear } from "@/lib/quarter";
 import { SelectOption } from "@/types/dto/common";
+import { Role } from "@/types/dto/role";
+import { mapProvinceName } from "./province";
 
 export const typeOption: SelectOption[] = [
   { label: "การขายปลีก", value: 1 },
@@ -43,3 +45,21 @@ export const estTitleOption: SelectOption[] = [
   { label: "หจก.", value: "หจก." },
   { label: "บจก.", value: "บจก." },
 ];
+
+export const addUserTitleOption: SelectOption[] = [
+  { label: "นาย", value: "นาย" },
+  { label: "นาง", value: "นาง" },
+  { label: "นางสาว", value: "นางสาว" },
+];
+
+export const roleOption: SelectOption[] = [
+  { label: "เจ้าหน้าที่บันทึกข้อมูล", value: Role.INTERVIEWER },
+  { label: "ผู้ตรวจ", value: Role.SUPERVISOR },
+  { label: "เจ้าหน้าที่ส่วนกลาง", value: Role.SUBJECT },
+];
+
+const provinceOption: SelectOption[] = [];
+for (const [key, value] of Object.entries(mapProvinceName)) {
+  provinceOption.push({ label: value, value: key });
+}
+export { provinceOption };

@@ -83,6 +83,12 @@ const Navbar = () => {
       link: "/uploadControl",
       role: [Role.ADMIN],
     },
+    {
+      title: "เพิ่มผู้ใช้งาน",
+      path: "/addUser",
+      link: "/addUser",
+      role: [Role.ADMIN],
+    },
   ];
 
   let manualLink = process.env.NEXT_PUBLIC_COMPANY_MANUAL;

@@ -1,5 +1,4 @@
 import {
-  assertThaiId,
   between,
   currencyToNumber,
   hasNumber,
@@ -588,8 +587,6 @@ export const createReportSchema = z
   .superRefine(
     (
       {
-        LG1,
-        LG1_temp,
         R1_temp,
         R2_temp,
         R3_temp,
