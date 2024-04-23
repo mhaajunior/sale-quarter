@@ -6,6 +6,16 @@ import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserRole, validateUserRole } from "../middleware";
 
+interface WhereObj {
+  province: number;
+  year: number;
+  ID?: { startsWith: string };
+  isApproveQtr1?: boolean;
+  isApproveQtr2?: boolean;
+  isApproveQtr3?: boolean;
+  isApproveQtr4?: boolean;
+}
+
 // find company id in search page and return status
 export const POST = async (req: NextRequest) => {
   const accessToken = req.headers.get("authorization");
@@ -95,53 +105,54 @@ export const GET = async (req: NextRequest) => {
   }
 
   try {
-    let whereObj: any = { province, year };
-    let whereObj2: any = { province, year };
-    let whereObj3: any = { province, year };
-    if (searchId) {
-      whereObj.ID = { startsWith: searchId };
-      whereObj2.ID = { startsWith: searchId };
-    }
+    let whereObjTotalCount: WhereObj = { province, year };
+    let whereObjNotApproveCount: WhereObj = { province, year };
+    let whereObjTotalNotApproveCount: WhereObj = { province, year };
 
-    const totalCount = await prisma.reportStatus.count({
-      where: whereObj,
-    });
+    if (searchId) {
+      whereObjTotalCount.ID = { startsWith: searchId };
+      whereObjNotApproveCount.ID = { startsWith: searchId };
+    }
 
     switch (quarter) {
       case 1:
-        whereObj.isApproveQtr1 = false;
-        whereObj3.isApproveQtr1 = false;
+        whereObjTotalNotApproveCount.isApproveQtr1 = false;
+        whereObjNotApproveCount.isApproveQtr1 = false;
+        if (option === 2) whereObjTotalCount.isApproveQtr1 = false;
         break;
       case 2:
-        whereObj.isApproveQtr2 = false;
-        whereObj3.isApproveQtr2 = false;
+        whereObjTotalNotApproveCount.isApproveQtr2 = false;
+        whereObjNotApproveCount.isApproveQtr2 = false;
+        if (option === 2) whereObjTotalCount.isApproveQtr2 = false;
         break;
       case 3:
-        whereObj.isApproveQtr3 = false;
-        whereObj3.isApproveQtr3 = false;
+        whereObjTotalNotApproveCount.isApproveQtr3 = false;
+        whereObjNotApproveCount.isApproveQtr3 = false;
+        if (option === 2) whereObjTotalCount.isApproveQtr3 = false;
         break;
       case 4:
-        whereObj.isApproveQtr4 = false;
-        whereObj3.isApproveQtr4 = false;
+        whereObjTotalNotApproveCount.isApproveQtr4 = false;
+        whereObjNotApproveCount.isApproveQtr4 = false;
+        if (option === 2) whereObjTotalCount.isApproveQtr4 = false;
         break;
       default:
         break;
     }
 
+    const totalCount = await prisma.reportStatus.count({
+      where: whereObjTotalCount,
+    });
+
     const totalNotApproveCount = await prisma.reportStatus.count({
-      where: whereObj3,
+      where: whereObjTotalNotApproveCount,
     });
 
     const notApproveCount = await prisma.reportStatus.count({
-      where: whereObj,
+      where: whereObjNotApproveCount,
     });
 
-    if (option === 2) {
-      whereObj2 = whereObj;
-    }
-
     const reportStatus = await prisma.reportStatus.findMany({
-      where: whereObj2,
+      where: whereObjTotalCount,
       orderBy: [{ no: "asc" }],
       include: {
         report: {
