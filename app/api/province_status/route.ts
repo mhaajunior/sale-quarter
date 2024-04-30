@@ -5,6 +5,8 @@ import { Prisma } from "@prisma/client";
 import { Role } from "@/types/dto/role";
 import { NextRequest, NextResponse } from "next/server";
 import { validateUserRole } from "../middleware";
+import { logger } from "@/logger";
+import moment from "moment";
 
 // get all province report status for subject
 export const GET = async (req: NextRequest) => {
@@ -70,6 +72,12 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(
+      moment().format("HH:mm:ss"),
+      "GET /api/province_status",
+      req,
+      e
+    );
     throw e;
   }
 };

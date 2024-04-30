@@ -9,6 +9,8 @@ import { getThaiYear } from "@/lib/quarter";
 import { mapProvinceName } from "@/utils/province";
 import { ControlTable } from "@/types/dto/control";
 import { padZero } from "@/lib/common";
+import { logger } from "@/logger";
+import moment from "moment";
 
 // upload control for admin
 export const POST = async (req: NextRequest) => {
@@ -143,18 +145,6 @@ export const POST = async (req: NextRequest) => {
           region: Number(reg),
           province: Number(cwt),
           province_name: cwt_name,
-          canCreateQtr1: false,
-          canCreateQtr2: false,
-          canCreateQtr3: false,
-          canCreateQtr4: false,
-          isSendQtr1: false,
-          isSendQtr2: false,
-          isSendQtr3: false,
-          isSendQtr4: false,
-          isApproveQtr1: false,
-          isApproveQtr2: false,
-          isApproveQtr3: false,
-          isApproveQtr4: false,
         },
         create: {
           ID: es_id.toString(),
@@ -184,6 +174,7 @@ export const POST = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(moment().format("HH:mm:ss"), "POST /api/control", req, e);
     throw e;
   }
 };
@@ -223,6 +214,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(moment().format("HH:mm:ss"), "GET /api/control", req, e);
     throw e;
   }
 };

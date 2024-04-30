@@ -13,6 +13,8 @@ import {
   validateUserRole,
 } from "../middleware";
 import { changeToNull, checkValidZero } from "@/lib/common";
+import { logger } from "@/logger";
+import moment from "moment";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -450,6 +452,7 @@ export const POST = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(moment().format("HH:mm:ss"), "POST /api/report", req, e);
     throw e;
   }
 };
@@ -591,6 +594,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(moment().format("HH:mm:ss"), "GET /api/report", req, e);
     throw e;
   }
 };

@@ -5,6 +5,8 @@ import { Role } from "@/types/dto/role";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { numberWithCommas } from "@/lib/common";
+import { logger } from "@/logger";
+import moment from "moment";
 
 interface ResponseData {
   total: number;
@@ -105,6 +107,12 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
+    logger.error(
+      moment().format("HH:mm:ss"),
+      "GET /api/specification/response_rate",
+      req,
+      e
+    );
     throw e;
   }
 };
