@@ -4,7 +4,7 @@ import { validateUserRole } from "../../middleware";
 import { Role } from "@/types/dto/role";
 import prisma from "@/prisma/db";
 import bcrypt from "bcrypt";
-import { logger } from "@/logger";
+// import { logger } from "@/logger";
 import moment from "moment";
 
 // create new user for admin
@@ -47,7 +47,7 @@ export const POST = async (req: NextRequest) => {
     });
     return NextResponse.json("เพิ่มผู้ใช้งานสำเร็จ");
   } catch (e) {
-    logger.error(moment().format("HH:mm:ss"), "POST /api/user", req, e);
+    // logger.error(moment().format("HH:mm:ss"), "POST /api/user", req, e);
     throw e;
   }
 };

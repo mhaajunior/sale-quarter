@@ -9,7 +9,7 @@ import { getThaiYear } from "@/lib/quarter";
 import { mapProvinceName } from "@/utils/province";
 import { ControlTable } from "@/types/dto/control";
 import { padZero } from "@/lib/common";
-import { logger } from "@/logger";
+// import { logger } from "@/logger";
 import moment from "moment";
 
 // upload control for admin
@@ -174,7 +174,7 @@ export const POST = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(moment().format("HH:mm:ss"), "POST /api/control", req, e);
+    // logger.error(moment().format("HH:mm:ss"), "POST /api/control", req, e);
     throw e;
   }
 };
@@ -214,7 +214,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(moment().format("HH:mm:ss"), "GET /api/control", req, e);
+    // logger.error(moment().format("HH:mm:ss"), "GET /api/control", req, e);
     throw e;
   }
 };

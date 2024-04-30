@@ -5,7 +5,7 @@ import { Role } from "@/types/dto/role";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import moment from "moment";
-import { logger } from "@/logger";
+// import { logger } from "@/logger";
 
 interface Data {
   NO: string;
@@ -128,12 +128,12 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(
-      moment().format("HH:mm:ss"),
-      "GET /api/specification/tabulation",
-      req,
-      e
-    );
+    // logger.error(
+    //   moment().format("HH:mm:ss"),
+    //   "GET /api/specification/tabulation",
+    //   req,
+    //   e
+    // );
     throw e;
   }
 };
