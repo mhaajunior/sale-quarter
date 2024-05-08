@@ -7,7 +7,6 @@ const Title = ({
   title: string | React.ReactNode;
   addon?: React.ReactNode;
 }) => {
-  // hi
   return (
     <div className="flex flex-col gap-2 mb-10">
       <div className="flex flex-wrap-reverse items-center justify-between">

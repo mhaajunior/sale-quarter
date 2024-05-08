@@ -1,4 +1,4 @@
-import * as winston from "winston";
+import { createLogger, transports, format } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 const transportInfo: DailyRotateFile = new DailyRotateFile({
@@ -20,15 +20,15 @@ const errorInfo: DailyRotateFile = new DailyRotateFile({
   maxFiles: "14d",
 });
 
-const logger = winston.createLogger({
+const logger = createLogger({
   level: "info",
   transports: [transportInfo, errorInfo],
 });
 
 if (process.env.NODE_ENV !== "production") {
   logger.add(
-    new winston.transports.Console({
-      format: winston.format.simple(),
+    new transports.Console({
+      format: format.simple(),
     })
   );
 }

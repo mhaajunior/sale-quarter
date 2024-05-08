@@ -1,5 +1,5 @@
 import { ReportForm } from "@/types/schemas/validationSchema";
-import { between, checkValidZero, currencyToNumber } from "./common";
+import { between, currencyToNumber } from "./common";
 import { FormErrors } from "@/types/dto/common";
 import { Role } from "@/types/dto/role";
 
