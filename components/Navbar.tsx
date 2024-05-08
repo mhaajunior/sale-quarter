@@ -78,6 +78,12 @@ const Navbar = () => {
       role: [Role.SUBJECT],
     },
     {
+      title: "อัตราการตอบกลับ",
+      path: "/responseRate",
+      link: "/responseRate",
+      role: [Role.SUBJECT],
+    },
+    {
       title: "อัพโหลด Control",
       path: "/uploadControl",
       link: "/uploadControl",

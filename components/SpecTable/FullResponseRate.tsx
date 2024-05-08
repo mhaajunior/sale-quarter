@@ -5,24 +5,23 @@ import { errorHandler } from "@/lib/errorHandler";
 import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Loading from "../Loading";
 import Button from "../Button";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import * as ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { createOuterBorder } from "@/lib/excel";
-
-interface Data {
-  year: number;
-  quarter: number;
-  province: number | null;
-}
+import { FilterContext } from "@/context";
+import { QuarterArr } from "@/types/dto/common";
+import { quarterMap } from "@/lib/quarter";
+import moment from "moment";
+import Badge from "../Badge";
+import { mapProvinceName } from "@/utils/province";
 
 interface DataType {
   key: React.Key;
-  QTR: number;
+  province: string;
   total_count: string;
   total_percent: string;
   countable_count: string;
@@ -51,29 +50,24 @@ interface DataType {
   enu11_percent: string;
 }
 
-const ResponseRate = ({ data }: { data: Data }) => {
-  const { year, province } = data;
+const FullResponseRate = () => {
+  const { year, quarter, setQuarter } = useContext(FilterContext);
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<DataType[]>([]);
   const [excelData, setExcelData] = useState<any>([]);
-  const router = useRouter();
   const session = useClientSession();
 
   useEffect(() => {
-    if (province) {
-      getTableData();
-    } else {
-      router.push("/denied?code=3");
-    }
+    getTableData();
   }, []);
 
   const getTableData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/specification/response_rate", {
+      const res = await axios.get("/api/specification/full_response_rate", {
         params: {
-          province,
           year,
+          quarter,
         },
         headers: { authorization: session?.user.accessToken },
       });
@@ -86,7 +80,8 @@ const ResponseRate = ({ data }: { data: Data }) => {
           const v: any = value;
           report_res.push({
             key: key,
-            QTR: Number(key),
+            province:
+              mapProvinceName[Number(key) as keyof typeof mapProvinceName],
             total_count: v.total,
             total_percent: "100.00",
             countable_count: v.response[1] ? v.response[1].count : "-",
@@ -118,7 +113,7 @@ const ResponseRate = ({ data }: { data: Data }) => {
             enu11_percent: v.response[11] ? v.response[11].percent : "-",
           });
           excel.push([
-            Number(key),
+            mapProvinceName[Number(key) as keyof typeof mapProvinceName],
             v.total,
             "100.00",
             v.response[1] ? v.response[1].count : "-",
@@ -161,9 +156,9 @@ const ResponseRate = ({ data }: { data: Data }) => {
 
   const columns: ColumnsType<any> = [
     {
-      title: "ไตรมาส",
-      dataIndex: "QTR",
-      key: "QTR",
+      title: "ภาค/จังหวัด",
+      dataIndex: "province",
+      key: "province",
       align: "center",
       width: "3%",
     },
@@ -426,12 +421,32 @@ const ResponseRate = ({ data }: { data: Data }) => {
     },
   ];
 
+  const quarterArr: QuarterArr[] = [];
+  for (let i = 1; i <= 4; i++) {
+    let passOpenDate = false;
+    const res = quarterMap(Number("25" + year) - 543);
+    const startDate = moment(res[i - 1].formSubmittedRange[0]);
+    const now = moment();
+
+    if (now >= startDate) {
+      passOpenDate = true;
+    }
+    quarterArr.push({
+      label: "ไตรมาสที่ " + i,
+      value: i,
+      color: "black",
+      passOpenDate,
+    });
+  }
+
   const handleDownload = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Response Rate", {
       views: [{ showGridLines: false }],
       properties: { defaultRowHeight: 30 },
     });
+
+    worksheet.getColumn(1).width = 20;
 
     worksheet.mergeCells("A1:AA1");
     worksheet.getCell("A1").value = "Response Rate Specification";
@@ -446,15 +461,26 @@ const ResponseRate = ({ data }: { data: Data }) => {
 
     worksheet.mergeCells("A3:J3");
     worksheet.getCell("A3").value =
-      "ตาราง  จำนวนและร้อยละของสถานประกอบการ จำแนกตามผลการแจงนับ";
+      "ตาราง  จำนวนและร้อยละของสถานประกอบการ จำแนกตามผลการแจงนับ เป็นรายภาคและทั่วประเทศ";
     worksheet.getCell("A3").font = {
       bold: true,
       name: "TH SarabunPSK",
       size: 16,
     };
 
-    worksheet.getCell("Z5").value = "จังหวัด";
-    worksheet.getCell("AA5").value = province;
+    worksheet.getCell("Z5").value = "ไตรมาส";
+    worksheet.getCell("Z5").font = {
+      bold: true,
+      name: "TH SarabunPSK",
+      size: 14,
+    };
+    worksheet.getCell("AA5").value = quarter;
+    worksheet.getCell("AA5").font = {
+      bold: true,
+      name: "TH SarabunPSK",
+      size: 14,
+    };
+
     worksheet.getRow(5).font = { name: "TH SarabunPSK", size: 16 };
     worksheet.getRow(6).font = { name: "TH SarabunPSK", size: 16 };
     worksheet.getRow(7).font = { name: "TH SarabunPSK", size: 16 };
@@ -463,7 +489,7 @@ const ResponseRate = ({ data }: { data: Data }) => {
     worksheet.getRow(9).alignment = { horizontal: "center" };
 
     worksheet.mergeCells("A6:A9");
-    worksheet.getCell("A6").value = "ไตรมาส";
+    worksheet.getCell("A6").value = "ภาค/จังหวัด";
     worksheet.getCell("A6").alignment = {
       vertical: "top",
       horizontal: "center",
@@ -792,6 +818,12 @@ const ResponseRate = ({ data }: { data: Data }) => {
       getRowInsert.alignment = { horizontal: "right" };
     }
 
+    worksheet.getColumn(1).alignment = { horizontal: "center" };
+    worksheet.getCell("A6").alignment = {
+      vertical: "top",
+      horizontal: "center",
+    };
+
     let lastRow = worksheet.lastRow!.number;
     createOuterBorder(worksheet, [1, 6], [27, lastRow]);
 
@@ -802,13 +834,15 @@ const ResponseRate = ({ data }: { data: Data }) => {
 
     const blob = new Blob([buffer], { type: fileType });
 
-    saveAs(blob, `response_rate-${year}-${province}` + fileExtension);
+    saveAs(blob, `response_rate-${year}` + fileExtension);
   };
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap justify-between items-center gap-3">
-        <h1>ตารางอัตราการตอบกลับของข้อมูล</h1>
+        <h1>
+          ตารางร้อยละการได้รับความร่วมมือในการตอบแบบสอบถาม (Response Rate)
+        </h1>
         <Button secondary loading={loading} onClick={handleDownload}>
           <IoCloudDownloadOutline className="mr-1" />
           ดาวน์โหลด
@@ -817,18 +851,31 @@ const ResponseRate = ({ data }: { data: Data }) => {
       {loading ? (
         <Loading type="partial" />
       ) : (
-        <Table
-          columns={columns}
-          dataSource={response}
-          bordered
-          size="middle"
-          scroll={{ x: "calc(2000px + 50%)" }}
-          showSorterTooltip={false}
-          pagination={false}
-        />
+        <div className="flex flex-wrap">
+          {quarterArr.map((item) => (
+            <Badge
+              key={item.value}
+              color={item.color}
+              onClick={() => item.passOpenDate && setQuarter(item.value)}
+              active={item.value === quarter}
+              disabled={!item.passOpenDate}
+            >
+              {item.label}
+            </Badge>
+          ))}
+          <Table
+            columns={columns}
+            dataSource={response}
+            bordered
+            size="middle"
+            scroll={{ x: "calc(2000px + 50%)" }}
+            showSorterTooltip={false}
+            pagination={false}
+          />
+        </div>
       )}
     </div>
   );
 };
 
-export default ResponseRate;
+export default FullResponseRate;

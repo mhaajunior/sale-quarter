@@ -21,6 +21,10 @@ const accessRole: AccessRole[] = [
     role: [Role.SUBJECT],
   },
   {
+    path: "/responseRate",
+    role: [Role.SUBJECT],
+  },
+  {
     path: "/specification",
     role: [Role.SUPERVISOR, Role.SUBJECT],
   },
@@ -54,5 +58,6 @@ export const config = {
     "/accessControl",
     "/specification",
     "/uploadControl",
+    "/responseRate",
   ],
 };

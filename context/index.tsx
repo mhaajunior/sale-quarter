@@ -1,6 +1,6 @@
 "use client";
 
-import { checkDateBetween, getThaiYear } from "@/lib/quarter";
+import { checkDateBetween, getThaiYear, quarterMap } from "@/lib/quarter";
 import moment from "moment";
 import {
   Dispatch,
@@ -34,19 +34,12 @@ export default function FilterProvider({ children }: PropsWithChildren) {
     currentYear--;
   }
 
-  let qtr;
-  if (checkDateBetween(currentDate, `${fullYear}-02-01`, `${fullYear}-04-30`)) {
-    qtr = 1;
-  } else if (
-    checkDateBetween(currentDate, `${fullYear}-05-01`, `${fullYear}-07-31`)
-  ) {
-    qtr = 2;
-  } else if (
-    checkDateBetween(currentDate, `${fullYear}-08-01`, `${fullYear}-10-31`)
-  ) {
-    qtr = 3;
-  } else {
-    qtr = 4;
+  let qtr = 0;
+  const res = quarterMap(fullYear);
+  for (let i = 0; i < res.length; i++) {
+    if (currentDate >= res[i].formSubmittedRange[0]) {
+      qtr = i + 1;
+    }
   }
 
   const [year, setYear] = useState(currentYear);

@@ -3,7 +3,7 @@ import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { validateApiKey } from "../../middleware";
-// import { logger } from "@/logger";
+import { logger } from "@/logger";
 import moment from "moment";
 
 // cronjob for update form submitted status
@@ -68,8 +68,8 @@ export const PATCH = async (req: NextRequest) => {
         break;
     }
   }
-  const updateSql = `${Object.keys(updateObj)} = ${
-    Object.values(updateObj) ? 1 : 0
+  const updateSql = `${Object.keys(updateObj)[0]} = ${
+    Object.values(updateObj)[0] ? 1 : 0
   }`;
 
   try {
@@ -79,23 +79,19 @@ export const PATCH = async (req: NextRequest) => {
       WHERE year = ${currentYear}
     `);
 
-    // logger.info(
-    //   moment().format("HH:mm:ss"),
-    //   "PATCH /api/cron/update-status",
-    //   req,
-    //   "update success"
-    // );
+    logger.info(
+      `${moment().format(
+        "HH:mm:ss"
+      )} PATCH /api/cron/update-status update success`
+    );
     return NextResponse.json("เปลี่ยนสถานะเรียบร้อย");
   } catch (e) {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    // logger.error(
-    //   moment().format("HH:mm:ss"),
-    //   "PATCH /api/cron/update-status",
-    //   req,
-    //   e
-    // );
+    logger.error(
+      `${moment().format("HH:mm:ss")} PATCH /api/cron/update-status ${e}`
+    );
     throw e;
   }
 };
