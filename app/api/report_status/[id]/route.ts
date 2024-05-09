@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
 import { logger } from "@/logger";
-import moment from "moment";
 
 // get access status of specific id in the quarter
 export const GET = async (
@@ -55,11 +54,7 @@ export const GET = async (
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(
-      `${moment().format(
-        "HH:mm:ss"
-      )} GET /api/report_status/${companyId} ${e} ${req}`
-    );
+    logger.error(`GET /api/report_status/${companyId} ${e} ${req}`);
     throw e;
   }
 };

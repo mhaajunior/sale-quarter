@@ -3,7 +3,6 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "../../middleware";
 import { logger } from "@/logger";
-import moment from "moment";
 
 // get related data from previous quarter to be new control for current quarter
 export const GET = async (
@@ -123,9 +122,7 @@ export const GET = async (
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(
-      `${moment().format("HH:mm:ss")} GET /api/control/${companyId} ${e} ${req}`
-    );
+    logger.error(`GET /api/control/${companyId} ${e} ${req}`);
     throw e;
   }
 };

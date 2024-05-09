@@ -90,6 +90,12 @@ const Navbar = () => {
       role: [Role.ADMIN],
     },
     {
+      title: "จัดการแบบ",
+      path: "/uploadReport",
+      link: "/uploadReport",
+      role: [Role.ADMIN],
+    },
+    {
       title: "เพิ่มผู้ใช้งาน",
       path: "/addUser",
       link: "/addUser",

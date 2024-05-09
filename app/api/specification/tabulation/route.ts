@@ -128,11 +128,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(
-      `${moment().format(
-        "HH:mm:ss"
-      )} GET /api/specification/tabulation ${e} ${req}`
-    );
+    logger.error(`GET /api/specification/tabulation ${e} ${req}`);
     throw e;
   }
 };

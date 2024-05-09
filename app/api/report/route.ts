@@ -14,7 +14,6 @@ import {
 } from "../middleware";
 import { changeToNull, checkValidZero } from "@/lib/common";
 import { logger } from "@/logger";
-import moment from "moment";
 
 // create and edit report
 export const POST = async (req: NextRequest) => {
@@ -452,7 +451,7 @@ export const POST = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(`${moment().format("HH:mm:ss")} POST /api/report ${e} ${req}`);
+    logger.error(`POST /api/report ${e} ${req}`);
     throw e;
   }
 };
@@ -468,18 +467,29 @@ export const GET = async (req: NextRequest) => {
     return NextResponse.json("ยังไม่ได้เข้าสู่ระบบ", { status: 401 });
   }
 
-  if (!validateUserRole(accessToken, [Role.SUPERVISOR, Role.SUBJECT])) {
+  if (
+    !validateUserRole(accessToken, [Role.SUPERVISOR, Role.SUBJECT, Role.ADMIN])
+  ) {
     return NextResponse.json("ไม่สามารถเข้าถึงข้อมูลได้", { status: 401 });
   }
 
-  if (!province || !quarter || !year) {
+  if (!quarter || !year) {
     return NextResponse.json("ข้อมูลไม่ถูกต้อง", { status: 400 });
+  }
+
+  let whereObj: any = { YR: year, QTR: quarter };
+  let orderByArr: any = [];
+  if (province) {
+    orderByArr.push({ NO: "asc" });
+    whereObj.CWT = province;
+  } else {
+    orderByArr.push({ REG: "asc" }, { CWT: "asc" }, { NO: "asc" });
   }
 
   try {
     const report = await prisma.report.findMany({
-      where: { CWT: province, YR: year, QTR: quarter },
-      orderBy: [{ NO: "asc" }],
+      where: whereObj,
+      orderBy: orderByArr,
       select: {
         ID: true,
         REG: true,
@@ -594,7 +604,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(`${moment().format("HH:mm:ss")} GET /api/report ${e} ${req}`);
+    logger.error(`GET /api/report ${e} ${req}`);
     throw e;
   }
 };

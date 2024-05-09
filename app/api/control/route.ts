@@ -4,13 +4,12 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { encrypt, validateUserRole } from "../middleware";
 import { Role } from "@/types/dto/role";
-import { controlAttr } from "@/utils/control";
+import { controlField } from "@/utils/formField";
 import { getThaiYear } from "@/lib/quarter";
 import { mapProvinceName } from "@/utils/province";
 import { ControlTable } from "@/types/dto/control";
 import { padZero } from "@/lib/common";
 import { logger } from "@/logger";
-import moment from "moment";
 
 // upload control for admin
 export const POST = async (req: NextRequest) => {
@@ -33,7 +32,7 @@ export const POST = async (req: NextRequest) => {
     for (const item of body) {
       let count = 0;
       for (const [key, value] of Object.entries(item)) {
-        if (controlAttr.includes(key)) {
+        if (controlField.includes(key)) {
           count++;
         }
       }
@@ -174,9 +173,7 @@ export const POST = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(
-      `${moment().format("HH:mm:ss")} POST /api/control ${e} ${req}`
-    );
+    logger.error(`POST /api/control ${e} ${req}`);
     throw e;
   }
 };
@@ -216,7 +213,7 @@ export const GET = async (req: NextRequest) => {
     // if (e instanceof Prisma.PrismaClientKnownRequestError) {
     //   console.log(e);
     // }
-    logger.error(`${moment().format("HH:mm:ss")} GET /api/control ${e} ${req}`);
+    logger.error(`GET /api/control ${e} ${req}`);
     throw e;
   }
 };

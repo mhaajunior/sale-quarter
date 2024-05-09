@@ -32,6 +32,14 @@ const accessRole: AccessRole[] = [
     path: "/uploadControl",
     role: [Role.ADMIN],
   },
+  {
+    path: "/uploadReport",
+    role: [Role.ADMIN],
+  },
+  {
+    path: "/addUser",
+    role: [Role.ADMIN],
+  },
 ];
 
 export default withAuth(
@@ -59,5 +67,7 @@ export const config = {
     "/specification",
     "/uploadControl",
     "/responseRate",
+    "/uploadReport",
+    "/addUser",
   ],
 };
